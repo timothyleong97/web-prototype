@@ -1,26 +1,38 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-
-function App() {
+import faker from 'faker';
+import Comment from './components/Comment';
+import YesNoCard from './components/YesNoCard'
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="ui container comments">
+      <YesNoCard>
+        <div>
+          <h4>Warning!</h4>
+          Are you sure you want to do this?
+        </div>
+      </YesNoCard>
+
+      <YesNoCard>
+        <Comment
+          author="Sam"
+          timeAgo="Today at 4:45PM"
+          content="Nice blog post"
+          avatar={faker.image.avatar()}
+        />
+      </YesNoCard>
+
+      <YesNoCard>
+        <Comment
+          author="Alex"
+          timeAgo="Today at 2:00AM"
+          content="I like the subject"
+          avatar={faker.image.avatar()}
+        />
+      </YesNoCard>
     </div>
   );
-}
+};
+
 
 export default App;

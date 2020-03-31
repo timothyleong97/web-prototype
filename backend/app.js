@@ -20,7 +20,7 @@ app.get('/summary', (req, res)=> {
 app.get('/schedule', (req, res)=> {
     res.send('Schedule page')
 })
-app.listen(3000, () => {
-    console.log('Server is up on port 3000.')
+app.listen(3500, () => {
+    console.log('Server is up on port 3500.')
 
 })

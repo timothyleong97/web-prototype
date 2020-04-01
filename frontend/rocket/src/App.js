@@ -1,9 +1,11 @@
 import React from 'react';
-import Signup from './components/Signup';
+import BrowseRestaurants from './components/BrowseRestaurants';
+
+
 
 const App = () => {
   return (
-      <Signup />
+      <BrowseRestaurants />
   );
 };
 

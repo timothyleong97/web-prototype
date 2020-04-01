@@ -1,9 +1,18 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 
 const app = express()
 
+app.use(bodyParser.json())
+app.use(
+    bodyParser.urlencoded({
+      extended: true,
+    })
+ )
+
+
 app.get('/signup', (req, res)=> {
-    res.send({name:'timothy', age: 22})
+    res.send("signup page")
 })
 
 app.get('/login', (req, res)=> {

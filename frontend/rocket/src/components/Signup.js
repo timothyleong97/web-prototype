@@ -4,13 +4,11 @@ import {
   Checkbox,
   Form,
   Input,
-  Radio,
   Select,
   TextArea,
   Container,
   Header,
   Icon,
-  Image
 } from 'semantic-ui-react'
 
 const options = [
@@ -25,9 +23,8 @@ class Signup extends Component {
   handleChange = (e, { value }) => this.setState({ value })
 
   render() {
-    const { value } = this.state
     return (
-      <Container text>
+      <Container text style = {{marginTop: 30}}>
       <Header as='h2' icon textAlign='center'>
       <Icon name='rocket' circular />
       <Header.Content>Become a Rocketeer</Header.Content>
@@ -51,28 +48,11 @@ class Signup extends Component {
             placeholder='Gender'
           />
         </Form.Group>
-        <Form.Group inline>
-          <label>Quantity</label>
+        <Form.Group>
           <Form.Field
-            control={Radio}
-            label='One'
-            value='1'
-            checked={value === '1'}
-            onChange={this.handleChange}
-          />
-          <Form.Field
-            control={Radio}
-            label='Two'
-            value='2'
-            checked={value === '2'}
-            onChange={this.handleChange}
-          />
-          <Form.Field
-            control={Radio}
-            label='Three'
-            value='3'
-            checked={value === '3'}
-            onChange={this.handleChange}
+            control={Input}
+            label='Credit Card No.'
+            placeholder='Credit Card'
           />
         </Form.Group>
         <Form.Field

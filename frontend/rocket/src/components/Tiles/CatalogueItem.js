@@ -1,23 +1,29 @@
 import React from 'react'
-import { Header, Segment } from 'semantic-ui-react'
+import { Header, Segment, Grid } from 'semantic-ui-react'
 
 const square = { 
-    width: 200, 
+    width: 300, 
     height: 150, 
-    backgroundColor: 'grey', 
+    backgroundColor: '#bfbfbf', 
     borderRadius:0, 
     verticalAlign:'middle',
     paddingTop: 55,
-    color: 'black'
+    color: 'black',
+    marginTop: 15
 }
 
+/**
+ * Tile used to display the different cuisines in Catalogue
+ * @param {text} props 
+ */
 const CatalogueItem = props => (
-<Segment style={square}>
-    <Header  as='h2' textAlign='center'>
-     {props.text}
-    </Header>
-</Segment>
-
+    <Grid.Column>
+        <Segment style={square}>
+            <Header  as='h2' textAlign='center'>
+                {props.text}
+            </Header>
+        </Segment>
+    </Grid.Column>
 )
 
 export default CatalogueItem

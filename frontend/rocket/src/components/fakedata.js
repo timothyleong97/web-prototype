@@ -1,4 +1,4 @@
-module.exports =  {mos : [
+data =   {mos : [
     {
         name: 'MOS Burger',
         price: '3.55',
@@ -30,3 +30,5 @@ cat: [
     'Fast Food'
 ]
 }
+
+export default data

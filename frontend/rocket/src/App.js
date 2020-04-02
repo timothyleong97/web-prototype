@@ -1,12 +1,15 @@
 import React from 'react';
-import RestaurantView from './components/RestaurantView';
+import Checkout from './components/Checkout';
+import { Container } from 'semantic-ui-react';
 
 
 
 
 const App = () => {
   return (
-      <RestaurantView/>
+    <Container>
+      <Checkout />
+      </Container>
   );
 };
 

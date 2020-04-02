@@ -2,6 +2,9 @@ import React from 'react'
 import {Container, Form, Grid } from 'semantic-ui-react'
 import RestaurantCard from './Tiles/RestaurantCard'
 
+/**
+ * Display restaurants after searching in the catalogue
+ */
 class RestaurantView extends React.Component {
     state = {names : [
         {
@@ -20,7 +23,7 @@ class RestaurantView extends React.Component {
             rating: '5.0'
         }, 
         {
-            name: 'KFC NUS',
+            name: 'KFC JEM',
             img: '/restaurantsamplepics/kfc.png',
             rating: '5.0'
         }, 
@@ -30,6 +33,7 @@ class RestaurantView extends React.Component {
             rating: '4.7'
         }
     ]}
+
     render() {
         return (
             <Container>

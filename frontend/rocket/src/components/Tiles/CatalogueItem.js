@@ -13,8 +13,8 @@ const square = {
 
 const CatalogueItem = props => (
 <Segment style={square}>
-    <Header  as='h2' inverted textAlign='center'>
-    {props.text}
+    <Header  as='h2' textAlign='center'>
+     {props.text}
     </Header>
 </Segment>
 

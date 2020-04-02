@@ -1,15 +1,18 @@
 import React from 'react'
-import { Header, Segment } from 'semantic-ui-react'
-
-const square = { width: 200, height: 150, backgroundColor: 'grey', borderRadius:0}
+import { Card, Image, Grid } from 'semantic-ui-react'
 
 const RestaurantItem = props => (
-<Segment inverted style={square}>
-    <Header as='h2' inverted>
-    {props.text}
-    <Header.Subheader>$10.99</Header.Subheader>
-    </Header>
-</Segment>
+    <Grid.Column>
+  <Card style={{height: 400}}>
+    <Image src={props.img} wrapped ui={false}/>
+    <Card.Content>
+      <Card.Header>{props.name}</Card.Header>
+      <Card.Meta>
+        <span className='date'>${props.price}</span>
+      </Card.Meta>
+    </Card.Content>
+  </Card>
+  </Grid.Column>
 
 )
 

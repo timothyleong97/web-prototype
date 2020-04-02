@@ -1,11 +1,11 @@
 import React from 'react';
-import BrowseRestaurants from './components/BrowseRestaurants';
-
+import CatalogueItem from './components/Tiles/CatalogueItem';
+var {cat} = require('./components/fakedata')
 
 
 const App = () => {
   return (
-      <BrowseRestaurants />
+      cat.map(i => <CatalogueItem text = {i}/>)
   );
 };
 

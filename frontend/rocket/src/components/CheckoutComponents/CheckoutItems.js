@@ -2,7 +2,7 @@ import React from "react";
 import { List, Grid } from "semantic-ui-react";
 
 /**
- * Generates the list of items for checkout page.
+ * Generates the list of items for checkout page (the black box).
  * @param {[{name, qty, price}]} props
  */
 const CheckoutItems = props => (
@@ -14,16 +14,15 @@ const CheckoutItems = props => (
           <Grid>
             <Grid.Row>
               <Grid.Column width={13} verticalAlign="middle">
-                {" "}
-                {qty}x{" "}
+                {qty}x
               </Grid.Column>
-              <Grid.Column width={2} verticalAlign="middle">
+              <Grid.Column style={{textAlign: 'right'}} width={2} verticalAlign="middle">
                 {new Intl.NumberFormat("en-US", {
                   style: "currency",
                   currency: "USD"
                 }).format(price * qty)}
               </Grid.Column>
-              <Grid.Column width={1} verticalAlign="middle">
+              <Grid.Column width={1} verticalAlign="middle" style={{textAlign: 'right'}}>
                 <a href="/">Edit</a>
               </Grid.Column>
             </Grid.Row>

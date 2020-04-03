@@ -9,10 +9,10 @@ import {
  * flat $5 fee.
  */
 const SubtotalAndDeliveryFee = ({order}) => (
-    
+      
       <Grid>
         <Grid.Row>
-          <Grid.Column width={15}>
+          <Grid.Column width={15} >
             Subtotal
           </Grid.Column>
           <Grid.Column style={{textAlign: 'right'}}>

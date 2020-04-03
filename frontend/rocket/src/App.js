@@ -1,14 +1,12 @@
 import React from 'react';
-import Checkout from './components/Checkout';
 import { Container } from 'semantic-ui-react';
-
-
+import OrderDispatched from './components/OrderDispatched';
 
 
 const App = () => {
   return (
     <Container>
-      <Checkout />
+      <OrderDispatched />
       </Container>
   );
 };

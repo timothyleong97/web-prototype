@@ -5,7 +5,7 @@ import {
 } from "semantic-ui-react";
 
 
-const Checkout = () => (
+const RewardsAndPromoCode = () => (
       <Grid>
         <Grid.Row>
           <Grid.Column width={3} verticalAlign='middle'>
@@ -24,4 +24,4 @@ const Checkout = () => (
       </Grid>
 );
 
-export default Checkout;
+export default RewardsAndPromoCode;

@@ -4,13 +4,13 @@ import {
   Form,
   Divider,
   Header,
-  Segment,
-  Grid
+  Grid,
+  Segment
 } from "semantic-ui-react";
 import CheckoutItems from "./CheckoutComponents/CheckoutItems";
 import SubtotalAndDeliveryFee from "./CheckoutComponents/SubtotalAndDeliveryFee";
-import RewardsAndPromoCode from "./CheckoutComponents/RewardsAndPromoCode";
-import PaymentDropdown from "./CheckoutComponents/PaymentDropdown";
+
+
 const order = [
   {
     name: "Vanilla Milkshake",
@@ -31,36 +31,41 @@ const order = [
     customisations: ["Extra Cheese"]
   }
 ];
-const payment = ["Cash on Delivery", "Visa 3271", "Amex 0311"];
-const Checkout = () => (
+
+const OrderDispatched = () => (
   <Form style={{ marginTop: 20 }}>
     <Form.Field>
-      <Header>Deliver to</Header>
-      <input placeholder="Your Address" />
+      <Header>Delivering to</Header>
+      18 College Ave E, Cinnamon West Learn Lobe, Singapore 138593
     </Form.Field>
     <Divider />
-    <Grid>
-      <Grid.Row>
-        <Grid.Column width={14}>
-          <Header>Order Summary</Header>
-        </Grid.Column>
-        <Grid.Column width={2} style={{ textAlign: "right" }}>
-          <a href="/" style={{ textAlign: "right" }}>
-            Add items
-          </a>
-        </Grid.Column>
-      </Grid.Row>
-    </Grid>
+
+    <Header>Order Summary</Header>
 
     <Segment inverted>
-      <CheckoutItems order={order} editable />
+      <CheckoutItems order={order} />
     </Segment>
 
-    <RewardsAndPromoCode />
+    <Grid>
+        <Grid.Row>
+          <Grid.Column width={3} verticalAlign='middle'>
+            <Header as='h4'>Reward Points Used</Header>
+          </Grid.Column>
+          <Grid.Column width={11}/>
+          <Grid.Column width={2} style={{textAlign: 'right'}}>100</Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column width={3} verticalAlign='middle'>
+            <Header as='h4'>Promo Code</Header>
+          </Grid.Column>
+          <Grid.Column width={11}/>
+          <Grid.Column width={2} style={{textAlign: 'right'}}>NIL</Grid.Column>
+        </Grid.Row>
+      </Grid>
 
     <Divider />
     <Header>Payment Method</Header>
-    <PaymentDropdown payment={payment} />
+    <div>Cash on Delivery</div>
 
     <Divider />
     <SubtotalAndDeliveryFee order={order} />
@@ -82,8 +87,8 @@ const Checkout = () => (
     </Grid>
 
     <Divider />
-    <Button type="submit">Place order</Button>
+    <Button>Order received</Button>
   </Form>
 );
 
-export default Checkout;
+export default OrderDispatched;

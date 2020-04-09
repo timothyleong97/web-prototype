@@ -20,7 +20,7 @@ const order = [
   },
   {
     name: "Chicken Rice",
-    price: 3.5,
+    price: 4.5,
     qty: 3,
     customisations: ["No chilli"]
   },

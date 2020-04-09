@@ -31,7 +31,9 @@ const order = [
     customisations: ["Extra Cheese"]
   }
 ];
-
+/**
+ * Display page when order has been paid for.
+ */
 const OrderDispatched = () => (
   <Form style={{ marginTop: 20 }}>
     <Form.Field>

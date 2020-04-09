@@ -46,7 +46,7 @@ const HomepageHeading = ({ mobile }) => (
     </Header>
     <Header
       as='h2'
-      content='Eat whatever you want when you want to.'
+      content='Food at lightspeed.'
       inverted
       style={{
         fontSize: mobile ? '1.5em' : '1.7em',
@@ -102,11 +102,11 @@ class DesktopContainer extends Component {
             >
               <Container>
                 <Menu.Item as='a' active>
-                  Home
+                  Customers
                 </Menu.Item>
-                <Menu.Item as='a'>Work</Menu.Item>
-                <Menu.Item as='a'>Company</Menu.Item>
-                <Menu.Item as='a'>Careers</Menu.Item>
+                <Menu.Item as='a'>Restaurant Staff</Menu.Item>
+                <Menu.Item as='a'>FDS Manager</Menu.Item>
+                <Menu.Item as='a'>Rocket Rider</Menu.Item>
                 <Menu.Item position='right'>
                   <Button as='a' inverted={!fixed}>
                     Log in
@@ -251,7 +251,7 @@ const Splash = () => (
         <Grid.Row textAlign='center'>
           <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
             <Header as='h3' style={{ fontSize: '2em' }}>
-              "What a Company"
+              "Better than the competition"
             </Header>
             <p style={{ fontSize: '1.33em' }}>That is what they all say about us</p>
           </Grid.Column>
@@ -260,7 +260,7 @@ const Splash = () => (
               "I shouldn't have gone with their competitor."
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              <b>Nan</b> Chief Fun Officer Acme Toys
+              <b>Jim</b> Former GrabFood user
             </p>
           </Grid.Column>
         </Grid.Row>
@@ -273,12 +273,11 @@ const Splash = () => (
           Breaking The Grid, Grabs Your Attention
         </Header>
         <p style={{ fontSize: '1.33em' }}>
-          Instead of focusing on content creation and hard work, we have learned how to master the
-          art of doing nothing by providing massive amounts of whitespace and generic content that
-          can seem massive, monolithic and worth your attention.
+          Forget waiting times and annoying lines. Rocket has ground-breakingly fast 
+          food delivery speeds.
         </p>
         <Button as='a' size='large'>
-          Read More
+          Join Now
         </Button>
 
         <Divider

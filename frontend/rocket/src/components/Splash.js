@@ -8,18 +8,20 @@ import {
   Icon,
   Divider
 } from "semantic-ui-react";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 
-/**
- * TODO: need svg of the logo with the name in it
- */
+const footerStyle = {
+  fontSize: "2em",
+  color: "black",
+  textDecoration: "underline"
+}
 
 const Splash = () => {
   let history = useHistory();
   return (
     <div>
-      <Container>
-        <Grid style={{ marginTop: "4em" }}>
+      <Container style={{ height: "71.2vh" }}>
+        <Grid style={{ marginTop: "5em" }}>
           <Grid.Row>
             <Grid.Column width={7}>
               <Header
@@ -64,6 +66,43 @@ const Splash = () => {
           </Grid.Row>
         </Grid>
       </Container>
+      <footer
+        style={{
+          backgroundColor: "#eac012",
+          height: "10vh",
+          position: "fixed",
+          bottom: 0,
+          width: "100vw"
+        }}
+      >
+        <Grid columns='equal'>
+          <Grid.Row style={{ marginTop: 20 }}>
+            <Grid.Column width={2}></Grid.Column>
+            <Grid.Column >
+              <Link
+                to="/"
+                style={footerStyle}
+              >
+                Rocket Rider
+              </Link>
+            </Grid.Column>
+            <Grid.Column>
+              <Link
+                to="/"
+                style={footerStyle}
+              >
+                Restaurant Staff
+              </Link>
+            </Grid.Column>
+            <Grid.Column
+              style={footerStyle}
+            >
+              FDS Manager
+            </Grid.Column>
+            <Grid.Column width={7}></Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </footer>
     </div>
   );
 };

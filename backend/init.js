@@ -335,7 +335,6 @@ VALUES('Thomas Engine','password');`)
 query(`INSERT INTO users(userid,user_password)
 VALUES('Jay Park','jay');`)
 
-
 query(`INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
 VALUES('undertaker','undertaker',0,'2020-04-07', '4258-1234-1010-0000');`)
 query(`INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)

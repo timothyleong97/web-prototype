@@ -1,108 +1,38 @@
-import React from 'react'
-import Splash from './components/Splash'
-import OrderDispatched from './components/OrderDispatched';
-import { Container } from 'semantic-ui-react';
-import RestaurantView from './components/RestaurantView';
-import RestaurantMenu from './components/RestaurantMenu';
-import OrderReceived from './components/OrderReceived';
-import Signin from './components/Signin';
-import Signup from './components/Signup';
-import Catalogue from './components/Catalogue';
-import Checkout from './components/Checkout';
-//import {BrowserRouter, Route, Link} from 'react-router-dom'
-
-
-// const App = () => {
-//   return (
-  
-//       <RestaurantMenu restaurant='Mos Burger' minOrder= '10' items= { [
-//     {
-//         name: 'MOS Burger',
-//         price: '3.55',
-//         img: '/mosburgersamplepics/mosburger.jfif'
-
-//     },
-//     {
-//         name: 'MOS Cheeseburger',
-//         price: '3.85',
-//         img: '/mosburgersamplepics/cheese.jfif'
-//     },
-//     {
-//         name: 'Teriyaki Burger',
-//         price: '3.55',
-//         img: '/mosburgersamplepics/teri.jfif'
-//     },
-//     {
-//         name: 'Chicken Burger',
-//         price: '3.45',
-//         img: '/mosburgersamplepics/chx.jfif'
-//     }
-// ]}/>
-
-//   );
-// };
-
-// const App = () => {
-//   return (
-  
-//       <Splash />
-
-//   );
-// };
-
-// const App = () => {
-//   return (
-//   <Container>
-//       <OrderDispatched />
-//       </Container>
-//   );
-// };
-
-// const App = () => {
-//   return (
-//   <Container>
-//       <OrderReceived />
-//       </Container>
-//   );
-// };
-
-// const App = () => {
-//   return (
-//   <Container>
-//       <Signin />
-//       </Container>
-//   );
-// };
-
-// const App = () => {
-//   return (
-//   <Container>
-//       <Signup />
-//       </Container>
-//   );
-// };
-
-// const App = () => {
-//   return (
-//   <Container>
-//       <Catalogue />
-//       </Container>
-//   );
-// };
-
-// const App = () => {
-//   return (
-//   <Container>
-//       <Checkout />
-//       </Container>
-//   );
-// };
+import React from "react";
+import { BrowserRouter, Route, Link } from "react-router-dom";
+import Splash from "./components/Splash";
+import Signup from "./components/Signup";
+import { Header, Image } from "semantic-ui-react";
 
 const App = () => {
   return (
-  <Container>
-      <RestaurantView />
-      </Container>
+    <BrowserRouter>
+      <div>
+        <Header as="h1" style={{ backgroundColor: "#eac012", height: "10vh" }}>
+          <Link to="/">
+            <Image
+              src="./name.png"
+              style={{
+                width: "10%",
+                marginTop: 0,
+                marginLeft: 10,
+                paddingTop: 12
+              }}
+            />
+          </Link>
+        </Header>
+        <Route path="/" exact component={Splash} />
+        <Route path="/signup" exact component={Signup} />
+      </div>
+    </BrowserRouter>
   );
 };
 export default App;
+
+/**
+ * 1. Route up everything so far
+ * 2. Clean up the stock code and remake the splash
+ * 3. Set up the database for that idiot
+ * 4. Turn app into a class
+ * 5. Use react router for auth redirect or use redirect with a ternary
+ */

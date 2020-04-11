@@ -1,9 +1,6 @@
 /**
     CS2102 Team 62 Project
 **/
-CREATE EXTENSION "pgcrypto";
-CREATE EXTENSION "btree_gist";
-
 DROP TABLE IF EXISTS addresses cascade;
 DROP TABLE IF EXISTS customers cascade;
 DROP TABLE IF EXISTS deliveries cascade;

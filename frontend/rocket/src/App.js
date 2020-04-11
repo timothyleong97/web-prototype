@@ -28,11 +28,3 @@ const App = () => {
   );
 };
 export default App;
-
-/**
- * 1. Route up everything so far
- * 2. Clean up the stock code and remake the splash
- * 3. Set up the database for that idiot
- * 4. Turn app into a class
- * 5. Use react router for auth redirect or use redirect with a ternary
- */

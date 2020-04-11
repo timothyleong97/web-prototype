@@ -129,9 +129,45 @@ app.post("/signup", (req, res) => {
 
 
 // --LOGIN--
+/** req.body should be {
+        username: String,
+        password: String     
+     } 
 
+     Frontend should make sure all fields are present before sending to backend.
+
+     Send an insert statement to the database with the above variables
+
+     If there is an error (which will cause the catch function call to run instead), an error message is returned instead. So if in the then call,
+      send a js object back to the frontend: {
+         status: 400
+         message: error.detail
+      } else send {
+         status: 200
+      }
+      so that the frontend can then either prompt the user to check and resubmit, or redirect the user straight to the catalogue page.
+ */
 app.post("/login", (req, res)=> {
-  
+  let {username, password} = req.body;
+  client.query(`SELECT * 
+                FROM users 
+                WHERE userid = $1
+                AND user_password = $2`,
+                [username, password]
+  ).then(result => {
+    if (result.rowCount == 0) {
+      //such a record does not exist
+      res.send({status: 401}) //UNAUTHORISED
+    } else {
+      res.send({status: 200})
+    }
+  })
+  .catch(_ => res.send(
+    {
+      status: 500 //SERVER ERROR
+    }
+  )); 
+  res.send("ok")
 })
 
 

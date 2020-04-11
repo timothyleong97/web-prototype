@@ -1,5 +1,8 @@
 const client = require('./elephantsql');
 
+//To run this script, type 'node init.js'
+
+// DROP all existing tables
 client.query('DROP TABLE IF EXISTS addresses cascade;')
 .then(result => console.log(result))
 .catch(e => console.error(e.stack));
@@ -69,3 +72,5 @@ client.query('DROP TABLE IF EXISTS users cascade;')
 client.query('DROP TABLE IF EXISTS uses cascade;')
 .then(result => console.log(result))
 .catch(e => console.error(e.stack));
+
+//CREATE all tables

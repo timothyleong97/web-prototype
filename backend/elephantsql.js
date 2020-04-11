@@ -1,5 +1,10 @@
-var pg = require('pg');
+/**
+ * This file sets up a database connection to our cloud Postgresql database. 
+ * This connection is an object called client that allows us to send queries to the database.
+ * We export this connection and import it into our main backend file, app.js.
+ */
 
+var pg = require('pg');
 
 var conString = "postgres://siqbgtid:aCoyZAgY1cmKXJvVMSBBszAx5UReSAsV@john.db.elephantsql.com:5432/siqbgtid" 
 var client = new pg.Client(conString);
@@ -16,3 +21,4 @@ client.connect(function(err) {
   });
 });
 
+module.exports = client;

@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import axiosClient from "./axiosClient";
+<<<<<<< Updated upstream
+=======
 import history from './history';
+>>>>>>> Stashed changes
 import {
   Button,
   Form,
@@ -21,13 +24,6 @@ const Signin = (props) => {
     customers: "customer",
   }; //we use this in the error message to the user - e.g no [customer] with these credentials found
 
-  let display = {
-    fds_manager: "an FDS manager",
-    restaurant_staff: "a restaurant staff",
-    delivery_riders: "a rider",
-    customers: "a customer",
-  }
-
   //stateful variables
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -44,7 +40,11 @@ const Signin = (props) => {
           } else if (data.status === 200) {
             props.setUsername(username);
             props.setUsertype(userType);
+<<<<<<< Updated upstream
+            setErr(false);
+=======
             history.push('/catalogue');
+>>>>>>> Stashed changes
           }
         })
         .catch((err) => console.error(err)); // query formed wrongly
@@ -59,7 +59,7 @@ const Signin = (props) => {
             src="/logo.jpg"
             style={{ width: "100px", paddingBottom: "5px" }}
           />
-          <Header.Content>Log-in as {display[userType]}</Header.Content>
+          <Header.Content>Log-in to your account</Header.Content>
         </Header>
         <Form size="large" onSubmit={submitLogin} error={err}>
           <Segment stacked>
@@ -96,6 +96,9 @@ const Signin = (props) => {
             </Button>
           </Segment>
         </Form>
+        <Message>
+          New to us? <a href="/signup">Sign Up</a>
+        </Message>
       </Grid.Column>
     </Grid>
   );

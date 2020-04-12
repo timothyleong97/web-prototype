@@ -1,16 +1,58 @@
+<<<<<<< Updated upstream
+import React, { useState } from "react";
+import { BrowserRouter, Route, Link } from "react-router-dom";
+=======
 import React, { useState, Fragment } from "react";
 import { Router, Route, Link, Switch, Redirect } from "react-router-dom";
+>>>>>>> Stashed changes
 import Splash from "./components/Splash";
 import Signup from "./components/Signup";
 import Signin from "./components/Signin";
 import Catalogue from "./components/Catalogue";
+<<<<<<< Updated upstream
+import { Header, Image } from "semantic-ui-react";
+=======
 import { Header, Image, Grid, Button } from "semantic-ui-react";
 import history from "./components/history";
+>>>>>>> Stashed changes
 
 const App = () => {
   const [username, setUsername] = useState("");
   const [usertype, setUsertype] = useState("");
-  // console.log("App.js can see username:", username, "usertype:", usertype);
+<<<<<<< Updated upstream
+  console.log("App sees:", username, usertype);
+  //put a useEffect here to redirect users to the catalogue
+  return (
+    <BrowserRouter>
+      <div>
+        <Header as="h1" style={{ backgroundColor: "#eac012", height: "12vh" }}>
+          <Link to="/">
+            <Image
+              src="../name.png"
+              style={{
+                width: 240,
+                marginTop: 2,
+                marginLeft: 10,
+                paddingTop: 13,
+                paddingBottom: -2,
+              }}
+            />
+          </Link>
+        </Header>
+        <Route path="/" exact component={Splash} />
+        <Route path="/signup" exact component={Signup} />
+        <Route
+          path="/signin/:type"
+          exact
+          render={(props) => (
+            <Signin {...props} setUsername={setUsername} setUsertype={setUsertype} />
+          )}
+        />
+        <Route path="/catalogue" exact component={Catalogue}/>
+      </div>
+    </BrowserRouter>
+=======
+  console.log("App.js can see username:", username, "usertype:", usertype);
   return (
     <Router history={history}>
       <div>
@@ -108,6 +150,7 @@ const App = () => {
         </Switch>
       </div>
     </Router>
+>>>>>>> Stashed changes
   );
 };
 export default App;

@@ -6,22 +6,32 @@ import {
   Grid,
   Button,
   Icon,
-  Divider,
+  Divider
 } from "semantic-ui-react";
+<<<<<<< Updated upstream
+import { useHistory, Link } from "react-router-dom";
+=======
 import { useHistory, Link, Redirect } from "react-router-dom";
+>>>>>>> Stashed changes
 
 const footerStyle = {
-  fontSize: "1.6em",
+  fontSize: "2em",
   color: "black",
-  textDecoration: "underline",
-  marginTop: 30,
-};
+  textDecoration: "underline"
+}
 
+<<<<<<< Updated upstream
+const Splash = () => {
+  let history = useHistory();
+  return (
+=======
 const Splash = (props) => {
   let history = useHistory();
-  return props.usertype === "customers" ? (
-    <Redirect to="/catalogue" />
-  ) : (
+  return (
+    props.usertype === "customers" ?
+    <Redirect to = '/catalogue' />
+    :
+>>>>>>> Stashed changes
     <div>
       <Container style={{ height: "71.2vh" }}>
         <Grid style={{ marginTop: "5em" }}>
@@ -31,7 +41,7 @@ const Splash = (props) => {
                 style={{
                   fontSize: "5em",
                   fontWeight: "bold",
-                  marginBottom: -10,
+                  marginBottom: -10
                 }}
                 as="h1"
               >
@@ -43,7 +53,7 @@ const Splash = (props) => {
                   fontWeight: "thin",
                   fontSize: "1.3em",
                   width: 470,
-                  marginBottom: 35,
+                  marginBottom: 35
                 }}
               >
                 Forget waiting times and annoying lines. Rocket has
@@ -59,11 +69,7 @@ const Splash = (props) => {
                 <Icon name="right arrow" />
               </Button>
               <Divider hidden />
-              <Button
-                circular
-                size="huge"
-                onClick={() => history.replace("/signin/customers")}
-              >
+              <Button circular size="huge"  onClick={() => history.replace("/signin/customers")}>
                 I already have an account
               </Button>
             </Grid.Column>
@@ -79,28 +85,34 @@ const Splash = (props) => {
           height: "10vh",
           position: "fixed",
           bottom: 0,
-          width: "100vw",
+          width: "100vw"
         }}
       >
-        <Grid columns="equal">
-          <Grid.Row>
-            <Grid.Column width={3}></Grid.Column>
-            <Grid.Column  style={footerStyle}>
-              <Link to="/signin/delivery_riders">
-                <Header>
+        <Grid columns='equal'>
+          <Grid.Row style={{ marginTop: 20 }}>
+            <Grid.Column width={2}></Grid.Column>
+            <Grid.Column >
+              <Link
+                to="/"
+                style={footerStyle}
+              >
                 Rocket Rider
-                </Header>
               </Link>
             </Grid.Column>
-            <Grid.Column style={footerStyle} floated="left">
-              <Link to="/signin/restaurant_staff">
-                <Header>
+            <Grid.Column>
+              <Link
+                to="/"
+                style={footerStyle}
+              >
                 Restaurant Staff
-                </Header>
               </Link>
             </Grid.Column>
-            <Grid.Column style={footerStyle}><Link to ="/signin/fds_manager"><Header>FDS Manager</Header></Link></Grid.Column>
-            <Grid.Column width={3}></Grid.Column>
+            <Grid.Column
+              style={footerStyle}
+            >
+              FDS Manager
+            </Grid.Column>
+            <Grid.Column width={7}></Grid.Column>
           </Grid.Row>
         </Grid>
       </footer>

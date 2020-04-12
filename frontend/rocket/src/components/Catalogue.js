@@ -6,10 +6,17 @@ import {
   Loader,
   Dimmer,
   Header,
+<<<<<<< Updated upstream
+  Icon,
+} from "semantic-ui-react";
+import CatalogueItem from "./Tiles/CatalogueItem";
+import axiosClient from "./axiosClient";
+=======
 } from "semantic-ui-react";
 import CatalogueItem from "./Tiles/CatalogueItem";
 import axiosClient from "./axiosClient";
 import { Redirect } from "react-router-dom";
+>>>>>>> Stashed changes
 
 class Catalogue extends React.Component {
   // state = {cat : [
@@ -24,7 +31,13 @@ class Catalogue extends React.Component {
 
   state = { cat: [], rest: [] }; //initialise catalogue to an empty array
 
+<<<<<<< Updated upstream
+  constructor(props) {
+    super(props);
+
+=======
   componentDidMount() {
+>>>>>>> Stashed changes
     //get an array of categories from the Food_items table
     axiosClient
       .get("/categories")
@@ -39,13 +52,21 @@ class Catalogue extends React.Component {
   }
 
   render() {
+<<<<<<< Updated upstream
+    return (
+=======
     return this.props.usertype === "customers" ? (
+>>>>>>> Stashed changes
       <Container>
         <Form>
           <Form.Field>
             <input
               style={{ marginTop: 20 }}
+<<<<<<< Updated upstream
+              placeholder="Search categories/restaurants"
+=======
               placeholder="Search categories / restaurants"
+>>>>>>> Stashed changes
             />
           </Form.Field>
         </Form>
@@ -76,8 +97,11 @@ class Catalogue extends React.Component {
           </Fragment>
         )}
       </Container>
+<<<<<<< Updated upstream
+=======
     ) : (
       <Redirect to="/" />
+>>>>>>> Stashed changes
     );
   }
 }

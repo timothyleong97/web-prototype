@@ -5,6 +5,15 @@ import {
   Input,
   Container,
   Header,
+<<<<<<< Updated upstream
+  Icon
+} from "semantic-ui-react";
+
+class Signup extends Component {
+  state = {};
+
+  handleChange = (e, { value }) => this.setState({ value });
+=======
   Icon,
   Message,
 } from "semantic-ui-react";
@@ -28,6 +37,7 @@ class Signup extends Component {
     password: "Password",
     cc: "Credit Card",
   };
+>>>>>>> Stashed changes
 
   render() {
     return (
@@ -36,6 +46,9 @@ class Signup extends Component {
           <Icon name="rocket" circular />
           <Header.Content>Become a Rocketeer</Header.Content>
         </Header>
+<<<<<<< Updated upstream
+        <Form>
+=======
         <Form
           onSubmit={() => {
             this.setState({ error: [] }); // reset the error message
@@ -79,20 +92,27 @@ class Signup extends Component {
           }}
           error={this.state.error.length !== 0}
         >
+>>>>>>> Stashed changes
           <Form.Group widths="equal">
             <Form.Field
               control={Input}
               label="First name"
               placeholder="First name"
+<<<<<<< Updated upstream
+=======
               value={this.state.firstName}
               onChange={(_, { value }) => this.setState({ firstName: value })}
+>>>>>>> Stashed changes
             />
             <Form.Field
               control={Input}
               label="Last name"
               placeholder="Last name"
+<<<<<<< Updated upstream
+=======
               value={this.state.lastName}
               onChange={(_, { value }) => this.setState({ lastName: value })}
+>>>>>>> Stashed changes
             />
           </Form.Group>
           <Form.Group>
@@ -100,6 +120,10 @@ class Signup extends Component {
               control={Input}
               label="Username"
               placeholder="Username"
+<<<<<<< Updated upstream
+            />
+            <Form.Input label='Password' type='password' placeholder='Password'/>
+=======
               value={this.state.userName}
               onChange={(_, { value }) => this.setState({ userName: value })}
             />
@@ -110,10 +134,15 @@ class Signup extends Component {
               value={this.state.password}
               onChange={(_, { value }) => this.setState({ password: value })}
             />
+>>>>>>> Stashed changes
             <Form.Field
               control={Input}
               label="Credit Card No."
               placeholder="Credit Card"
+<<<<<<< Updated upstream
+            />
+          </Form.Group>
+=======
               value={this.state.cc}
               onChange={(_, { value }) => this.setState({ cc: value })}
             />
@@ -125,6 +154,7 @@ class Signup extends Component {
               ))}
             </Message.List>
           </Message>
+>>>>>>> Stashed changes
           <Form.Field control={Button}>Submit</Form.Field>
         </Form>
       </Container>

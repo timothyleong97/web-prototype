@@ -50,13 +50,13 @@ const Splash = () => {
                 circular
                 size="huge"
                 color="purple"
-                onClick={() => history.push("/signup")}
+                onClick={() => history.replace("/signup")}
               >
                 Join now
                 <Icon name="right arrow" />
               </Button>
               <Divider hidden />
-              <Button circular size="huge">
+              <Button circular size="huge"  onClick={() => history.replace("/signin/customers")}>
                 I already have an account
               </Button>
             </Grid.Column>

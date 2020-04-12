@@ -5,7 +5,16 @@ const client = require("./elephantsql");
 const app = express();
 const port = 3500;
 
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 app.use(express.json());
+
 //Don't modify above this comment (other than changing the port number if you need)
 
 /** Steps to create an API endpoint
@@ -89,9 +98,8 @@ app.use(express.json());
       }
       so that the frontend can then either prompt the user to check and resubmit, or redirect the user straight to the catalogue page.
       Note: use Postman to send in a post request during testing
-      Note: this endpoint is for verifying customers only. Use other endpoints for verifying other users.
  */
-app.post("/signup/customer", (req, res) => {
+app.post("/signup", (req, res) => {
   let { firstName, lastName, username, credit_card, password } = req.body;
   let customername = firstName + " " + lastName;
   //First insert this person into Users
@@ -103,33 +111,34 @@ app.post("/signup/customer", (req, res) => {
     )
     .then(
       //Next insert this person into Customers
-      _ => client
-        .query(
-          `INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
+      (_) =>
+        client
+          .query(
+            `INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
            VALUES($1,$2, 0, CURRENT_DATE, $3);`,
-          [username, customername, credit_card]
-        )
-        .then( _ => {
-          res.send({ status: 200 }); //OK
-        })
-        .catch(error => {
-          res.send({ 
-            status: 400,
-            message: error.detail
-          }); //BAD REQUEST
-        })
+            [username, customername, credit_card]
+          )
+          .then((_) => {
+            res.send({ status: 200 }); //OK
+          })
+          .catch((error) => {
+            res.send({
+              status: 400,
+              message: error.detail,
+            }); //BAD REQUEST
+          })
     )
-    .catch(error => {
+    .catch((error) => {
       console.log(error);
       res.send({
         status: 400,
-        message: error.detail // "Key (userid)=(timothyleong) already exists."
-      });       
+        message: error.detail, // "Key (userid)=(timothyleong) already exists."
+      });
     });
 });
 
-
 // --LOGIN--
+
 /** req.body should be {
         username: String,
         password: String     
@@ -141,37 +150,91 @@ app.post("/signup/customer", (req, res) => {
 
      If there is an error (which will cause the catch function call to run instead), an error message is returned instead. So if in the then call,
       send a js object back to the frontend: {
-         status: 400
+         status: 401
          message: error.detail
       } else send {
-         status: 200
+         status: 200,
+         userid
       }
       so that the frontend can then either prompt the user to check and resubmit, or redirect the user straight to the catalogue page.
+      Note: usertype should only be one of 'customers', 'fds_manager', 'restaurant_staff', 'delivery_riders'
  */
-app.post("/login", (req, res)=> {
-  let {username, password} = req.body;
-  client.query(`SELECT * 
-                FROM users 
-                WHERE userid = $1
-                AND user_password = $2`,
-                [username, password]
-  ).then(result => {
-    if (result.rowCount == 0) {
-      //such a record does not exist
-      res.send({status: 401}) //UNAUTHORISED
-    } else {
-      res.send({status: 200})
-    }
-  })
-  .catch(_ => res.send(
-    {
-      status: 500 //SERVER ERROR
-    }
-  )); 
-  res.send("ok")
-})
+app.post("/login/:usertype", (req, res) => {
+  let { username, password } = req.body;
+  let usertype = req.params.usertype;
+  let ids = {
+    fds_manager: "manager_id",
+    restaurant_staff: "staff_id",
+    delivery_riders: "did",
+    customers: "cid",
+  };
+  // console.log(username, password, usertype)
+  client
+    .query(
+      `SELECT * 
+                FROM users join ${usertype}
+                ON users.userid = ${usertype}.${ids[usertype]}
+                WHERE userid = '${username}'
+                AND user_password = '${password}'`
+    )
+    .then((result) => {
+      if (result.rowCount == 0) {
+        //such a record does not exist
+        res.send({ status: 401 }); //UNAUTHORISED
+      } else {
+        res.send({
+          status: 200, //OK
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.send({
+        status: 500, // INTERNAL SERVER ERROR
+      });
+    });
+});
 
+// --CATALOGUE--
+/*
+  A query to return a DISTINCT list of categories in the Food_items table.
+  No req body.
+  Will return an array of categories.
+*/
+app.get("/categories", (req, res) => {
+  client
+    .query(
+      `SELECT DISTINCT category
+                FROM food_items`
+    )
+    .then(
+      (result) => {
+        res.send(result.rows.map((json) => json.category));
+      } //Array of categories e.g. ['Sandwich', 'Chinese']
+    )
+    .catch((_) => {
+      res.send({ status: 500 }); //INTERNAL SERVER ERROR
+    });
+});
 
+/*
+  A query to return a DISTINCT list of restaurants in the Restaurants table.
+  No req body.
+  Will return an array of restaurants.
+*/
+app.get("/restaurants", (req, res) => {
+  client
+    .query(
+      `SELECT DISTINCT restaurant_name
+                FROM restaurants`
+    )
+    .then((result) => {
+      res.send(result.rows.map(json => json.restaurant_name)); // e,g ['Dian Xiao Er', 'Subway']
+    })
+    .catch((_) => {
+      res.send({ status: 500 }); //INTERNAL SERVER ERROR
+    });
+});
 
 //Don't modify below this comment
 app.listen(port, () => {

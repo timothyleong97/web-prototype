@@ -374,7 +374,7 @@ VALUES(2,'2 Tampines East','24','10-02','123421');`)
 query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
 VALUES(1,60,1,'Dian Xiao er');`)
 query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(2,20,2,'SubWay');`)
+VALUES(2,20,2,'Subway');`)
 
 query(`INSERT INTO opening_hours_template(id,restaurant_id,start_day,start_time,end_day,end_time)
 VALUES(0,1,0,'10:00:00',0,'00:00:00');`)

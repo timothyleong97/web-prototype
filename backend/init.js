@@ -37,7 +37,7 @@ query('DROP FUNCTION IF EXISTS null_if_overlap_opening_hours_template cascade;')
 
 //CREATE all tables
 query(`create table Users(
-    userid varchar(30), 
+    userid varchar(30),
     user_password varchar(50),
     primary key(userid),
     unique (userid)
@@ -54,10 +54,10 @@ query(`create table Customers(
 );`)
 
 query(`create table Orders(
-    order_id CHAR(11) UNIQUE, 
+    order_id CHAR(11) UNIQUE,
 	restaurant_review VARCHAR(255),
     restaurant_rating INTEGER,
-    reward_points INTEGER DEFAULT 0, 
+    reward_points INTEGER DEFAULT 0,
     primary key (order_id)
 );`)
 
@@ -73,14 +73,14 @@ query(`create table Places(
     order_id CHAR(11),
 	cid varchar(30) NOT NULL,
     primary key(order_id, cid),
-    foreign key(order_id) references orders(order_id), 
+    foreign key(order_id) references orders(order_id),
     foreign key(cid) references Customers(cid)
 );`)
 
 query(`create table Uses(
     promo_code CHAR(10) NOT NULL,
     order_id CHAR(11) NOT NULL,
-    usage serial NOT NULL, 
+    usage serial NOT NULL,
     primary key(promo_code, order_id),
     foreign key(promo_code) references promotions (promo_code),
     foreign key(order_id) references orders(order_id),
@@ -100,20 +100,20 @@ query(`create table Addresses(
 query(`create table Restaurants(
     rid VARCHAR(30),
     min_order_amt real,
-    located_at VARCHAR(255) UNIQUE,
+    located_at VARCHAR(255),
     restaurant_name VARCHAR(255),
     primary key (rid),
     foreign key(located_at) references Addresses(address_id)
 );`)
 
 query(`create table Food_items(
-    food_item_name VARCHAR(30) UNIQUE,
+    food_item_name VARCHAR(30),
     price real,
     category VARCHAR(255),
     daily_limit integer,
     num_orders_made integer,
     rid VARCHAR(30) not null,
-    primary key (rid,food_item_name),    
+    primary key (rid,food_item_name),
     Foreign key(rid) references restaurants(rid) ON DELETE CASCADE
 );`)
 
@@ -171,7 +171,7 @@ query(`create table Delivery_Riders(
 
 query(`create table Salary(
     did varchar(30),
-    salary_date timestamp, 
+    salary_date timestamp,
     base_salary real default 0.00,
     commission real default 0.00,
     primary key (did, salary_date),
@@ -181,16 +181,16 @@ query(`create table Salary(
 query(`create table Time_Entries(
     did varchar(30),
     clock_in TIMESTAMP,
-    clock_out TIMESTAMP, 
+    clock_out TIMESTAMP,
     primary key(did, clock_in),
-    foreign key(did) REFERENCES Delivery_Riders(did) on delete cascade 
+    foreign key(did) REFERENCES Delivery_Riders(did) on delete cascade
 );`)
 
 query(`create table Full_Time_Rider(
     did varchar(30),
-    month_of_work TIMESTAMP, 
-    wws_start_day char(3), 
-    day1_shift integer, 
+    month_of_work TIMESTAMP,
+    wws_start_day char(3),
+    day1_shift integer,
     day2_shift integer,
     day3_shift integer,
     day4_shift integer,
@@ -202,7 +202,7 @@ query(`create table Full_Time_Rider(
 query(`create table Part_Time_Rider (
     did varchar(30),
     week_of_work TIMESTAMP,
-    mon bigint, 
+    mon bigint,
     tue bigint,
     wed bigint,
     thu bigint,
@@ -217,13 +217,13 @@ query(`create table Part_Time_Rider (
 query(`create table Deliveries (
     order_id char(11),
     driver varchar(30) not null,
-   
+
     time_customer_placed_order TIMESTAMP,
     time_rider_departs_for_restaurant TIMESTAMP,
     time_rider_reach_restaurant TIMESTAMP,
     time_rider_departs_restaurant TIMESTAMP,
     time_rider_delivers_order TIMESTAMP,
-    delivery_rating integer, 
+    delivery_rating integer,
     comments_for_rider CHAR(100),
     delivers_to varchar(255),
     primary key(order_id),
@@ -232,7 +232,7 @@ query(`create table Deliveries (
     foreign key(delivers_to) references Addresses(address_id) on delete cascade
 );`)
 
-query(`CREATE TABLE opening_hours_template ( 
+query(`CREATE TABLE opening_hours_template (
     id SERIAL PRIMARY KEY,
     restaurant_id varchar(30) NOT NULL REFERENCES restaurants(rid) ON DELETE CASCADE,
     start_day integer NOT NULL,
@@ -334,6 +334,8 @@ query(`INSERT INTO users(userid,user_password)
 VALUES('Thomas Engine','password');`)
 query(`INSERT INTO users(userid,user_password)
 VALUES('Jay Park','jay');`)
+query(`INSERT INTO users(userid,user_password)
+VALUES('Akon','convict');`)
 
 query(`INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
 VALUES('undertaker','undertaker',0,'2020-04-07', '4258-1234-1010-0000');`)
@@ -343,6 +345,8 @@ VALUES('Jay Park','jay',0,'2019-12-07', '4228-1144-1040-0000');`)
 
 query(`INSERT INTO restaurant_staff(staff_id)
 VALUES('waiter');`)
+query(`INSERT INTO restaurant_staff(staff_id)
+VALUES('Akon');`)
 
 
 query(`INSERT INTO fds_manager(manager_id)
@@ -369,12 +373,42 @@ query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal
 VALUES(1,'1 Jurong East','234','01-10','21221');`)
 query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
 VALUES(2,'2 Tampines East','24','10-02','123421');`)
+query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
+VALUES(3,'123 Outram park','242','110-02','121121');`)
+query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
+VALUES(4,'21 Toa payoh','214','01-02','124421');`)
+query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
+VALUES(5,'110 Marina South','2','02-02','122121');`)
+query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
+VALUES(6,'50 Marina Bay','90','01-12','100321');`)
+query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
+VALUES(7,'20 Shenton Way','102','05-12','102321');`)
+query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
+VALUES(8,'50 Beach rd','1','01-12','101221');`)
+
+
+
 
 
 query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
 VALUES(1,60,1,'Dian Xiao er');`)
 query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
 VALUES(2,20,2,'Subway');`)
+query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
+VALUES(3,10,3,'Macdonald');`)
+query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
+VALUES(4,20,4,'PokeBowl');`)
+query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
+VALUES(5,50,2,'Crystal Jade');`)
+query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
+VALUES(6,25,5,'Ben and Jerry');`)
+query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
+VALUES(7,10,1,'Tian tian chicken rice');`)
+
+query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
+VALUES(8,30,2,'Soup spoon');`)
+query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
+VALUES(9,10,8,'Char grill bar');`)
 
 query(`INSERT INTO opening_hours_template(id,restaurant_id,start_day,start_time,end_day,end_time)
 VALUES(0,1,0,'10:00:00',0,'00:00:00');`)
@@ -395,6 +429,15 @@ query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orde
 VALUES('Chicken Rice',2.50,'Chinese',50,0,1);`)
 query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
 VALUES('Cold cut trio',5.50,'Sandwich',10,0,2);`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
+VALUES('Big Mac',5.50,'Western',100,0,3);`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
+VALUES('Healthy stuff',10.50,'Vegan',50,0,4);`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
+VALUES('Chicken Rice',4.50,'Chinese',50,0,7);`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
+VALUES('Fish and Chip',5.50,'Western',100,0,8);`)
+
 
 query(`INSERT INTO Options(options_name,type_of_option,addon_price,rid,food_item_name)
 VALUES('Style-Fried','Fried',0,1,'Chicken Rice');`)

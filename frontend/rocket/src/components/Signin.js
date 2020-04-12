@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import axiosClient from "./axiosClient";
+<<<<<<< Updated upstream
+=======
+import history from './history';
+>>>>>>> Stashed changes
 import {
   Button,
   Form,
@@ -36,7 +40,11 @@ const Signin = (props) => {
           } else if (data.status === 200) {
             props.setUsername(username);
             props.setUsertype(userType);
+<<<<<<< Updated upstream
             setErr(false);
+=======
+            history.push('/catalogue');
+>>>>>>> Stashed changes
           }
         })
         .catch((err) => console.error(err)); // query formed wrongly

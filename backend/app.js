@@ -89,10 +89,11 @@ app.use(express.json());
       }
       so that the frontend can then either prompt the user to check and resubmit, or redirect the user straight to the catalogue page.
       Note: use Postman to send in a post request during testing
+      Note: this endpoint is for verifying customers only. Use other endpoints for verifying other users.
  */
-app.post("/signup", (req, res) => {
+app.post("/signup/customer", (req, res) => {
   let { firstName, lastName, username, credit_card, password } = req.body;
-  customername = firstName + " " + lastName;
+  let customername = firstName + " " + lastName;
   //First insert this person into Users
   client
     .query(

@@ -1,4 +1,12 @@
 // This is our backend server. It listens to all GET/POST/DELETE requests and sends back a response.
+/**
+ * 1. Route up everything so far
+ * 2. Clean up the stock code and remake the splash
+ * 3. Set up the database
+ * 4. Turn app into a class
+ * 5. Use react router for auth redirect or use redirect with a ternary
+ */
+
 const express = require("express");
 const client = require("./elephantsql");
 
@@ -146,8 +154,10 @@ app.post("/signup", (req, res) => {
          status: 200
       }
       so that the frontend can then either prompt the user to check and resubmit, or redirect the user straight to the catalogue page.
+
+      Note that this signin is for customer - i.e we check only the Customer table to see if the user exists as a Customer. There should be other endpoints for authenticating the other kinds of users
  */
-app.post("/login", (req, res)=> {
+app.post("/signin/customer", (req, res)=> {
   let {username, password} = req.body;
   client.query(`SELECT * 
                 FROM users 
@@ -159,7 +169,10 @@ app.post("/login", (req, res)=> {
       //such a record does not exist
       res.send({status: 401}) //UNAUTHORISED
     } else {
-      res.send({status: 200})
+      res.send({
+        status: 200,
+        user: 'CUSTOMER' // Let frontend know what to display 
+      }) // OK
     }
   })
   .catch(_ => res.send(
@@ -167,7 +180,6 @@ app.post("/login", (req, res)=> {
       status: 500 //SERVER ERROR
     }
   )); 
-  res.send("ok")
 })
 
 
@@ -176,3 +188,5 @@ app.post("/login", (req, res)=> {
 app.listen(port, () => {
   console.log("Backend server is up on port " + port);
 });
+
+exports.port = port

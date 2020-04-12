@@ -56,7 +56,10 @@ const Splash = () => {
                 <Icon name="right arrow" />
               </Button>
               <Divider hidden />
-              <Button circular size="huge">
+              <Button 
+              circular 
+              size="huge"
+              onClick={() => history.push("/login")}>
                 I already have an account
               </Button>
             </Grid.Column>

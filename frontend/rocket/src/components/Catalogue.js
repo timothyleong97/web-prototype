@@ -6,10 +6,10 @@ import {
   Loader,
   Dimmer,
   Header,
-  Icon,
 } from "semantic-ui-react";
 import CatalogueItem from "./Tiles/CatalogueItem";
 import axiosClient from "./axiosClient";
+import { Redirect } from "react-router-dom";
 
 class Catalogue extends React.Component {
   // state = {cat : [
@@ -24,9 +24,7 @@ class Catalogue extends React.Component {
 
   state = { cat: [], rest: [] }; //initialise catalogue to an empty array
 
-  constructor(props) {
-    super(props);
-
+  componentDidMount() {
     //get an array of categories from the Food_items table
     axiosClient
       .get("/categories")
@@ -41,13 +39,13 @@ class Catalogue extends React.Component {
   }
 
   render() {
-    return (
+    return this.props.usertype === "customers" ? (
       <Container>
         <Form>
           <Form.Field>
             <input
               style={{ marginTop: 20 }}
-              placeholder="Search categories/restaurants"
+              placeholder="Search categories / restaurants"
             />
           </Form.Field>
         </Form>
@@ -78,6 +76,8 @@ class Catalogue extends React.Component {
           </Fragment>
         )}
       </Container>
+    ) : (
+      <Redirect to="/" />
     );
   }
 }

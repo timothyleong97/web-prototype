@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axiosClient from "./axiosClient";
+import history from './history';
 import {
   Button,
   Form,
@@ -36,7 +37,7 @@ const Signin = (props) => {
           } else if (data.status === 200) {
             props.setUsername(username);
             props.setUsertype(userType);
-            setErr(false);
+            history.push('/catalogue');
           }
         })
         .catch((err) => console.error(err)); // query formed wrongly

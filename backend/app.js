@@ -98,6 +98,7 @@ app.use(express.json());
       }
       so that the frontend can then either prompt the user to check and resubmit, or redirect the user straight to the catalogue page.
       Note: use Postman to send in a post request during testing
+      Note: only accepting signups for customers right now, other users must be added by FDS manager
  */
 app.post("/signup", (req, res) => {
   let { firstName, lastName, username, credit_card, password } = req.body;
@@ -122,14 +123,14 @@ app.post("/signup", (req, res) => {
             res.send({ status: 200 }); //OK
           })
           .catch((error) => {
+            console.log("app.js signup api error", error);
             res.send({
-              status: 400,
-              message: error.detail,
+              status: 500,
+              message: error.detail
             }); //BAD REQUEST
           })
     )
     .catch((error) => {
-      console.log(error);
       res.send({
         status: 400,
         message: error.detail, // "Key (userid)=(timothyleong) already exists."
@@ -235,6 +236,16 @@ app.get("/restaurants", (req, res) => {
       res.send({ status: 500 }); //INTERNAL SERVER ERROR
     });
 });
+
+
+
+
+
+
+
+
+
+
 
 //Don't modify below this comment
 app.listen(port, () => {

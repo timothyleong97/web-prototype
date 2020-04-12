@@ -8,7 +8,7 @@ import {
   Icon,
   Divider
 } from "semantic-ui-react";
-import { useHistory, Link } from "react-router-dom";
+import { useHistory, Link, Redirect } from "react-router-dom";
 
 const footerStyle = {
   fontSize: "2em",
@@ -16,9 +16,12 @@ const footerStyle = {
   textDecoration: "underline"
 }
 
-const Splash = () => {
+const Splash = (props) => {
   let history = useHistory();
   return (
+    props.usertype === "customers" ?
+    <Redirect to = '/catalogue' />
+    :
     <div>
       <Container style={{ height: "71.2vh" }}>
         <Grid style={{ marginTop: "5em" }}>

@@ -126,7 +126,7 @@ app.post("/signup", (req, res) => {
             console.log("app.js signup api error", error);
             res.send({
               status: 500,
-              message: error.detail
+              message: error.detail,
             }); //BAD REQUEST
           })
     )
@@ -200,40 +200,43 @@ app.post("/login/:usertype", (req, res) => {
 // -- EDIT PROFILE --
 
 /**
- * A query to update username and cascade the updates.
- * Req body is {
+ * What: A query to update username and cascade the updates.
+ * Receives: Req body is {
  *    oldusername: String,
  *    newusername: String,
  *    password: String
  *     },
  * possible responses from database is ok or the username is already taken.
- * if the former, send back {status: 200} else send {status: 400}
+ * Returns: if the former, send back {status: 200} else send {status: 400}
  */
 
- app.patch('/updateuserpwd', (req, res) => {
-   let {oldusername, newusername, password} = req.body;
-   client.query(`UPDATE users 
+app.patch("/updateuserpwd", (req, res) => {
+  let { oldusername, newusername, password } = req.body;
+  client
+    .query(
+      `UPDATE users 
                  SET userid = '${newusername}',
                  user_password = '${password}'
                  where userid = '${oldusername}';
                 `
-   ).then(result => {
-      console.log(result)
-      res.send(result)
+    )
+    .then((result) => {
+      console.log(result);
+      res.send(result);
     })
-   .catch(err => {
-     console.log(err)
-     if (err.detail.endsWith("already exists.")) { //Duplicate username
-       res.send({status: 400})
-     }
-   });
-   
- })
+    .catch((err) => {
+      console.log(err);
+      if (err.detail.endsWith("already exists.")) {
+        //Duplicate username
+        res.send({ status: 400 });
+      }
+    });
+});
 // --CATALOGUE--
 /*
-  A query to return a DISTINCT list of categories in the Food_items table.
-  No req body.
-  Will return an array of categories.
+  What: A query to return a DISTINCT list of categories in the Food_items table.
+  Receives: No req body.
+  Returns: an array of categories.
 */
 app.get("/categories", (req, res) => {
   client
@@ -252,9 +255,9 @@ app.get("/categories", (req, res) => {
 });
 
 /*
-  A query to return a DISTINCT list of restaurants in the Restaurants table.
-  No req body.
-  Will return an array of restaurants.
+  What: A query to return a DISTINCT list of restaurants in the Restaurants table.
+  Receives: No req body.
+  Returns: an array of restaurants.
 */
 app.get("/restaurants", (req, res) => {
   client
@@ -263,7 +266,7 @@ app.get("/restaurants", (req, res) => {
                 FROM restaurants`
     )
     .then((result) => {
-      res.send(result.rows.map(json => json.restaurant_name)); // e,g ['Dian Xiao Er', 'Subway']
+      res.send(result.rows.map((json) => json.restaurant_name)); // e,g ['Dian Xiao Er', 'Subway']
     })
     .catch((_) => {
       res.send({ status: 500 }); //INTERNAL SERVER ERROR
@@ -278,22 +281,32 @@ app.get("/restaurants", (req, res) => {
       price: 5.5,
       category: 'Sandwich',
       daily_limit: 10,
-      num_orders_made: 0
+      num_orders_made: 0,
+      min_order_amt: 20,
+      rid: 2
     }
   ]
  */
- app.post("/fooditems", (req, res) => {
-   let {name} = req.body;
-   client.query(
-     `SELECT food_item_name, price, category, daily_limit, num_orders_made
+app.post("/fooditems", (req, res) => {
+  let { name } = req.body;
+  client
+    .query(
+      `SELECT 
+      food_item_name, 
+      price, 
+      category, 
+      daily_limit, 
+      num_orders_made, 
+      min_order_amt, 
+      F.rid
       FROM food_items F, restaurants R
       where F.rid = R.rid
       and R.restaurant_name = '${name}'
-     `)
-     .then(result => res.send(result.rows))
-     .catch(err=> console.log(err))
- })
-
+     `
+    )
+    .then((result) => res.send(result.rows))
+    .catch((err) => console.log(err));
+});
 
 /** What: A query to return all the entries in the Food_items table corresponding to the category name
  *  Receives: Req.body = {name : String}
@@ -308,21 +321,46 @@ app.get("/restaurants", (req, res) => {
   ]
  */
 app.post("/cuisineitems", (req, res) => {
-  let {name} = req.body;
-  client.query(
-    `SELECT food_item_name, price, daily_limit, num_orders_made, restaurant_name
+  let { name } = req.body;
+  client
+    .query(
+      `SELECT food_item_name, price, daily_limit, num_orders_made, restaurant_name
      FROM food_items natural join restaurants
      where category = '${name}'
-    `)
-    .then(result => res.send(result.rows))
-    .catch(err=> console.log(err))
-})
+    `
+    )
+    .then((result) => res.send(result.rows))
+    .catch((err) => console.log(err));
+});
 
+/**
+ * What: A query to return all the options for a food item.
+ * Receives: Req.body = {rid: String, food_item_name: String}
+ * Returns: An array of jsons. e.g  {
+      options_name: 'Size-small',
+      type_of_option: 'small',
+      addon_price: 0,
+      rid: '1',
+      food_item_name: 'Chicken Rice'
+    },
+ */
 
+app.post("/option", (req, res) => {
+  let { rid, food_item_name } = req.body;
 
-
-
-
+  client
+    .query(
+      `SELECT *
+       FROM options
+       WHERE rid = '${rid}'
+       AND food_item_name = '${food_item_name}';
+      `
+    )
+    .then((result) => {
+      res.send(result.rows);
+    })
+    .catch((err) => console.log(err));
+});
 
 
 //Don't modify below this comment

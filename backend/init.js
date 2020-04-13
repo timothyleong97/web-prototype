@@ -800,7 +800,6 @@ query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(1,2,2,'Cold cut trio');`)
 
 // Queries for FDS Manager
-query('select userid as UserID, user_type as UserType from Users;') //see all users
 query('select unique fds_promo as FDS Promotion from FDS_Promotion;') //see fds promotions
 query ('select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see rest promotions
 query('select unique fds_promo as FDS Promotion from FDS_Promotion union select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see all promotions

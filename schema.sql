@@ -126,7 +126,6 @@ create table Restaurant_promotion(restaurant_promo int primary KEY references pr
 create table Users(
     userid varchar(30), /* store username as string */
     user_password varchar(50),
-    user_type varchar(30),
     primary key(userid),
     unique (userid)
 );

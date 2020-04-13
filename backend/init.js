@@ -448,6 +448,8 @@ query('select userid as UserID, user_type as UserType from Users;') //see all us
 query('select unique fds_promo as FDS Promotion from FDS_Promotion;') //see fds promotions
 query ('select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see rest promotions
 query('select unique fds_promo as FDS Promotion from FDS_Promotion union select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see all promotions 
+query('select count(cid), count(order_id), sum() from ?? group by Month(join_date)') // undone
+
 
 // See available riders 
 query(`select did as Name from Time_Entries where (clock_in != null and clock_out = null);`)

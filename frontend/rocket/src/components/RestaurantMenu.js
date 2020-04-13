@@ -1,37 +1,74 @@
-import React from 'react'
-import {
-  Container,
-  Grid,
-  Header,
-  Image,
-  Menu,
-} from 'semantic-ui-react'
-import RestaurantItem from './Tiles/RestaurantItem'
+import React, { useState, useEffect } from "react";
+import { Container, Table, Button } from "semantic-ui-react";
+import history from "./importables/history";
+import axiosClient from "./importables/axiosClient";
 
-const RestaurantMenu = props => (
-  <div>
-    <Menu fixed='top' inverted>
-      <Container>
-        <Menu.Item as='a' header>
-          <Image circular size='mini' src='/logo.jpg' style={{ marginRight: '1.5em' }} />
-          Rocket
-        </Menu.Item>
-        <Menu.Item as='a'>Home</Menu.Item>
-      </Container>
-    </Menu>
+const RestaurantMenu = (props) => {
+  const name = decodeURI(props.match.params.name);
+  const [menu, setMenu] = useState([]);
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
+  useEffect(() => {
+    if (menu.length === 0) {
+      //only the first time
+      axiosClient
+        .post("/fooditems", { name })
+        .then(({ data }) => setMenu(data))
+        .catch((err) => console.log(err));
+    }
+  });
+  /**  menu looks like this : {
+        "food_item_name": "Chicken Rice",
+        "price": 2.5,
+        "category": "Chinese",
+        "daily_limit": 50,
+        "num_orders_made": 0
+    } */
+  return (
+    <Container>
+      <Button onClick={() => history.push("/catalogue")}>
+        Back to Catalogue
+      </Button>
+      <Table singleLine>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell colSpan="4">{name}</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell>Price</Table.HeaderCell>
+            <Table.HeaderCell>Item Name</Table.HeaderCell>
+            <Table.HeaderCell>Qty left</Table.HeaderCell>
+            <Table.HeaderCell>Order</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
 
-    <Container text style={{ marginTop: '7em' }}>
-      <Header as='h1'>{props.restaurant}</Header>
-        <p>Minimum Order: ${props.minOrder}</p>
-      <a href='/'>
-        See all reviews
-      </a>
-      <Grid columns={2} style={{marginTop:8}}>
-
-      {props.items.map(({name, img, price}) => <RestaurantItem name={name} img = {img} price = {price}/>)}
-      </Grid>
+        <Table.Body>
+          {menu.map(
+            ({
+              food_item_name,
+              price,
+              daily_limit,
+              num_orders_made,
+            }) => {
+              const qtyleft = daily_limit - num_orders_made;
+              return (
+                <Table.Row disabled = {qtyleft <= 0}>
+                  <Table.Cell>{formatter.format(price)}</Table.Cell>
+                  <Table.Cell>{food_item_name}</Table.Cell>
+                  <Table.Cell>{qtyleft}</Table.Cell>
+                  <Table.Cell collapsing textAlign='right'>{qtyleft > 0 ? <Button onClick={()=>console.log(props.username, name, food_item_name)}>Order</Button> : 'NA'}</Table.Cell>
+                </Table.Row>
+              );
+            }
+          )}
+        </Table.Body>
+      </Table>
     </Container>
-  </div>
-)
+  );
+};
 
-export default RestaurantMenu
+export default RestaurantMenu;

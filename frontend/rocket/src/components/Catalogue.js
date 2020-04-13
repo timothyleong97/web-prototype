@@ -57,19 +57,19 @@ class Catalogue extends React.Component {
         ) : (
           <Fragment>
             <Header>Categories</Header>
-            <Grid columns="equal" padded="vertically">
-              <Grid.Row columns={Math.min(3, this.state.cat.length)}>
+            <Grid columns = {3} padded>
+              <Grid.Row>
                 {this.state.cat.map((i) => (
-                  <CatalogueItem className="listItem" text={i} key={i} />
+                  <CatalogueItem className="listItem" text={i} type='cuisine' key={i} />
                 ))}
               </Grid.Row>
             </Grid>
 
             <Header>Restaurants</Header>
-            <Grid columns="equal" padded="vertically">
-              <Grid.Row columns={Math.min(3, this.state.cat.length)}>
+            <Grid columns={3} padded>
+              <Grid.Row>
                 {this.state.rest.map((i) => (
-                  <CatalogueItem className="listItem" text={i} key={i} />
+                  <CatalogueItem className="listItem" text={i} type='restaurant' key={i} />
                 ))}
               </Grid.Row>
             </Grid>

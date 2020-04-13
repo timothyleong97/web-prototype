@@ -8,6 +8,7 @@ import { Header, Image, Grid, Button } from "semantic-ui-react";
 import history from "./components/importables/history";
 import RestaurantSummary from "./components/RestaurantSummary";
 import RiderSummary from "./components/RiderSummary";
+import RestaurantMenu from "./components/RestaurantMenu";
 import FDSSummary from "./components/FDSSummary";
 import EditProfile from "./components/EditProfile";
 
@@ -88,7 +89,7 @@ const App = () => {
         <Header as="h1" style={{ backgroundColor: "#eac012", height: "14vh" }}>
           <Grid>
             <Grid.Row>
-              <Grid.Column floated="left" width={4} verticalAlign="middle">
+              <Grid.Column floated="left" width={3} verticalAlign="middle">
                 <Link to={usertype === "" ? "/" : homePages[usertype]}>
                   <Image
                     src="../name.png"
@@ -116,7 +117,7 @@ const App = () => {
                     floated="right"
                     verticalAlign="middle"
                     style={{ marginRight: 30, marginTop: 10 }}
-                    width={3}
+                    width={4}
                   > <EditProfile setAppUsername={setUsername}/>
                     <Button
                       color="orange"
@@ -138,6 +139,12 @@ const App = () => {
           </Grid>
         </Header>
         <Switch>
+          <Route path='/menu/:name' exact render={(props) => (
+              <RestaurantMenu
+                {...props}
+                username={username}
+              />
+            )} />
           <Route path="/" exact component={Splash} />
           <Route
             path="/signup"

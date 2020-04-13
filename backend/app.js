@@ -221,7 +221,13 @@ app.post("/login/:usertype", (req, res) => {
       console.log(result)
       res.send(result)
     })
-   .catch(err => console.log(err));
+   .catch(err => {
+     console.log(err)
+     if (err.detail.endsWith("already exists.")) { //Duplicate username
+       res.send({status: 400})
+     }
+   });
+   
  })
 // --CATALOGUE--
 /*
@@ -264,8 +270,54 @@ app.get("/restaurants", (req, res) => {
     });
 });
 
+/** What: A query to return all the entries in the Food_items table corresponding to the restaurant name
+ *  Receives: Req.body = {name : String}
+ *  Returns: An array of jsons. e.g rows: [
+    {
+      food_item_name: 'Cold cut trio',
+      price: 5.5,
+      category: 'Sandwich',
+      daily_limit: 10,
+      num_orders_made: 0
+    }
+  ]
+ */
+ app.post("/fooditems", (req, res) => {
+   let {name} = req.body;
+   client.query(
+     `SELECT food_item_name, price, category, daily_limit, num_orders_made
+      FROM food_items F, restaurants R
+      where F.rid = R.rid
+      and R.restaurant_name = '${name}'
+     `)
+     .then(result => res.send(result.rows))
+     .catch(err=> console.log(err))
+ })
 
 
+/** What: A query to return all the entries in the Food_items table corresponding to the category name
+ *  Receives: Req.body = {name : String}
+ *  Returns: An array of jsons. e.g rows: [
+    {
+      food_item_name: 'Cold cut trio',
+      price: 5.5,
+      category: 'Sandwich',
+      daily_limit: 10,
+      num_orders_made: 0,
+      rid
+    }
+  ]
+ */
+app.post("/cuisineitems", (req, res) => {
+  let {name} = req.body;
+  client.query(
+    `SELECT *
+     FROM food_items F
+     where category = '${name}'
+    `)
+    .then(result => res.send(result.rows))
+    .catch(err=> console.log(err))
+})
 
 
 

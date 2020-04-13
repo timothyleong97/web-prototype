@@ -126,6 +126,7 @@ create table Restaurant_promotion(restaurant_promo int primary KEY references pr
 create table Users(
     userid varchar(30), /* store username as string */
     user_password varchar(50),
+    user_type varchar(30),
     primary key(userid),
     unique (userid)
 );
@@ -163,8 +164,8 @@ create table Salary(
 
 create table Time_Entries(
     did varchar(30),
-    clock_in TIMESTAMP,
-    clock_out TIMESTAMP, /* use this as trigger to update salary */
+    clock_in TIMESTAMP default null,
+    clock_out TIMESTAMP default null, /* use this as trigger to update salary */
     primary key(did, clock_in),
     foreign key(did) REFERENCES Delivery_Riders(did) on delete cascade
 );

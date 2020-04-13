@@ -37,7 +37,7 @@ query('DROP FUNCTION IF EXISTS null_if_overlap_opening_hours_template cascade;')
 
 //CREATE all tables
 query(`create table Users(
-    userid varchar(30), 
+    userid varchar(30),
     user_password varchar(50),
     primary key(userid),
     unique (userid)
@@ -54,10 +54,10 @@ query(`create table Customers(
 );`)
 
 query(`create table Orders(
-    order_id CHAR(11) UNIQUE, 
+    order_id CHAR(11) UNIQUE,
 	restaurant_review VARCHAR(255),
     restaurant_rating INTEGER,
-    reward_points INTEGER DEFAULT 0, 
+    reward_points INTEGER DEFAULT 0,
     primary key (order_id)
 );`)
 
@@ -71,7 +71,9 @@ query(`create table Promotions (
 
 query(`create table Places(
     order_id CHAR(11),
-	cid varchar(30) NOT NULL,
+  	cid varchar(30) NOT NULL,
+    delivery_fee real default 0,
+    totalCost real default 0,
     primary key(order_id, cid),
     foreign key(order_id) references orders(order_id), 
     foreign key(cid) references Customers(cid) ON UPDATE CASCADE 
@@ -80,7 +82,7 @@ query(`create table Places(
 query(`create table Uses(
     promo_code CHAR(10) NOT NULL,
     order_id CHAR(11) NOT NULL,
-    usage serial NOT NULL, 
+    usage serial NOT NULL,
     primary key(promo_code, order_id),
     foreign key(promo_code) references promotions (promo_code),
     foreign key(order_id) references orders(order_id),
@@ -113,7 +115,7 @@ query(`create table Food_items(
     daily_limit integer,
     num_orders_made integer,
     rid VARCHAR(30) not null,
-    primary key (rid,food_item_name),    
+    primary key (rid,food_item_name),
     Foreign key(rid) references restaurants(rid) ON DELETE CASCADE
 );`)
 
@@ -171,7 +173,7 @@ query(`create table Delivery_Riders(
 
 query(`create table Salary(
     did varchar(30),
-    salary_date timestamp, 
+    salary_date timestamp,
     base_salary real default 0.00,
     commission real default 0.00,
     primary key (did, salary_date),
@@ -181,16 +183,16 @@ query(`create table Salary(
 query(`create table Time_Entries(
     did varchar(30),
     clock_in TIMESTAMP,
-    clock_out TIMESTAMP, 
+    clock_out TIMESTAMP,
     primary key(did, clock_in),
-    foreign key(did) REFERENCES Delivery_Riders(did) on delete cascade 
+    foreign key(did) REFERENCES Delivery_Riders(did) on delete cascade
 );`)
 
 query(`create table Full_Time_Rider(
     did varchar(30),
-    month_of_work TIMESTAMP, 
-    wws_start_day char(3), 
-    day1_shift integer, 
+    month_of_work TIMESTAMP,
+    wws_start_day char(3),
+    day1_shift integer,
     day2_shift integer,
     day3_shift integer,
     day4_shift integer,
@@ -202,7 +204,7 @@ query(`create table Full_Time_Rider(
 query(`create table Part_Time_Rider (
     did varchar(30),
     week_of_work TIMESTAMP,
-    mon bigint, 
+    mon bigint,
     tue bigint,
     wed bigint,
     thu bigint,
@@ -217,13 +219,13 @@ query(`create table Part_Time_Rider (
 query(`create table Deliveries (
     order_id char(11),
     driver varchar(30) not null,
-   
+
     time_customer_placed_order TIMESTAMP,
     time_rider_departs_for_restaurant TIMESTAMP,
     time_rider_reach_restaurant TIMESTAMP,
     time_rider_departs_restaurant TIMESTAMP,
     time_rider_delivers_order TIMESTAMP,
-    delivery_rating integer, 
+    delivery_rating integer,
     comments_for_rider CHAR(100),
     delivers_to varchar(255),
     primary key(order_id),
@@ -232,7 +234,7 @@ query(`create table Deliveries (
     foreign key(delivers_to) references Addresses(address_id) on delete cascade
 );`)
 
-query(`CREATE TABLE opening_hours_template ( 
+query(`CREATE TABLE opening_hours_template (
     id SERIAL PRIMARY KEY,
     restaurant_id varchar(30) NOT NULL REFERENCES restaurants(rid) ON DELETE CASCADE,
     start_day integer NOT NULL,
@@ -442,3 +444,28 @@ query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(3,1,1,'Chicken Rice');`)
 query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(1,2,2,'Cold cut trio');`)
+
+// Queries for FDS Manager
+query('select userid as UserID, user_type as UserType from Users;') //see all users
+query('select unique fds_promo as FDS Promotion from FDS_Promotion;') //see fds promotions
+query ('select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see rest promotions
+query('select unique fds_promo as FDS Promotion from FDS_Promotion union select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see all promotions
+query('select count(cid), count(order_id), sum() from ?? group by Month(join_date)') // undone
+
+
+// See available riders
+query(`select did as Name from Time_Entries where (clock_in != null and clock_out = null);`)
+
+// Restaurant related queries
+query('select unique category as FoodCategory from Food_items;')
+query('select food_item_name as Item, category as FoodCategory from Food_items group by category;')
+query('select unique food_item_name as Item from Food_items from Food_items order by category limit(5);')
+
+// Customer's 5 most recent addresses
+query('select cid as CustomerName, address as Address from Customers group by cid limit (5);')
+
+// Queries for customers
+
+// Queries for restaurant staff
+
+// Queries for delivery riders

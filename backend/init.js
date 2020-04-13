@@ -73,7 +73,7 @@ query(`create table Places(
     order_id CHAR(11),
   	cid varchar(30) NOT NULL,
     delivery_fee real default 0,
-    totalCost real default 0,
+    totalCost real default 1,
     primary key(order_id, cid),
     foreign key(order_id) references orders(order_id),
     foreign key(cid) references Customers(cid) ON UPDATE CASCADE

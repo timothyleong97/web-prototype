@@ -126,7 +126,7 @@ query(`create table Food_items_in_Orders(
     rid VARCHAR(30) not null,
     options_name varchar(30),
     primary key(order_id,food_item_name),
-    foreign key(order_id) references orders (order_id),
+    foreign key(order_id) references Orders(order_id),
     foreign key(rid,food_item_name) references Food_items(rid,food_item_name)
     foreign key(options_name) references Options(options_name) ON UPDATE CASCADE ON DELETE CASCADE
 );`)

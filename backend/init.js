@@ -444,3 +444,15 @@ query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(1,2,2,'Cold cut trio');`)
 
 // Queries for FDS Manager
+// View all users 
+query(
+    'select userid as UserID, user_type as UserType from Users;'
+)
+
+// Restaurant related queries 
+query(
+    'select unique category as FoodCategory from Food_items;'
+)
+query(
+    'select food_item_name as Item, category as FoodCategory from Food_items group by category;'
+)

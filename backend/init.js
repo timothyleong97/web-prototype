@@ -442,3 +442,5 @@ query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(3,1,1,'Chicken Rice');`)
 query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(1,2,2,'Cold cut trio');`)
+
+// Queries for FDS Manager

@@ -74,7 +74,7 @@ query(`create table Places(
 	cid varchar(30) NOT NULL,
     primary key(order_id, cid),
     foreign key(order_id) references orders(order_id), 
-    foreign key(cid) references Customers(cid)
+    foreign key(cid) references Customers(cid) ON UPDATE CASCADE 
 );`)
 
 query(`create table Uses(

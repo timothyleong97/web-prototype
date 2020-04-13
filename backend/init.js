@@ -450,8 +450,18 @@ query ('select unique restaurant_promo as Restaurant Promotions from Restaurant_
 query('select unique fds_promo as FDS Promotion from FDS_Promotion union select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see all promotions 
 
 // See available riders 
-query(`select did as Name from Time_Entries where (clock_in != null, clock_out == null);`)
+query(`select did as Name from Time_Entries where (clock_in != null and clock_out = null);`)
+
 // Restaurant related queries 
 query('select unique category as FoodCategory from Food_items;')
 query('select food_item_name as Item, category as FoodCategory from Food_items group by category;')
 query('select unique food_item_name as Item from Food_items from Food_items order by category limit(5);') 
+
+// Customer's 5 most recent addresses
+query('select cid as CustomerName, address as Address from Customers group by cid limit (5);')
+
+// Queries for customers 
+
+// Queries for restaurant staff
+
+// Queries for delivery riders

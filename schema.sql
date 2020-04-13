@@ -160,7 +160,7 @@ create table Salary(
     commission real default 0.00,
     primary key (did, salary_date),
     foreign key(did) REFERENCES Delivery_Riders(did) on delete cascade
-)
+);
 
 create table Time_Entries(
     did varchar(30),

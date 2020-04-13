@@ -324,6 +324,165 @@ ON opening_hours_template
 FOR ROW
 EXECUTE PROCEDURE null_if_overlap_opening_hours_template();`)
 
+query(`create or replace function fn_setPartTimeRider() returns trigger as
+  $$
+declare
+   working_hours integer;
+begin
+   if(not exists (select 1 from Part_Time_Rider where part_time_rider.did = coalesce(new.did, old.did))) then return null;
+   end if;
+
+   select sum(mon::bit(4)::integer + tue::bit(4)::integer + wed::bit(4)::integer + thu::bit(4)::integer + fri::bit(4)::integer + sat::bit(4)::integer + sun::bit(4)::integer )
+   into working_hours
+   from part_time_rider
+   where part_time_rider.did = coalesce(new.did, old.did)
+   and part_time_rider.week_of_work = coalesce(new.week_of_work,old.week_of_work);
+
+   if (working_hours <10 or working_hours is null)
+   then
+       raise exception 'Work hours are less than the required of 10 hours';
+   elseif(working_hours > 48)
+   then
+       raise exception 'Work hours exceed 48 hours';
+   end if;
+
+  if (exists(select 1
+              from Salary
+              where salary.did = coalesce(new.did,old.did)
+
+              ))
+  then
+      update salary
+      set base = working_hours * 8,
+          bonus = 0
+      where salary.did = coalesce(new.did,old.did)
+
+      ;
+      return null;
+  end if;
+
+  insert into salary
+    values (new.did, CURRENT_DATE, working_hours * 8, 0);
+  return null;
+end;
+$$  language plpgsql;`)
+
+query(`drop trigger if exists tr_setPartTimeSchedule on part_time_rider cascade;
+create constraint trigger tr_setPartTimeSchedule
+  after update or insert or delete
+  on part_time_rider
+  deferrable initially deferred
+  for each row
+execute function fn_setPartTimeRider();`)
+
+query(`create or replace function fn_setFullTimeSchedule() returns trigger as
+  $$
+begin
+  if(exists(select 1
+            from Salary
+            where Salary.did = new.did
+          ))
+  then
+     update Salary
+       set base_salary = 4 * 5 * 10,
+           commission = 0
+       where salary.did = new.did;
+
+        return null;
+     end if;
+
+     insert into Salary
+      values (new.did, CURRENT_DATE, 160 * 10,0);
+      return null;
+end;
+$$ language plpgsql;`)
+
+query(`drop trigger if exists tr_setFullTimeSchedule on Full_Time_Rider cascade;
+create trigger tr_setFullTimeSchedule
+  after update or insert
+  on Full_Time_Rider
+  for each row
+execute function fn_setFullTimeSchedule();`)
+
+query(`create or replace function fn_calculateFee() returns trigger as
+  $$
+declare
+  num_orders_made float;
+  fee float :=1;
+begin
+  select count(order_id)
+  into num_orders_made
+  FROM places
+  WHERE cid = new.cid;
+
+
+  if (num_orders_made < 10) then
+     fee = fee + 5;
+  else if (num_orders_made>= 10 and num_orders_made < 20) then
+     fee = fee + 4.5;
+  else if (num_orders_made >= 20 and num_orders_made < 30) then
+     fee = fee + 4;
+  else if (num_orders_made >= 30 and num_orders_made < 40) then
+     fee = fee + 3.5;
+  else if (num_orders_made >=40) then
+     fee = fee + 3;
+
+      end if;
+    end if;
+  end if;
+ end if;
+ end if;
+ new.delivery_fee = fee;
+return new;
+
+end;
+$$ language plpgsql;`)
+
+query(`drop trigger if exists tr_calculateFee on Places cascade;
+create trigger tr_calculateFee
+  before insert
+  on Places
+  for each row
+execute function fn_calculateFee();`)
+
+query(`create or replace function fn_updateTotalPrice() returns trigger as
+  $$
+  begin
+    update places
+    set totalcost = totalcost + (select fi.price
+                                 from food_items fi, food_items_in_orders fio
+                                 where fi.food_item_name = fio.food_item_name AND
+                                 fi.rid = fio.rid
+                               ) + 1
+    where places.order_id = new.order_id;
+    return null;
+end;
+$$ language plpgsql;`)
+
+query(`drop trigger if exists tr_totalPrice on Places cascade;
+create trigger tr_totalPrice
+  after insert
+  on places
+  for each ROW
+execute function fn_updateTotalPrice();`)
+
+query(`create or replace function fn_resetNumOrders() returns trigger as
+  $$
+  BEGIN
+  update food_items
+  set num_orders_made = 0;
+
+  return new;
+
+  end;
+$$ language plpgsql;`)
+query(`drop trigger if exists tr_resetNumOrders on food_items;
+create trigger tr_resetNumOrders
+  after insert
+  on food_items
+  for each ROW
+execute function fn_resetNumOrders();`)
+
 
 //INSERT starting values into tables
 query(`INSERT INTO users(userid,user_password)
@@ -785,11 +944,57 @@ query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_
 VALUES(1,null,null,null);`)
 query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
 VALUES(2,'Good',4,10);`)
+query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
+VALUES(3,'bad',1,5);`)
+query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
+VALUES(4,'Great',5,15);`)
+query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
+VALUES(5,'average',3,5);`)
+query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
+VALUES(6,null,null,null);`)
+query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
+VALUES(7,null,null,null);`)
+query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
+VALUES(8,'poor',2,10);`)
+query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
+VALUES(9,null,null,null);`)
+query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
+VALUES(10,null,4,10);`)
+query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
+VALUES(11,'Good',4,null);`)
+query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
+VALUES(12,'Good',4,null);`)
+
+
 
 query(`INSERT INTO places(order_id,cid)
 VALUES(1,'Jay Park');`)
 query(`INSERT INTO places(order_id,cid)
 VALUES(2,'undertaker');`)
+query(`INSERT INTO places(order_id,cid)
+VALUES(3,'Jay Park');`)
+query(`INSERT INTO places(order_id,cid)
+VALUES(4,'Jay Park');`)
+query(`INSERT INTO places(order_id,cid)
+VALUES(5,'Jay Park');`)
+query(`INSERT INTO places(order_id,cid)
+VALUES(6,'Jay Park');`)
+query(`INSERT INTO places(order_id,cid)
+VALUES(7,'Jay Park');`)
+query(`INSERT INTO places(order_id,cid)
+VALUES(8,'Jay Park');`)
+query(`INSERT INTO places(order_id,cid)
+VALUES(9,'Jay Park');`)
+query(`INSERT INTO places(order_id,cid)
+VALUES(10,'Jay Park');`)
+query(`INSERT INTO places(order_id,cid)
+VALUES(11,'Jay Park');`)
+query(`INSERT INTO places(order_id,cid)
+VALUES(12,'Jay Park');`)
+
+
+
+
 
 query(`INSERT INTO uses(promo_code,order_id,usage)
 VALUES('FFS',1,0);`)
@@ -808,8 +1013,8 @@ query('select unique fds_promo as FDS Promotion from FDS_Promotion union select 
 query('select count(cid), count(order_id), sum(costs) from ?? group by Month(join_date)') // undone
 // each month, total number of new customers, total orders, total cost of all orders
 // each month and each customer who placed some order for that month, total number of orders placed by the customer for that month and the total cost of all these orders
-// for each hour and each delivery location area, total number of orders placed at that hour for that location area 
-// each rider and each month, total number of orders delivered by the rider for that motnh, total hours worked, total salary earned, average delivery time, number of ratings, average ratings for that month 
+// for each hour and each delivery location area, total number of orders placed at that hour for that location area
+// each rider and each month, total number of orders delivered by the rider for that motnh, total hours worked, total salary earned, average delivery time, number of ratings, average ratings for that month
 
 
 // See available riders

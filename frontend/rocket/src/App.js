@@ -11,7 +11,7 @@ import RiderSummary from "./components/RiderSummary";
 import RestaurantMenu from "./components/RestaurantMenu";
 import FDSSummary from "./components/FDSSummary";
 import EditProfile from "./components/EditProfile";
-
+import CategoryDisplay from "./components/CategoryDisplay";
 
 const homePages = {
   customers: "/catalogue",
@@ -31,6 +31,16 @@ const renderUserRoutes = (username, usertype) => {
           render={(props) => (
             <Catalogue {...props} username={username} usertype={usertype} />
           )}
+        />
+        <Route
+          path="/menu/:name"
+          exact
+          render={(props) => <RestaurantMenu {...props} username={username} />}
+        />
+        <Route
+          path="/categories/:name"
+          exact
+          render={(props) => <CategoryDisplay {...props} username={username} />}
         />
       </Fragment>
     );
@@ -109,7 +119,7 @@ const App = () => {
                     width={3}
                     floated="left"
                     verticalAlign="middle"
-                    style={{ marginLeft: 500, marginTop: 10}}
+                    style={{ marginLeft: 500, marginTop: 10 }}
                   >
                     <Header as="h2">Welcome, {username}.</Header>
                   </Grid.Column>
@@ -118,7 +128,9 @@ const App = () => {
                     verticalAlign="middle"
                     style={{ marginRight: 30, marginTop: 10 }}
                     width={4}
-                  > <EditProfile setAppUsername={setUsername}/>
+                  >
+                    {" "}
+                    <EditProfile setAppUsername={setUsername} />
                     <Button
                       color="orange"
                       circular
@@ -139,12 +151,6 @@ const App = () => {
           </Grid>
         </Header>
         <Switch>
-          <Route path='/menu/:name' exact render={(props) => (
-              <RestaurantMenu
-                {...props}
-                username={username}
-              />
-            )} />
           <Route path="/" exact component={Splash} />
           <Route
             path="/signup"

@@ -301,18 +301,17 @@ app.get("/restaurants", (req, res) => {
     {
       food_item_name: 'Cold cut trio',
       price: 5.5,
-      category: 'Sandwich',
       daily_limit: 10,
       num_orders_made: 0,
-      rid
+      restaurant_name: 'Subway'
     }
   ]
  */
 app.post("/cuisineitems", (req, res) => {
   let {name} = req.body;
   client.query(
-    `SELECT *
-     FROM food_items F
+    `SELECT food_item_name, price, daily_limit, num_orders_made, restaurant_name
+     FROM food_items natural join restaurants
      where category = '${name}'
     `)
     .then(result => res.send(result.rows))

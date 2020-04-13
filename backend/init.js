@@ -55,7 +55,7 @@ query(`create table Customers(
 
 query(`create table Orders(
     order_id CHAR(11) UNIQUE,
-	restaurant_review VARCHAR(255),
+  	restaurant_review VARCHAR(255),
     restaurant_rating INTEGER,
     reward_points INTEGER DEFAULT 0,
     primary key (order_id)
@@ -73,10 +73,10 @@ query(`create table Places(
     order_id CHAR(11),
   	cid varchar(30) NOT NULL,
     delivery_fee real default 0,
-    totalCost real default 0,
+    totalCost real default 1,
     primary key(order_id, cid),
-    foreign key(order_id) references orders(order_id), 
-    foreign key(cid) references Customers(cid) ON UPDATE CASCADE 
+    foreign key(order_id) references orders(order_id),
+    foreign key(cid) references Customers(cid) ON UPDATE CASCADE
 );`)
 
 query(`create table Uses(
@@ -116,7 +116,7 @@ query(`create table Food_items(
     num_orders_made integer,
     rid VARCHAR(30) not null,
     primary key (rid,food_item_name),
-    Foreign key(rid) references restaurants(rid) ON DELETE CASCADE
+    Foreign key(rid) references restaurants(rid) ON UPDATE CASCADE ON DELETE CASCADE
 );`)
 
 query(`create table Food_items_in_Orders(
@@ -141,7 +141,7 @@ query(`create table Options(
     rid varchar(30) not null,
     food_item_name VARCHAR(30) not null,
     primary key(options_name),
-    foreign key (rid,food_item_name) references food_items(rid,food_item_name) ON DELETE cascade
+    foreign key (rid,food_item_name) references food_items(rid,food_item_name) ON UPDATE cascade ON DELETE cascade
 );`)
 
 query(`create table FDS_promotion(
@@ -154,7 +154,7 @@ query(`create table Restaurant_promotion(
 
 query(`create table FDS_Manager(
     manager_id varchar(30) primary key,
-    foreign key(manager_id) REFERENCES Users(userid) on delete cascade
+    foreign key(manager_id) REFERENCES Users(userid) on delete cascade ON UPDATE CASCADE
 );`)
 
 query(`create table Restaurant_Staff(
@@ -177,7 +177,7 @@ query(`create table Salary(
     base_salary real default 0.00,
     commission real default 0.00,
     primary key (did, salary_date),
-    foreign key(did) REFERENCES Delivery_Riders(did) on delete cascade
+    foreign key(did) REFERENCES Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade
 );`)
 
 query(`create table Time_Entries(
@@ -185,7 +185,7 @@ query(`create table Time_Entries(
     clock_in TIMESTAMP,
     clock_out TIMESTAMP,
     primary key(did, clock_in),
-    foreign key(did) REFERENCES Delivery_Riders(did) on delete cascade
+    foreign key(did) REFERENCES Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade
 );`)
 
 query(`create table Full_Time_Rider(
@@ -198,7 +198,7 @@ query(`create table Full_Time_Rider(
     day4_shift integer,
     day5_shift integer,
     primary key(did, month_of_work),
-    foreign key(did) REFERENCES Delivery_Riders on delete cascade
+    foreign key(did) REFERENCES Delivery_Riders ON UPDATE CASCADE ON DELETE cascade
 );`)
 
 query(`create table Part_Time_Rider (
@@ -212,7 +212,7 @@ query(`create table Part_Time_Rider (
     sat bigint,
     sun bigint,
     primary key(did, week_of_work),
-    foreign key(did) REFERENCES Delivery_Riders(did) on delete cascade
+    foreign key(did) REFERENCES Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade
 );
 `)
 
@@ -229,14 +229,14 @@ query(`create table Deliveries (
     comments_for_rider CHAR(100),
     delivers_to varchar(255),
     primary key(order_id),
-    foreign key(order_id) references Orders(order_id) on delete cascade,
-    foreign key(driver) references Delivery_Riders(did) on delete cascade,
-    foreign key(delivers_to) references Addresses(address_id) on delete cascade
+    foreign key(order_id) references Orders(order_id) ON UPDATE CASCADE ON DELETE cascade,
+    foreign key(driver) references Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade,
+    foreign key(delivers_to) references Addresses(address_id) ON UPDATE CASCADE ON DELETE cascade
 );`)
 
 query(`CREATE TABLE opening_hours_template (
     id SERIAL PRIMARY KEY,
-    restaurant_id varchar(30) NOT NULL REFERENCES restaurants(rid) ON DELETE CASCADE,
+    restaurant_id varchar(30) NOT NULL REFERENCES restaurants(rid) ON UPDATE CASCADE ON DELETE CASCADE,
     start_day integer NOT NULL,
     start_time time NOT NULL,
     end_day integer NOT NULL,

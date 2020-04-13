@@ -353,7 +353,8 @@ app.post("/option", (req, res) => {
       `SELECT *
        FROM options
        WHERE rid = '${rid}'
-       AND food_item_name = '${food_item_name}';
+       AND food_item_name = '${food_item_name}'
+       ORDER BY type_of_option;
       `
     )
     .then((result) => {

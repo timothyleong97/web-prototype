@@ -92,6 +92,8 @@ const renderUserRoutes = (username, usertype) => {
 const App = () => {
   const [username, setUsername] = useState("");
   const [usertype, setUsertype] = useState("");
+
+
   console.log("App.js can see username:", username, "usertype:", usertype);
   return (
     <Router history={history}>

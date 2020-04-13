@@ -119,14 +119,14 @@ const App = () => {
                     width={3}
                     floated="left"
                     verticalAlign="middle"
-                    style={{ marginLeft: 500, marginTop: 10 }}
+                    style={{ marginLeft: 520, marginTop: 10 }}
                   >
                     <Header as="h2">Welcome, {username}.</Header>
                   </Grid.Column>
                   <Grid.Column
                     floated="right"
                     verticalAlign="middle"
-                    style={{ marginRight: 30, marginTop: 10 }}
+                    style={{marginTop: 10 }}
                     width={4}
                   >
                     {" "}

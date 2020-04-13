@@ -1,5 +1,6 @@
 import React from 'react'
 import { Header, Segment, Grid } from 'semantic-ui-react'
+import './styles.css';
 
 import history from '../importables/history';
 const square = { 
@@ -20,7 +21,7 @@ const square = {
 
 const CatalogueItem = ({text, type}) => (
     <Grid.Column>
-        <Segment style={square} onClick={()=>type === "restaurant" ? history.push(`/menu/${encodeURI(text)}`) : history.push(`/categories/${encodeURI(text)}`)}>
+        <Segment className='clickable' style={square} onClick={()=>type === "restaurant" ? history.push(`/menu/${encodeURI(text)}`) : history.push(`/categories/${encodeURI(text)}`)}>
             <Header  as='h2' textAlign='center'>
                 {text}
             </Header>

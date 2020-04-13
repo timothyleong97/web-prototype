@@ -119,6 +119,16 @@ query(`create table Food_items(
     Foreign key(rid) references restaurants(rid) ON UPDATE CASCADE ON DELETE CASCADE
 );`)
 
+query(`create table Options(
+    options_name varchar(30) UNIQUE,
+    type_of_option varchar(30),
+    addon_price real,
+    rid varchar(30) not null,
+    food_item_name VARCHAR(30) not null,
+    primary key(options_name,type_of_option,rid),
+    foreign key (rid,food_item_name) references food_items(rid,food_item_name) ON UPDATE cascade ON DELETE cascade
+);`)
+
 query(`create table Food_items_in_Orders(
     qty INTEGER,
     order_id VARCHAR(11),
@@ -136,15 +146,7 @@ query(`create table Set_meals(
     primary key(set_meal_id)
 );`)
 
-query(`create table Options(
-    options_name varchar(30),
-    type_of_option varchar(30),
-    addon_price real,
-    rid varchar(30) not null,
-    food_item_name VARCHAR(30) not null,
-    primary key(options_name,type_of_option,rid),
-    foreign key (rid,food_item_name) references food_items(rid,food_item_name) ON UPDATE cascade ON DELETE cascade
-);`)
+
 
 query(`create table FDS_promotion(
     fds_promo char(10) PRIMARY KEY references promotions(promo_code));

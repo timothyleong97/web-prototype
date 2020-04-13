@@ -213,11 +213,14 @@ app.post("/login/:usertype", (req, res) => {
  app.patch('/updateuserpwd', (req, res) => {
    let {oldusername, newusername, password} = req.body;
    client.query(`UPDATE users 
-                 SET userid = ${newusername},
-                 password = ${password}
-                 where userid = ${oldusername};
+                 SET userid = '${newusername}',
+                 user_password = '${password}'
+                 where userid = '${oldusername}';
                 `
-   ).then(res => console.log(res))
+   ).then(result => {
+      console.log(result)
+      res.send(result)
+    })
    .catch(err => console.log(err));
  })
 // --CATALOGUE--

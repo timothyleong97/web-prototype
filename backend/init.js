@@ -50,7 +50,7 @@ query(`create table Customers(
     join_date DATE,
     credit_card VARCHAR(255),
     primary key (cid),
-    foreign key(cid) references Users(userid)
+    foreign key(cid) references Users(userid) ON UPDATE CASCADE ON DELETE CASCADE
 );`)
 
 query(`create table Orders(
@@ -157,7 +157,7 @@ query(`create table FDS_Manager(
 
 query(`create table Restaurant_Staff(
     staff_id varchar(30) primary key,
-    foreign key(staff_id) REFERENCES Users(userid) on delete cascade
+    foreign key(staff_id) REFERENCES Users(userid) on delete cascade ON UPDATE CASCADE
 );`)
 
 query(`create table Delivery_Riders(
@@ -166,7 +166,7 @@ query(`create table Delivery_Riders(
     sum_all_ratings integer,
     num_deliveries integer,
     primary key(did),
-    foreign key(did) REFERENCES Users(userid) on delete cascade
+    foreign key(did) REFERENCES Users(userid) on delete cascade ON UPDATE CASCADE
 );`)
 
 query(`create table Salary(

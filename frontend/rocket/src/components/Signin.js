@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axiosClient from "./axiosClient";
-import history from './history';
+import axiosClient from "./importables/axiosClient";
+import history from './importables/history';
 import {
   Button,
   Form,
@@ -11,27 +11,36 @@ import {
   Segment,
 } from "semantic-ui-react";
 
+//props = {setUsername: Function, setUsertype: Function}
 const Signin = (props) => {
   const userType = props.match.params.type; //the /whatever that comes after /signin
 
-  let ids = {
+  const ids = {
     fds_manager: "Rocket manager",
     restaurant_staff: "restaurant staff",
     delivery_riders: "rider",
     customers: "customer",
   }; //we use this in the error message to the user - e.g no [customer] with these credentials found
 
-  let display = {
+  const display = {
     fds_manager: "an FDS manager",
     restaurant_staff: "a restaurant staff",
     delivery_riders: "a rider",
     customers: "a customer",
-  }
+  } // we use this in the 'Login as a ...' header
+
+  const redirect = {
+    'customers' : '/catalogue', 
+    'restaurant_staff': '/restaurantSummary',
+    'delivery_riders' : '/riderSummary',
+    'fds_manager': '/fdsSummary'
+  } // we use this to redirect the user to the relevant browsing pages after signin
 
   //stateful variables
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState("");
   const [err, setErr] = useState(false);
+
 
   const submitLogin = () => {
     setErr(false);
@@ -44,7 +53,7 @@ const Signin = (props) => {
           } else if (data.status === 200) {
             props.setUsername(username);
             props.setUsertype(userType);
-            history.push('/catalogue');
+            history.push(redirect[userType]); //sign-in redirect here
           }
         })
         .catch((err) => console.error(err)); // query formed wrongly
@@ -102,3 +111,4 @@ const Signin = (props) => {
 };
 
 export default Signin;
+

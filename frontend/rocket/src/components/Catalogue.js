@@ -8,8 +8,8 @@ import {
   Header,
 } from "semantic-ui-react";
 import CatalogueItem from "./Tiles/CatalogueItem";
-import axiosClient from "./axiosClient";
-import { Redirect } from "react-router-dom";
+import axiosClient from "./importables/axiosClient";
+
 
 class Catalogue extends React.Component {
   // state = {cat : [
@@ -39,7 +39,7 @@ class Catalogue extends React.Component {
   }
 
   render() {
-    return this.props.usertype === "customers" ? (
+    return (
       <Container>
         <Form>
           <Form.Field>
@@ -76,8 +76,6 @@ class Catalogue extends React.Component {
           </Fragment>
         )}
       </Container>
-    ) : (
-      <Redirect to="/" />
     );
   }
 }

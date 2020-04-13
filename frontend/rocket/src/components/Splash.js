@@ -8,7 +8,7 @@ import {
   Icon,
   Divider,
 } from "semantic-ui-react";
-import { useHistory, Link, Redirect } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 
 const footerStyle = {
   fontSize: "1.6em",
@@ -17,11 +17,9 @@ const footerStyle = {
   marginTop: 30,
 };
 
-const Splash = (props) => {
+const Splash = () => {
   let history = useHistory();
-  return props.usertype === "customers" ? (
-    <Redirect to="/catalogue" />
-  ) : (
+  return (
     <div>
       <Container style={{ height: "71.2vh" }}>
         <Grid style={{ marginTop: "5em" }}>
@@ -85,21 +83,21 @@ const Splash = (props) => {
         <Grid columns="equal">
           <Grid.Row>
             <Grid.Column width={3}></Grid.Column>
-            <Grid.Column  style={footerStyle}>
+            <Grid.Column style={footerStyle}>
               <Link to="/signin/delivery_riders">
-                <Header>
-                Rocket Rider
-                </Header>
+                <Header>Rocket Rider</Header>
               </Link>
             </Grid.Column>
             <Grid.Column style={footerStyle} floated="left">
               <Link to="/signin/restaurant_staff">
-                <Header>
-                Restaurant Staff
-                </Header>
+                <Header>Restaurant Staff</Header>
               </Link>
             </Grid.Column>
-            <Grid.Column style={footerStyle}><Link to ="/signin/fds_manager"><Header>FDS Manager</Header></Link></Grid.Column>
+            <Grid.Column style={footerStyle}>
+              <Link to="/signin/fds_manager">
+                <Header>FDS Manager</Header>
+              </Link>
+            </Grid.Column>
             <Grid.Column width={3}></Grid.Column>
           </Grid.Row>
         </Grid>

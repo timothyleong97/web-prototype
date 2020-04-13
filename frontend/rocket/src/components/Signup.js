@@ -9,8 +9,8 @@ import {
   Message,
 } from "semantic-ui-react";
 import validator from "validator";
-import axiosClient from "./axiosClient";
-import history from './history';
+import axiosClient from "./importables/axiosClient";
+import history from './importables/history';
 
 class Signup extends Component {
   state = {

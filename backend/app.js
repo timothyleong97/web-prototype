@@ -160,6 +160,7 @@ app.post("/signup", (req, res) => {
       so that the frontend can then either prompt the user to check and resubmit, or redirect the user straight to the catalogue page.
       Note: usertype should only be one of 'customers', 'fds_manager', 'restaurant_staff', 'delivery_riders'
  */
+
 app.post("/login/:usertype", (req, res) => {
   let { username, password } = req.body;
   let usertype = req.params.usertype;
@@ -196,6 +197,29 @@ app.post("/login/:usertype", (req, res) => {
     });
 });
 
+// -- EDIT PROFILE --
+
+/**
+ * A query to update username and cascade the updates.
+ * Req body is {
+ *    oldusername: String,
+ *    newusername: String,
+ *    password: String
+ *     },
+ * possible responses from database is ok or the username is already taken.
+ * if the former, send back {status: 200} else send {status: 400}
+ */
+
+ app.patch('/updateuserpwd', (req, res) => {
+   let {oldusername, newusername, password} = req.body;
+   client.query(`UPDATE users 
+                 SET userid = ${newusername},
+                 password = ${password}
+                 where userid = ${oldusername};
+                `
+   ).then(res => console.log(res))
+   .catch(err => console.log(err));
+ })
 // --CATALOGUE--
 /*
   A query to return a DISTINCT list of categories in the Food_items table.

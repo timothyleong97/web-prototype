@@ -278,14 +278,15 @@ app.get("/restaurants", (req, res) => {
       price: 5.5,
       category: 'Sandwich',
       daily_limit: 10,
-      num_orders_made: 0
+      num_orders_made: 0,
+      min_order_amt: 10
     }
   ]
  */
  app.post("/fooditems", (req, res) => {
    let {name} = req.body;
    client.query(
-     `SELECT food_item_name, price, category, daily_limit, num_orders_made
+     `SELECT food_item_name, price, category, daily_limit, num_orders_made, min_order_amt
       FROM food_items F, restaurants R
       where F.rid = R.rid
       and R.restaurant_name = '${name}'

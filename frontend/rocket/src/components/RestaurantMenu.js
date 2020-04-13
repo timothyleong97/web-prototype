@@ -24,7 +24,8 @@ const RestaurantMenu = (props) => {
         "price": 2.5,
         "category": "Chinese",
         "daily_limit": 50,
-        "num_orders_made": 0
+        "num_orders_made": 0,
+        "min_order_amt": 10
     } */
   return (
     <Container>
@@ -34,7 +35,8 @@ const RestaurantMenu = (props) => {
       <Table singleLine>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell colSpan="4">{name}</Table.HeaderCell>
+            <Table.HeaderCell colSpan="3">{name}</Table.HeaderCell>
+            <Table.HeaderCell colSpan="1">Minimum order amt: {formatter.format(menu.length > 0 ? menu[0].min_order_amt : 0)}</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Header>
@@ -42,7 +44,7 @@ const RestaurantMenu = (props) => {
             <Table.HeaderCell>Price</Table.HeaderCell>
             <Table.HeaderCell>Item Name</Table.HeaderCell>
             <Table.HeaderCell>Qty left</Table.HeaderCell>
-            <Table.HeaderCell>Order</Table.HeaderCell>
+            <Table.HeaderCell  collapsing textAlign='center'>Order</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
@@ -60,7 +62,7 @@ const RestaurantMenu = (props) => {
                   <Table.Cell>{formatter.format(price)}</Table.Cell>
                   <Table.Cell>{food_item_name}</Table.Cell>
                   <Table.Cell>{qtyleft}</Table.Cell>
-                  <Table.Cell collapsing textAlign='right'>{qtyleft > 0 ? <Button onClick={()=>console.log(props.username, name, food_item_name)}>Order</Button> : 'NA'}</Table.Cell>
+                  <Table.Cell collapsing textAlign='center'>{qtyleft > 0 ? <Button onClick={()=>console.log(props.username, name, food_item_name)}>Order</Button> : 'NA'}</Table.Cell>
                 </Table.Row>
               );
             }

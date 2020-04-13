@@ -142,7 +142,7 @@ query(`create table Options(
     addon_price real,
     rid varchar(30) not null,
     food_item_name VARCHAR(30) not null,
-    primary key(options_name),
+    primary key(options_name,type_of_option,rid),
     foreign key (rid,food_item_name) references food_items(rid,food_item_name) ON UPDATE cascade ON DELETE cascade
 );`)
 

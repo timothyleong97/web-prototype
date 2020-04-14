@@ -13,6 +13,7 @@ import FDSSummary from "./components/FDSSummary";
 import EditProfile from "./components/EditProfile";
 import CategoryDisplay from "./components/CategoryDisplay";
 import AddNewRider from "./components/AddNewRider";
+import AddNewStaff from "./components/AddNewStaff";
 
 const homePages = {
   customers: "/catalogue",
@@ -88,6 +89,13 @@ const renderUserRoutes = (username, usertype) => {
           exact
           render={(props) => (
             <AddNewRider {...props} username={username} usertype={usertype} />
+          )}
+        />
+        <Route
+          path="/addNewStaff"
+          exact
+          render={(props) => (
+            <AddNewStaff {...props} username={username} usertype={usertype} />
           )}
         />
       </Fragment>

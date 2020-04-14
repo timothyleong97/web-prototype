@@ -32,9 +32,9 @@ const FDSSummary = () => {
               circular
               color="purple"
               size="huge"
-              onClick={() => history.replace("/addNewRider")}
+              onClick={() => history.replace("/addNewStaff")}
             >
-              Add A New Rider
+              Add A New Restaurant Staff
             </Button>
           </Grid.Column>
         </Grid.Row>

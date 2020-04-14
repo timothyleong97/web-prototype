@@ -92,7 +92,7 @@ query(`create table Uses(
 query(`create table Addresses(
     address_id char(11),
     street_name char(30),
-    building_num integer,
+    building_num varchar(30),
     unit_num char(10),
     postal_code integer,
     primary key (address_id),
@@ -531,7 +531,7 @@ query(`INSERT INTO salary(did,salary_date,base_salary,commission)
 VALUES('Thomas Engine','2010-10-10',100,10);`)
 
 query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(1,'1 Jurong East','234','01-10','21221');`)
+VALUES(1,'1 Jurong East','Park Royale','01-10','21221');`)
 query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
 VALUES(2,'2 Tampines East','24','10-02','123421');`)
 query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
@@ -541,11 +541,11 @@ VALUES(4,'51059 Donald Circle','65','04-311','518902');`)
 query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
 VALUES(5,'5 Ryan Junction','501','014-138','401187');`)
 query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(6,'65147 Glendale Road','545','06-547','812826');`)
+VALUES(6,'65147 Glendale Road','World trade centre','06-547','812826');`)
 query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
 VALUES(7,'704 Butterfield Pass','301','05-273','323293');`)
 query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(8,'85 Stephen Terrace','454','014-762','533718');`)
+VALUES(8,'85 Stephen Terrace','454','The deck','533718');`)
 query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
 VALUES(9,'72345 Johnson Place','397','05-839','629738');`)
 query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)

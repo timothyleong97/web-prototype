@@ -1,5 +1,6 @@
 import React from "react";
-import { Container, Header, Form, List, Segment } from "semantic-ui-react";
+import { Container, Header, Form, List, Segment, Button, Grid } from "semantic-ui-react";
+import { useHistory, Link } from "react-router-dom";
 
 const options = [
   { key: "f20", text: "February 2020", value: "feb20" },
@@ -7,11 +8,37 @@ const options = [
   { key: "a20", text: "April 2020", value: "apr20" },
 ];
 const FDSSummary = () => {
+  let history = useHistory();
   return (
     <Container>
-      <Header as="h2" style={{ marginTop: 20 }}>
-        Rocket Stats
-      </Header>
+      <Grid columns="equal">
+        <Grid.Row>
+          <Grid.Column>
+            <Header as="h2" style={{ marginTop: 20 }}>
+              Rocket Stats
+            </Header></Grid.Column>
+          <Grid.Column>
+            <Button
+              circular
+              color="purple"
+              size="huge"
+              onClick={() => history.replace("/addNewRider")}
+            >
+              Add A New Rider
+            </Button>
+          </Grid.Column>
+          <Grid.Column>
+            <Button
+              circular
+              color="purple"
+              size="huge"
+              onClick={() => history.replace("/addNewRider")}
+            >
+              Add A New Rider
+            </Button>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
       <Form style={{ marginBottom: 20 }}>
         <Form.Select
           fluid

@@ -232,6 +232,80 @@ app.patch("/updateuserpwd", (req, res) => {
       }
     });
 });
+
+// --ADD NEW RIDER--
+
+// query(`INSERT INTO Delivery_riders(did,start_work_date,sum_all_ratings,num_deliveries)
+// VALUES('lewis hamilton','2020-04-11',0,0);`)
+
+app.post("/addNewRider", (req, res) => {
+  let { firstName, lastName, username, password, type } = req.body;
+  let ridername = firstName + " " + lastName;
+  //First insert this person into Users
+  client
+    .query(
+      `INSERT INTO users(userid,user_password)
+     VALUES($1,$2);`,
+      [username, password]
+    )
+    .then(
+      //Next insert this person into Rider
+      // Change Current date to be filled in
+      (_) =>
+        client
+          .query(
+            `INSERT INTO delivery_riders(did,start_work_date,sum_all_ratings,num_deliveries)
+           VALUES($1, CURRENT_DATE, 0, 0);`,
+            [username]
+          )
+          .then(
+            //Next insert this person into either Full Time or Part Time Rider
+            // Change Current date to be filled in
+            (_) => {
+              if (type == "pt") {
+                client
+                  .query(`INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
+                    VALUES($1,CURRENT_DATE,0,0,0,0,0,0,0);`,
+                    [username]
+                  ).then(
+                    client.query(`INSERT INTO salary(did,salary_date,base_salary,commission)
+                    VALUES($1,CURRENT_DATE,100,10);`,
+                    [username])
+                    .then((_) => {
+                      res.send({ status: 100 }); //OK, Part Time
+                    })
+                  )
+              } else {
+                client
+                  .query(`INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+                    VALUES($1,CURRENT_DATE,'sun',1,1,1,1,1);`,
+                    [username]
+                  ).then(
+                    client.query(`INSERT INTO salary(did,salary_date,base_salary,commission)
+                    VALUES($1,CURRENT_DATE,100,10);`,
+                    [username])
+                    .then((_) => {
+                      res.send({ status: 200 }); //OK, Full Time
+                    })
+                  )
+              }
+          })
+          .catch((error) => {
+            console.log("app.js signup api error", error);
+            res.send({
+              status: 500,
+              message: error.detail,
+            }); //BAD REQUEST
+          })
+    )
+    .catch((error) => {
+      res.send({
+        status: 400,
+        message: error.detail, // "Key (userid)=(timothyleong) already exists."
+      });
+    });
+});
+
 // --CATALOGUE--
 /*
   What: A query to return a DISTINCT list of categories in the Food_items table.

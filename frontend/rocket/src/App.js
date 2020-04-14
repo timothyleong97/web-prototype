@@ -12,6 +12,7 @@ import RestaurantMenu from "./components/RestaurantMenu";
 import FDSSummary from "./components/FDSSummary";
 import EditProfile from "./components/EditProfile";
 import CategoryDisplay from "./components/CategoryDisplay";
+import AddNewRider from "./components/AddNewRider";
 
 const homePages = {
   customers: "/catalogue",
@@ -80,6 +81,13 @@ const renderUserRoutes = (username, usertype) => {
           exact
           render={(props) => (
             <FDSSummary {...props} username={username} usertype={usertype} />
+          )}
+        />
+        <Route
+          path="/addNewRider"
+          exact
+          render={(props) => (
+            <AddNewRider {...props} username={username} usertype={usertype} />
           )}
         />
       </Fragment>

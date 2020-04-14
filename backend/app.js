@@ -277,28 +277,20 @@ app.post("/addNewRider", (req, res) => {
               if (type == "pt") {
                 client
                   .query(`INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
-                    VALUES($1,CURRENT_DATE,0,0,0,0,0,0,0);`,
+                    VALUES($1,CURRENT_DATE,0,10,0,0,10,10,0);`,
                     [username]
-                  ).then(
-                    client.query(`INSERT INTO salary(did,salary_date,base_salary,commission)
-                    VALUES($1,CURRENT_DATE,100,10);`,
-                    [username])
-                    .then((_) => {
+                  ).then((_) => {
                       res.send({ status: 100 }); //OK, Part Time
-                    })
+                    }
                   )
               } else {
                 client
                   .query(`INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
                     VALUES($1,CURRENT_DATE,'sun',1,1,1,1,1);`,
                     [username]
-                  ).then(
-                    client.query(`INSERT INTO salary(did,salary_date,base_salary,commission)
-                    VALUES($1,CURRENT_DATE,100,10);`,
-                    [username])
-                    .then((_) => {
+                  ).then((_) => {
                       res.send({ status: 200 }); //OK, Full Time
-                    })
+                    }
                   )
               }
           })
@@ -319,7 +311,7 @@ app.post("/addNewRider", (req, res) => {
 });
 
 
-// --ADD NEW Staff--
+// --ADD NEW STAFF--
 
 /**
  * What: A query to add a new restaurant staff.

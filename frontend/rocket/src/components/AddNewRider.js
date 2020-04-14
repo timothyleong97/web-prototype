@@ -5,8 +5,8 @@ import {
   Input,
   Container,
   Header,
-  Icon,
   Message,
+  Image,
 } from "semantic-ui-react";
 import validator from "validator";
 import axiosClient from "./importables/axiosClient";
@@ -34,9 +34,12 @@ class AddNewRider extends Component {
   render() {
     return (
       <Container text style={{ marginTop: 30 }}>
-        <Header as="h2" icon textAlign="center">
-          <Icon name="rocket" circular />
-          <Header.Content>Add a new rider.</Header.Content>
+        <Header as="h2" color="purple" textAlign="center">
+          <Image
+            src="/logo.jpg"
+            style={{ width: "100px", paddingBottom: "5px" }}
+          />
+          <Header.Content>Add a new Rocket Rider</Header.Content>
         </Header>
         <Form
           onSubmit={() => {
@@ -52,7 +55,7 @@ class AddNewRider extends Component {
             if (errors.length !== 0) {
               this.setState({ error: errors });
             } else {
-              axiosClient.post("/signup", {
+              axiosClient.post("/addNewRider", {
                 firstName: this.state.firstName,
                 lastName: this.state.lastName,
                 username: this.state.userName,

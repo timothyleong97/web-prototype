@@ -67,7 +67,6 @@ const RestaurantMenu = (props) => {
   };
 
   useEffect(() => {
-    console.log(qty);
     if (menu.length === 0) {
       //only the first time
       axiosClient
@@ -96,7 +95,7 @@ const RestaurantMenu = (props) => {
   return goCheckout ? (
     <Container>
       <Button onClick={()=> setGoCheckout(false)}>Back to menu</Button>
-      <Checkout />
+      <Checkout menu={menu} qty={qty}/>
     </Container>
   ) : (
     <Container>
@@ -108,7 +107,7 @@ const RestaurantMenu = (props) => {
           <Table.Row>
             <Table.HeaderCell colSpan="2">{name}</Table.HeaderCell>
             <Table.HeaderCell colSpan="1">
-              Subtotal:
+              Subtotal:{" "}
               {formatter.format(getSubTotal())}
             </Table.HeaderCell>
             <Table.HeaderCell colSpan="1">

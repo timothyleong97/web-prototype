@@ -8,206 +8,230 @@ const query = q => client.query(q)
 //To run this script, type 'node init.js'. This script rebuilds the whole database.
 
 // DROP all existing tables
-query('DROP TABLE IF EXISTS addresses cascade;')
-query('DROP TABLE IF EXISTS customers cascade;')
-query('DROP TABLE IF EXISTS deliveries cascade;')
-query('DROP TABLE IF EXISTS delivery_riders cascade;')
-query('DROP TABLE IF EXISTS fds_manager cascade;')
-query('DROP TABLE IF EXISTS fds_promotion cascade;')
-query('DROP TABLE IF EXISTS food_items cascade;')
-query('DROP TABLE IF EXISTS food_items_in_orders cascade;')
-query('DROP TABLE IF EXISTS full_time_rider cascade;')
-query('DROP TABLE IF EXISTS opening_hours_template cascade;')
-query('DROP TABLE IF EXISTS options cascade;')
-query('DROP TABLE IF EXISTS orders cascade;')
-query('DROP TABLE IF EXISTS part_time_rider cascade;')
-query('DROP TABLE IF EXISTS places cascade;')
-query('DROP TABLE IF EXISTS promotions cascade;')
-query('DROP TABLE IF EXISTS restaurant_promotion cascade;')
-query('DROP TABLE IF EXISTS restaurant_staff cascade;')
-query('DROP TABLE IF EXISTS restaurants cascade;')
-query('DROP TABLE IF EXISTS salary cascade;')
-query('DROP TABLE IF EXISTS set_meals cascade;')
-query('DROP TABLE IF EXISTS time_entries cascade;')
-query('DROP TABLE IF EXISTS users cascade;')
-query('DROP TABLE IF EXISTS uses cascade;')
+query(`DROP TABLE IF EXISTS addresses cascade;`);
+query(`
+DROP TABLE IF EXISTS customers cascade;`);
+query(`
+DROP TABLE IF EXISTS deliveries cascade;`);
+query(`
+DROP TABLE IF EXISTS delivery_riders cascade;`);
+query(`
+DROP TABLE IF EXISTS fds_manager cascade;`);
+query(`
+DROP TABLE IF EXISTS fds_promotion cascade;`);
+query(`
+DROP TABLE IF EXISTS food_items cascade;`);
+query(`
+DROP TABLE IF EXISTS food_items_in_orders cascade;`);
+query(`
+DROP TABLE IF EXISTS full_time_rider cascade;`);
+query(`
+DROP TABLE IF EXISTS opening_hours_template cascade;`);
+query(`
+DROP TABLE IF EXISTS options cascade;`);
+query(`
+DROP TABLE IF EXISTS orders cascade;`);
+query(`
+DROP TABLE IF EXISTS part_time_rider cascade;`);
+query(`
+DROP TABLE IF EXISTS places cascade;`);
+query(`
+DROP TABLE IF EXISTS promotions cascade;`);
+query(`
+DROP TABLE IF EXISTS restaurant_promotion cascade;`);
+query(`
+DROP TABLE IF EXISTS restaurant_staff cascade;`);
+query(`
+DROP TABLE IF EXISTS restaurants cascade;`);
+query(`
+DROP TABLE IF EXISTS salary cascade;`);
+query(`
+DROP TABLE IF EXISTS set_meals cascade;`);
+query(`
+DROP TABLE IF EXISTS time_entries cascade;`);
+query(`
+DROP TABLE IF EXISTS users cascade;`);
+query(`
+DROP TABLE IF EXISTS uses cascade;`);
+query(`
+DROP TABLE IF EXISTS Salary_Paid_Out cascade;`);
+query(`
 
-//DROP FUNCTIONS
-query('DROP FUNCTION IF EXISTS null_if_overlap_opening_hours_template cascade;')
-
-//CREATE all tables
-query(`create table Users(
+create table Users(
     userid varchar(30),
     user_password varchar(50),
     primary key(userid),
     unique (userid)
-);`)
+);`);
+query(`
+INSERT INTO users(userid,user_password)
+VALUES('undertaker','undertaker');`);
+query(`
 
-query(`create table Customers(
+create table Customers(
     cid VARCHAR(30),
     customer_name VARCHAR(30) NOT NULL,
     reward_points INTEGER DEFAULT 0,
     join_date DATE,
-    credit_card VARCHAR(255),
+    credit_card VARCHAR(255), -- only one credit_card
     primary key (cid),
-    foreign key(cid) references Users(userid) ON UPDATE CASCADE ON DELETE CASCADE
-);`)
+    foreign key(cid) references Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+query(`
 
-query(`create table Orders(
+create table Orders(
     order_id CHAR(11) UNIQUE,
-  	restaurant_review VARCHAR(255),
+	  restaurant_review VARCHAR(255),
     restaurant_rating INTEGER,
-    reward_points INTEGER DEFAULT 0,
-    primary key (order_id)
-);`)
 
-query(`create table Promotions (
+    primary key (order_id)
+);`);
+query(`
+
+create table Promotions (
     promo_code CHAR(10) UNIQUE,
-	promo_start_date date NOT NULL,
+	  promo_start_date date NOT NULL,
     promo_end_date date NOT NULL,
     promo_detail VARCHAR(255),
     primary key (promo_code)
-);`)
+);`);
+query(`
 
-query(`create table Places(
+create table Places(
     order_id CHAR(11),
   	cid varchar(30) NOT NULL,
-    delivery_fee real default 0,
-    totalCost real default 1,
+    delivery_fee real default 0.00,
+    totalCost real default 0.00,
     primary key(order_id, cid),
-    foreign key(order_id) references orders(order_id),
-    foreign key(cid) references Customers(cid) ON UPDATE CASCADE
-);`)
+    foreign key(order_id) references orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    foreign key(cid) references Customers(cid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+query(`
 
-query(`create table Uses(
-    promo_code CHAR(10) NOT NULL,
-    order_id CHAR(11) NOT NULL,
-    usage serial NOT NULL,
-    primary key(promo_code, order_id),
-    foreign key(promo_code) references promotions (promo_code),
-    foreign key(order_id) references orders(order_id),
-    check (usage <= 10)
-);`)
 
-query(`create table Addresses(
-    address_id char(11),
+create table Addresses(
+
     street_name char(30),
-    building_num varchar(30),
+    building varchar(30),
     unit_num char(10),
     postal_code integer,
-    primary key (address_id),
-    UNIQUE (address_id)
-);`)
+    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
+    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
+    primary key (street_name,building,unit_num,postal_code)
 
-query(`create table Restaurants(
-    rid VARCHAR(30),
+);`);
+query(`
+
+create table Restaurants(
+
     min_order_amt real,
-    located_at VARCHAR(255) UNIQUE,
+    street_name char(30),
+    building varchar(30),
+    unit_num char(10),
+    postal_code integer,
     restaurant_name VARCHAR(255),
-    primary key (rid),
-    foreign key(located_at) references Addresses(address_id)
-);`)
+    primary key (restaurant_name),
+    foreign key(street_name,building,unit_num,postal_code) references Addresses(street_name,building,unit_num,postal_code) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+query(`
 
-query(`create table Food_items(
-    food_item_name VARCHAR(30) UNIQUE,
+create table Food_items(
+    food_item_name VARCHAR(30),
     price real,
     category VARCHAR(255),
     daily_limit integer,
     num_orders_made integer,
-    rid VARCHAR(30) not null,
-    primary key (rid,food_item_name),
-    Foreign key(rid) references restaurants(rid) ON UPDATE CASCADE ON DELETE CASCADE
-);`)
+    restaurant_name VARCHAR(255) not null,
+    primary key (restaurant_name,food_item_name),
+    Foreign key(restaurant_name) references restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+query(`
 
-query(`create table Options(
-    options_name varchar(30) UNIQUE,
-    type_of_option varchar(30),
-    addon_price real,
-    rid varchar(30) not null,
-    food_item_name VARCHAR(30) not null,
-    primary key(options_name,type_of_option,rid),
-    foreign key (rid,food_item_name) references food_items(rid,food_item_name) ON UPDATE cascade ON DELETE cascade
-);`)
 
-query(`create table Food_items_in_Orders(
-    qty INTEGER,
-    order_id VARCHAR(11),
-    food_item_name VARCHAR(30),
-    rid VARCHAR(30) not null,
-    options_name varchar(30),
-    primary key(order_id,food_item_name),
-    foreign key(order_id) references Orders(order_id),
-    foreign key(rid,food_item_name) references Food_items(rid,food_item_name),
-    foreign key(options_name) references Options(options_name) ON UPDATE CASCADE ON DELETE CASCADE
-);`)
+ create table Food_items_in_Orders(
+   qty INTEGER,
+   order_id VARCHAR(11),
+   food_item_name VARCHAR(30),
+   restaurant_name VARCHAR(255) not null,
 
-query(`create table Set_meals(
-    set_meal_id VARCHAR(30),
-    primary key(set_meal_id)
-);`)
+   primary key(order_id,food_item_name),
+   foreign key(order_id) references Orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
+   foreign key(restaurant_name,food_item_name) references Food_items(restaurant_name,food_item_name) ON DELETE CASCADE ON UPDATE CASCADE
+
+);`);
+query(`
+
+create table FDS_promotion(fds_promo char(10) PRIMARY KEY references promotions(promo_code));`);
+query(`
+
+create table Restaurant_promotion(restaurant_promo char(10) primary KEY references promotions(promo_code),
+                                  restaurant_name VARCHAR(255),
+                                  foreign key(restaurant_name) references restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
+                                );`);
+query(`
 
 
 
-query(`create table FDS_promotion(
-    fds_promo char(10) PRIMARY KEY references promotions(promo_code));
-`)
-
-query(`create table Restaurant_promotion(
-    restaurant_promo char(10) primary KEY references promotions(promo_code));
-`)
-
-query(`create table FDS_Manager(
+create table FDS_Manager(
     manager_id varchar(30) primary key,
-    foreign key(manager_id) REFERENCES Users(userid) on delete cascade ON UPDATE CASCADE
-);`)
+    foreign key(manager_id) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+query(`
 
-query(`create table Restaurant_Staff(
+create table Restaurant_Staff(
     staff_id varchar(30) primary key,
-    foreign key(staff_id) REFERENCES Users(userid) on delete cascade ON UPDATE CASCADE
-);`)
+    foreign key(staff_id) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+query(`
 
-query(`create table Delivery_Riders(
+create table Delivery_Riders(
     did varchar(30),
-    start_work_date timestamp,
     sum_all_ratings integer,
     num_deliveries integer,
     primary key(did),
-    foreign key(did) REFERENCES Users(userid) on delete cascade ON UPDATE CASCADE
-);`)
+    foreign key(did) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+query(`
 
-query(`create table Salary(
+create table Salary(
     did varchar(30),
-    salary_date timestamp,
+    salary_date timestamp, -- date that we pay them
     base_salary real default 0.00,
     commission real default 0.00,
     primary key (did, salary_date),
-    foreign key(did) REFERENCES Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade
-);`)
+    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+query(`
 
-query(`create table Time_Entries(
-    did varchar(30),
-    clock_in TIMESTAMP,
-    clock_out TIMESTAMP,
-    primary key(did, clock_in),
-    foreign key(did) REFERENCES Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade
-);`)
+create table Salary_Paid_Out(
+  day_Paid_Out Date,
+  total_amount_paid real default 0.00,
+  did varchar(30),
+  primary key (day_Paid_Out),
+  foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
 
-query(`create table Full_Time_Rider(
+);`);
+query(`
+
+
+
+create table Full_Time_Rider(
     did varchar(30),
-    month_of_work TIMESTAMP,
+
     wws_start_day char(3),
     day1_shift integer,
     day2_shift integer,
     day3_shift integer,
     day4_shift integer,
     day5_shift integer,
-    primary key(did, month_of_work),
-    foreign key(did) REFERENCES Delivery_Riders ON UPDATE CASCADE ON DELETE cascade
-);`)
+    primary key(did),
+    foreign key(did) REFERENCES Delivery_Riders ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+query(`
 
-query(`create table Part_Time_Rider (
+create table Part_Time_Rider (
     did varchar(30),
-    week_of_work TIMESTAMP,
+    week_of_work DATE,
     mon bigint,
     tue bigint,
     wed bigint,
@@ -216,11 +240,11 @@ query(`create table Part_Time_Rider (
     sat bigint,
     sun bigint,
     primary key(did, week_of_work),
-    foreign key(did) REFERENCES Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade
-);
-`)
+    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+query(`
 
-query(`create table Deliveries (
+create table Deliveries (
     order_id char(11),
     driver varchar(30) not null,
 
@@ -231,99 +255,17 @@ query(`create table Deliveries (
     time_rider_delivers_order TIMESTAMP,
     delivery_rating integer,
     comments_for_rider CHAR(100),
-    delivers_to varchar(255),
+    street_name char(30),
+    building varchar(30),
+    unit_num char(10),
+    postal_code integer,
     primary key(order_id),
-    foreign key(order_id) references Orders(order_id) ON UPDATE CASCADE ON DELETE cascade,
-    foreign key(driver) references Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade,
-    foreign key(delivers_to) references Addresses(address_id) ON UPDATE CASCADE ON DELETE cascade
-);`)
+    foreign key(order_id) references Orders(order_id) on update cascade on delete cascade,
+    foreign key(driver) references Delivery_Riders(did) on UPDATE cascade on delete cascade,
+    foreign key(street_name,building,unit_num,postal_code) references Addresses(street_name,building,unit_num,postal_code) on UPDATE cascade on delete cascade
+);`);
 
-query(`CREATE TABLE opening_hours_template (
-    id SERIAL PRIMARY KEY,
-    restaurant_id varchar(30) NOT NULL REFERENCES restaurants(rid) ON UPDATE CASCADE ON DELETE CASCADE,
-    start_day integer NOT NULL,
-    start_time time NOT NULL,
-    end_day integer NOT NULL,
-    end_time time NOT NULL,
-    CHECK (start_day >= 0 AND start_day < 7),
-    CHECK (end_day >= 0 AND end_day < 7)
-  );`)
-
-query(`CREATE FUNCTION null_if_overlap_opening_hours_template()
-RETURNS trigger AS
-$$
-BEGIN
-IF EXISTS (SELECT * FROM opening_hours_template T WHERE
-  T.restaurant_id = NEW.restaurant_id AND (
-  (
-    -- condition: range of given existing row does not have sat midnight in interior
-    --            and range of new row does not have sat midnight in interior
-    ((T.start_day < T.end_day) OR (T.start_day = T.end_day AND T.start_time <= T.end_time))
-    AND
-    ((NEW.start_day < NEW.end_day) OR (NEW.start_day = NEW.end_day AND NEW.start_time <= NEW.end_time))
-    AND NOT
-    (
-      -- either existing row is before new row
-      (T.end_day < NEW.start_day) OR (T.end_day = NEW.start_day AND T.end_time < NEW.start_time)
-      -- or new row is before existing row
-      OR
-      (NEW.end_day < T.start_day) OR (NEW.end_day = T.start_day AND NEW.end_time < T.start_time)
-    )
-  )
-  OR
-  (
-    -- condition: range of given existing row has sat midnight in interior
-    --            and range of new row does not have sat midnight in interior
-    ((T.end_day < T.start_day) OR (T.end_day = T.start_day AND T.end_time < T.start_time))
-    AND
-    ((NEW.start_day < NEW.end_day) OR (NEW.start_day = NEW.end_day AND NEW.start_time <= NEW.end_time))
-    AND NOT (
-    -- range of new row must be after the range of existing row ends...
-    ((T.end_day < NEW.start_day) OR (T.end_day = NEW.start_day AND T.end_time < NEW.start_time))
-    AND
-    -- and before the range of existing row starts.
-    ((NEW.end_day < T.start_day) OR (NEW.end_day = T.start_day AND NEW.end_time < T.start_time))
-    )
-  )
-  OR
-  (
-    -- condition: range of given existing row does not have sat midnight in interior
-    --            and range of new row has sat midnight in interior
-    ((T.start_day < T.end_day) OR (T.start_day = T.end_day AND T.start_time <= T.end_time))
-    AND
-    ((NEW.end_day < NEW.start_day) OR (NEW.end_day = NEW.start_day AND NEW.end_time < NEW.start_time))
-    -- same conditions as previous case
-    AND NOT (
-    ((NEW.end_day < T.start_day) OR (NEW.end_day = T.start_day AND NEW.end_time < T.start_time))
-    AND
-    ((T.end_day < NEW.start_day) OR (T.end_day = NEW.start_day AND T.end_time < NEW.start_time))
-    )
-  )
-  -- if range of new row and given existing row both have sat midnight in interior, they certainly overlap
-  OR
-  (
-    -- condition: range of new row has sat midnight in interior
-    --            and range of given existing row has sat midnight in interior
-    ((T.end_day < T.start_day) OR (T.end_day = T.start_day AND T.end_time < T.start_time))
-    AND
-    ((NEW.end_day < NEW.start_day) OR (NEW.end_day = NEW.start_day AND NEW.end_time < NEW.start_time))
-  )
-  )
-)
-THEN
-  RETURN NULL;
-ELSE
-  RETURN NEW;
-END IF;
-END;
-$$
-LANGUAGE plpgsql;`)
-
-query(`CREATE TRIGGER no_overlaps_opening_hours_template BEFORE INSERT
-ON opening_hours_template
-FOR ROW
-EXECUTE PROCEDURE null_if_overlap_opening_hours_template();`)
-
+/*
 query(`create or replace function fn_setPartTimeRider() returns trigger as
   $$
 declare
@@ -1027,10 +969,304 @@ query('select unique food_item_name as Item from Food_items from Food_items orde
 
 // Customer's 5 most recent addresses
 query('select cid as CustomerName, address as Address from Customers group by cid limit (5);')
-
+*/
 // Queries for customers
 // let customers view their reviews forthe restaurant
 
 // Queries for restaurant staff
 
 // Queries for delivery riders
+
+
+// new test data
+
+/*
+--INSERT USERS
+INSERT INTO users(userid,user_password)
+VALUES('undertaker','undertaker');
+INSERT INTO users(userid,user_password)
+VALUES('Bottleopener','Bottleopener');
+INSERT INTO users(userid,user_password)
+VALUES('waiter','waiter');
+INSERT INTO users(userid,user_password)
+VALUES('Manager','manager');
+INSERT INTO users(userid,user_password)
+VALUES('lewis hamilton','password');
+INSERT INTO users(userid,user_password)
+VALUES('Thomas Engine','password');
+INSERT INTO users(userid,user_password)
+VALUES('Jay Park','jay');
+INSERT INTO users(userid,user_password)
+VALUES('Akon','convict');
+
+--INSERT Customers
+INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
+VALUES('undertaker','undertaker',0,'2020-04-07', '4258-1234-1010-0000');
+INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
+VALUES('Jay Park','jay',0,'2019-12-07', '4228-1144-1040-0000');
+
+
+--INSERT RESTAURANT_staff
+INSERT INTO restaurant_staff(staff_id)
+VALUES('waiter');
+INSERT INTO restaurant_staff(staff_id)
+VALUES('Akon');
+
+--INSERT FDS manager
+INSERT INTO fds_manager(manager_id)
+VALUES('Manager');
+
+--INSERT Delivery_riders
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('lewis hamilton',0,0);
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('Thomas Engine',4.5,100);
+
+--INSERT PART TIME Delivery_riders
+INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
+VALUES('Thomas Engine','2017-10-25',0,10,0,0,10,10,0);
+INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
+VALUES('Thomas Engine','2020-10-25',0000100,10,0,0,10,10,0);
+INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
+VALUES('Thomas Engine','2018-10-25',0000000,10,0,0,10,10,0);
+
+
+--INSERT FULL TIME Delivery_riders
+INSERT INTO FULL_TIME_RIDER(did, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('lewis hamilton','mon',1,1,1,1,1);
+
+--INSERT SALARY
+INSERT INTO salary(did,salary_date,base_salary,commission)
+VALUES('lewis hamilton','2000-10-10',100,10);
+
+INSERT INTO salary(did,salary_date,base_salary,commission)
+VALUES('Thomas Engine','2010-10-10',100,10);
+
+
+
+
+
+
+--INSERT Addresses
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('1 Jurong East','haven way','01-10','21221',0,0);
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('2 Tampines East','24','10-02','123421',10,20);
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('123 Outram park','serene','110-02','121121',-90,90);
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('21 Toa payoh','214','01-02','124421',45,135);
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('110 Marina South','2','02-02','122121',-60,60);
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('50 Marina Bay','peace building','01-12','100321',-90,100);
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('20 Shenton Way','102','05-12','102321',70,120);
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('50 Beach rd','1','01-12','101221',-90,-180);
+
+--INSERT RESTAURANT
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(60,'1 Jurong East','haven way','01-10','21221','Dian Xiao er');
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(20,'2 Tampines East','24','10-02','123421','SubWay');
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,'123 Outram park','serene','110-02','121121','Macdonald');
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(20,'21 Toa payoh','214','01-02','124421','PokeBowl');
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(50,'21 Toa payoh','214','01-02','124421','Crystal Jade');
+
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,'20 Shenton Way','102','05-12','102321','Tian tian chicken rice');
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(30,'50 Beach rd','1','01-12','101221','Soup spoon');
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,'50 Beach rd','1','01-12','101221','Char grill bar');
+
+
+
+
+
+
+
+
+--INSERT food_items
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Chicken Rice',2.50,'Chinese',50,10,'Dian Xiao er');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Ee Fu Mee',2,'Chinese',50,20,'Dian Xiao er');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Fried Rice',4,'Chinese',50,0,'Dian Xiao er');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Shark fin',30,'Chinese',50,0,'Dian Xiao er');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Bird nest',25,'Chinese',50,0,'Dian Xiao er');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cold cut trio',15.50,'Lifestyle',10,0,'SubWay');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Tuna',25.50,'Lifestyle',10,0,'SubWay');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Turkey',12.50,'Lifestyle',10,0,'SubWay');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Subway club',13.50,'Lifestyle',10,0,'SubWay');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Big Mac',5.50,'Western',100,0,'Macdonald');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Mc chicken',5.50,'Western',100,0,'Macdonald');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Mc spicy',5.50,'Western',100,0,'Macdonald');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Samurai burger',5.50,'Western',100,0,'Macdonald');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Mcnuggets',5.50,'Western',100,0,'Macdonald');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Healthy stuff',10.50,'Lifestyle',50,0,'PokeBowl');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Vegan meatball',12.50,'Lifestyle',50,0,'PokeBowl');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Fruit shake',5.50,'Lifestyle',50,0,'PokeBowl');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Salad bowl',6.50,'Lifestyle',50,0,'PokeBowl');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Brown rice',10.50,'Lifestyle',50,0,'PokeBowl');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Chicken Rice',4.50,'Chinese',50,0,'Tian tian chicken rice');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Duck Rice',5.00,'Chinese',50,0,'Tian tian chicken rice');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Roasted Pork',5.50,'Chinese',50,0,'Tian tian chicken rice');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('tao hau',1.50,'Chinese',50,0,'Tian tian chicken rice');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Egg',0.50,'Chinese',50,0,'Tian tian chicken rice');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Fish and Chip',5.50,'Western',100,0,'Char grill bar');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Pork chop',5.50,'Western',100,0,'Char grill bar');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('steak',5.50,'Western',100,0,'Char grill bar');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Chicken chop',5.50,'Western',100,0,'Char grill bar');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('char grill',5.50,'Western',100,0,'Char grill bar');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Tomato',10.50,'Soup',100,0,'Soup spoon');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Mushroom',12.50,'Soup',100,0,'Soup spoon');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Beef strew',15.50,'Soup',100,0,'Soup spoon');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('corn',17.50,'Soup',100,0,'Soup spoon');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('carrot',15.50,'Soup',100,0,'Soup spoon');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('ABC',5.50,'Soup',100,0,'Crystal Jade');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Salted vegetable',15.50,'Soup',100,0,'Crystal Jade');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Pork ribs',15.50,'Soup',100,0,'Crystal Jade');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cure illness',15.50,'Soup',100,0,'Crystal Jade');
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('smooth plegm',15.50,'Soup',100,0,'Crystal Jade');
+
+
+
+
+
+
+
+--INSERT Promotions
+INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
+VALUES('10%OFF','2020-04-07','2020-05-08','10%OFFEVERYTHING');
+INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
+VALUES('FFS','2020-04-07','2020-04-15','FireSale');
+
+--INSERT Restaurant_promotion
+INSERT INTO restaurant_promotion(restaurant_promo,restaurant_name)
+VALUES('10%OFF','Dian Xiao er');
+
+--INSERT FDS_promotion
+INSERT INTO FDS_promotion(fds_promo)
+VALUES('FFS');
+
+
+
+--INSERT orders
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(1,null,null);
+
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(2,'Good',4);
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(3,'bad',1);
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(4,'Great',5);
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(5,'average',3);
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(6,null,null);
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(7,null,null);
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(8,'poor',2);
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(9,null,null);
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(10,null,4);
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(11,'Good',4);
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(12,'Good',4);
+
+
+-- INSERT food_items_in_orders
+INSERT INTO food_items_in_orders(qty,order_id,food_item_name,restaurant_name)
+VALUES(3,1,'Chicken Rice','Dian Xiao er');
+INSERT INTO food_items_in_orders(qty,order_id,food_item_name,restaurant_name)
+VALUES(1,2,'Cold cut trio','SubWay');
+
+--INSERT places
+INSERT INTO places(order_id,cid)
+VALUES(1,'Jay Park');
+
+
+INSERT INTO places(order_id,cid)
+VALUES(2,'undertaker');
+INSERT INTO places(order_id,cid)
+VALUES(3,'Jay Park');
+INSERT INTO places(order_id,cid)
+VALUES(4,'Jay Park');
+INSERT INTO places(order_id,cid)
+VALUES(5,'Jay Park');
+INSERT INTO places(order_id,cid)
+VALUES(6,'Jay Park');
+INSERT INTO places(order_id,cid)
+VALUES(7,'Jay Park');
+INSERT INTO places(order_id,cid)
+VALUES(8,'Jay Park');
+INSERT INTO places(order_id,cid)
+VALUES(9,'Jay Park');
+INSERT INTO places(order_id,cid)
+VALUES(10,'Jay Park');
+INSERT INTO places(order_id,cid)
+VALUES(11,'Jay Park');
+INSERT INTO places(order_id,cid)
+VALUES(12,'Jay Park');
+
+
+
+
+
+
+
+
+
+
+-- INSERT into deliveries;
+INSERT INTO deliveries(order_id, driver ,time_customer_placed_order , time_rider_departs_for_restaurant , time_rider_reach_restaurant , time_rider_departs_restaurant , time_rider_delivers_order , delivery_rating ,comments_for_rider , street_name, building, unit_num, postal_code )
+VALUES (1,'lewis hamilton','2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221');
+
+
+*/

@@ -92,7 +92,7 @@ query(`create table Uses(
 query(`create table Addresses(
     address_id char(11),
     street_name char(30),
-    building_num integer,
+    building_num char(30),
     unit_num char(10),
     postal_code integer,
     primary key (address_id),

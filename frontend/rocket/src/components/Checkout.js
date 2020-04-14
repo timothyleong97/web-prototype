@@ -32,15 +32,23 @@ const Checkout = ({ menu, qty }) => {
     <Form style={{ marginTop: 20 }}>
       <Form.Field>
         <Header>Deliver to</Header>
-        <input placeholder="Your Address" />
+        <Form.Input
+          fluid
+          label="Street name"
+          placeholder="Street name"
+        />
+        <Form.Input
+          fluid
+          label="Building number"
+          placeholder="Building number"
+        />
       </Form.Field>
       <Divider />
-      
-            <Header>Order Summary</Header>
-        
+
+      <Header>Order Summary</Header>
 
       <Segment inverted>
-        <CheckoutItems orders={orders}  />
+        <CheckoutItems orders={orders} />
       </Segment>
 
       <RewardsAndPromoCode />
@@ -68,6 +76,7 @@ const Checkout = ({ menu, qty }) => {
 
       <Divider />
       <Button type="submit">Place order</Button>
+      <Divider hidden />
     </Form>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { Container, Table, Button, Statistic } from "semantic-ui-react";
+import { Container, Table, Button, Statistic, Divider } from "semantic-ui-react";
 import history from "./importables/history";
 import axiosClient from "./importables/axiosClient";
 import Checkout from "./Checkout";
@@ -137,6 +137,7 @@ const RestaurantMenu = (props) => {
       >
         Proceed to checkout
       </Button>
+      <Divider />
     </Container>
   );
 };

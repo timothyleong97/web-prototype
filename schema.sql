@@ -95,7 +95,7 @@ create table Places(
     order_id CHAR(11),
   	cid varchar(30) NOT NULL,
     delivery_fee real default 0.00,
-    totalCost real default 0.00,
+    total_cost real default 0.00,
     primary key(order_id, cid),
     foreign key(order_id) references orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
     foreign key(cid) references Customers(cid) ON DELETE CASCADE ON UPDATE CASCADE
@@ -142,7 +142,7 @@ create table Food_items(
 
 --FOOD_ITEMS_IN_ORDERS
 
- create table Food_items_in_Orders(
+create table Food_items_in_Orders(
     qty INTEGER,
     order_id VARCHAR(11),
     food_item_name VARCHAR(30),

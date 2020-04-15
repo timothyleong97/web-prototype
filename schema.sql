@@ -51,7 +51,7 @@ DROP TABLE IF EXISTS Salary_Paid_Out cascade;
 
 create table Users(
     userid varchar(30),
-    user_password varchar(50),
+    user_password varchar(50) not null,
     primary key(userid),
     unique (userid)
 );

@@ -840,7 +840,7 @@ create table Full_Time_Rider(
     day3_shift integer,
     day4_shift integer,
     day5_shift integer,
-    primary key(did),
+    primary key(did, month_of_work),
     foreign key(did) REFERENCES Delivery_Riders ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 

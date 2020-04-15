@@ -50,7 +50,7 @@ DROP TABLE IF EXISTS set_meals cascade;`);
 query(`
 DROP TABLE IF EXISTS time_entries cascade;`);
 query(`
-DROP TABLE IF EXISTS users cascade;`);
+DROP TABLE IF EXISTS Users cascade;`);
 query(`
 DROP TABLE IF EXISTS uses cascade;`);
 query(`
@@ -162,18 +162,18 @@ create table Orders(
 
 query(`
 INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(1,null,null,lewis hamilton);`
+VALUES(1,null,null,'lewis hamilton');`
 );
 
 query(`
 
 INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(2,'Good',4,Thomas Engine);`
+VALUES(2,'Good',4,'Thomas Engine');`
 );
 
 query(`
 INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(3,'bad',1,null,null);`
+VALUES(3,'bad',1,null);`
 );
 
 query(`
@@ -217,7 +217,7 @@ VALUES(11,'Good',4,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, ,restaurant_rating,did)
+INSERT INTO orders(order_id,restaurant_review,restaurant_rating,did)
 VALUES(12,'Good',4,null);`
 );
 
@@ -931,14 +931,14 @@ query(`
 
 );`);
 
-query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
-VALUES(1,'2016-06-22 10:00:00','2016-06-22 12:00:00','2016-06-22 15:00:00','2016-06-22 17:00:00');`);
-query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
-VALUES(2,'2016-06-22 11:00:00','2016-06-22 15:00:00','2016-06-22 16:00:00','2016-06-22 18:00:00');`);
-query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
-VALUES(3,'2016-06-22 12:00:00','2016-06-22 16:00:00','2016-06-22 17:00:00','2016-06-22 21:00:00');`);
-query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
-VALUES(4,'2016-06-22 13:00:00','2016-06-22 17:00:00','2016-06-22 18:00:00','2016-06-22 20:00:00');`);
+query(`INSERT INTO shifts(shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES('2016-06-22 10:00:00','2016-06-22 12:00:00','2016-06-22 15:00:00','2016-06-22 17:00:00');`);
+query(`INSERT INTO shifts(shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES('2016-06-22 11:00:00','2016-06-22 15:00:00','2016-06-22 16:00:00','2016-06-22 18:00:00');`);
+query(`INSERT INTO shifts(shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES('2016-06-22 12:00:00','2016-06-22 16:00:00','2016-06-22 17:00:00','2016-06-22 21:00:00');`);
+query(`INSERT INTO shifts(shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES('2016-06-22 13:00:00','2016-06-22 17:00:00','2016-06-22 18:00:00','2016-06-22 20:00:00');`);
 
 
 

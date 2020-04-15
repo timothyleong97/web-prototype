@@ -50,17 +50,19 @@ DROP TABLE IF EXISTS set_meals cascade;`);
 query(`
 DROP TABLE IF EXISTS time_entries cascade;`);
 query(`
-DROP TABLE IF EXISTS users cascade;`);
+DROP TABLE IF EXISTS Users cascade;`);
 query(`
 DROP TABLE IF EXISTS uses cascade;`);
 query(`
 DROP TABLE IF EXISTS Salary_Paid_Out cascade;`);
+query(`
+DROP TABLE IF EXISTS shifts;`);
 
-// USERS 
+// USERS
 query(`
 create table Users(
     userid varchar(30),
-    user_password varchar(50),
+    user_password varchar(50) not null,
     primary key(userid),
     unique (userid)
 );`);
@@ -127,7 +129,27 @@ query(`
 INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
 VALUES('Jay Park','jay',0,'2019-12-07', '4228-1144-1040-0000');`
 );
+//DELIVERY_RIDERS
+query(`
+create table Delivery_Riders(
+    did varchar(30),
+    sum_all_ratings integer,
+    num_deliveries integer,
+    primary key(did),
+    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
+    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
+    foreign key(did) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
+VALUES('lewis hamilton',0,0,30,100);`
+);
+
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
+VALUES('Thomas Engine',4.5,100,-80,120);`
+);
 
 // ORDERS
 query(`
@@ -135,68 +157,70 @@ create table Orders(
     order_id CHAR(11) UNIQUE,
 	  restaurant_review VARCHAR(255),
     restaurant_rating INTEGER,
-    primary key (order_id)
+    did VARCHAR(30),
+    primary key (order_id),
+    foreign key(did) references Delivery_riders(did) ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(1,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(1,null,null,'lewis hamilton');`
 );
 
 query(`
 
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(2,'Good',4);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(2,'Good',4,'Thomas Engine');`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(3,'bad',1);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(3,'bad',1,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(4,'Great',5);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(4,'Great',5,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(5,'average',3);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(5,'average',3,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(6,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(6,null,null,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(7,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(7,null,null,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(8,'poor',2);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(8,'poor',2,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(9,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(9,null,null,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(10,null,4);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(10,null,4,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(11,'Good',4);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(11,'Good',4,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(12,'Good',4);`
+INSERT INTO orders(order_id,restaurant_review,restaurant_rating,did)
+VALUES(12,'Good',4,null);`
 );
 
 // PROMOTIONS
@@ -784,31 +808,11 @@ INSERT INTO restaurant_staff(staff_id)
 VALUES('Akon');`
 );
 
-//DELIVERY_RIDERS
-query(`
-create table Delivery_Riders(
-    did varchar(30),
-    sum_all_ratings integer,
-    num_deliveries integer,
-    primary key(did),
-    foreign key(did) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
-);`);
-
-query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
-VALUES('lewis hamilton',0,0);`
-);
-
-query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
-VALUES('Thomas Engine',4.5,100);`
-);
-
 //SALARY
 query(`
 create table Salary(
     did varchar(30),
-    salary_date timestamp, -- date that we pay them
+    salary_date timestamp, -- time that we calculated their salary
     base_salary real default 0.00,
     commission real default 0.00,
     primary key (did, salary_date),
@@ -825,28 +829,18 @@ INSERT INTO salary(did,salary_date,base_salary,commission)
 VALUES('Thomas Engine','2010-10-10',100,10);`
 );
 
-//SALARY_PAID_OUT
-query(`
-create table Salary_Paid_Out(
-  day_Paid_Out Date,
-  total_amount_paid real default 0.00,
-  did varchar(30),
-  primary key (day_Paid_Out),
-  foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
-
-);`);
-
 //FULL_TIME_RIDER
 query(`
 create table Full_Time_Rider(
     did varchar(30),
+    month_of_work DATE,
     wws_start_day char(3),
     day1_shift integer,
     day2_shift integer,
     day3_shift integer,
     day4_shift integer,
     day5_shift integer,
-    primary key(did),
+    primary key(did, month_of_work),
     foreign key(did) REFERENCES Delivery_Riders ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 
@@ -904,7 +898,6 @@ create table Deliveries (
     building varchar(30),
     unit_num char(10),
     postal_code integer,
-    reward_points_used integer,
     primary key(order_id),
     foreign key(order_id) references Orders(order_id) on update cascade on delete cascade,
     foreign key(driver) references Delivery_Riders(did) on UPDATE cascade on delete cascade,
@@ -912,28 +905,207 @@ create table Deliveries (
 );`);
 
 query(`
-INSERT INTO deliveries(order_id, driver ,time_customer_placed_order , time_rider_departs_for_restaurant , time_rider_reach_restaurant , time_rider_departs_restaurant , time_rider_delivers_order , delivery_rating ,comments_for_rider , street_name, building, unit_num, postal_code, reward_points_used )
-VALUES (1,'lewis hamilton','2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221', 0);`
+INSERT INTO deliveries(order_id, driver ,time_customer_placed_order , time_rider_departs_for_restaurant , time_rider_reach_restaurant , time_rider_departs_restaurant , time_rider_delivers_order , delivery_rating ,comments_for_rider , street_name, building, unit_num, postal_code )
+VALUES (1,'lewis hamilton','2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221');`
 );
+
+query(`
+  create table shifts(
+   shift_id SERIAL,
+   shift_start_time timestamp,
+   shift_end_time timestamp,
+   shift2_start_time timestamp,
+   shift2_end_time timestamp,
+   primary key(shift_id)
+
+);`);
+
+query(`INSERT INTO shifts(shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES('2016-06-22 10:00:00','2016-06-22 12:00:00','2016-06-22 15:00:00','2016-06-22 17:00:00');`);
+query(`INSERT INTO shifts(shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES('2016-06-22 11:00:00','2016-06-22 15:00:00','2016-06-22 16:00:00','2016-06-22 18:00:00');`);
+query(`INSERT INTO shifts(shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES('2016-06-22 12:00:00','2016-06-22 16:00:00','2016-06-22 17:00:00','2016-06-22 21:00:00');`);
+query(`INSERT INTO shifts(shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES('2016-06-22 13:00:00','2016-06-22 17:00:00','2016-06-22 18:00:00','2016-06-22 20:00:00');`);
 
 
 /**
+ * Trigger 1
+ *  schemas :Part_Time_Rider (
+    did varchar(30),
+    week_of_work DATE,
+    mon bigint,
+    tue bigint,
+    wed bigint,
+    thu bigint,
+    fri bigint,
+    sat bigint,
+    sun bigint,
+    primary key(did, week_of_work),
+    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+)
+
+create table Salary(
+    did varchar(30),
+    salary_date timestamp, -- date that we pay them
+    base_salary real default 0.00,
+    commission real default 0.00,
+    primary key (did, salary_date),
+    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+);
+ * Part timer schedule looks like this : 001001010... where 1 means working. Leading zeroes are dropped.
+ * Before an insertion of a schedule into the part-time_riders table, check if 
+ * 1. there are more than 4 consecutive zeroes for mon to sun,
+ * 2. the total number of zeroes from mon to sun is at least 10 and at most 48.
+ * 
+ * To test: 
+ * --insert into users values ('Timothy', 'password');
+ * --insert into delivery_riders values ('Timothy', 0 , 0 ,0, 0)
+ * --insert into part_time_rider values ('Timothy', '2020-10-25', 110111011101,110111011101,110111011101,110111011101,110111011101,110111011101,110111011101)
+ * --delete from part_time_rider where did = 'Timothy'
+ * --insert into part_time_rider values ('Timothy', '2010-9-25', 011111010101, 010101010101,010101011111,010101010101,010101010101,010101010101,010101010101)
+
+ *
+*/
+
+// Helper functions
+
+//Function to return 'am' or 'pm' in exception statement.
+query('DROP FUNCTION IF EXISTS ampm;');
+query(`
+  CREATE OR REPLACE FUNCTION ampm(t integer) 
+  returns char(2) as $$
+    select case
+      when t >= 12 then 'pm'
+      else 'am'
+    end;
+  $$ language sql;
+`);
+
+//Function to calculate number of zeroes in one day. Raises exception if more than 4 
+//consecutive ones are spotted.
+query(`DROP FUNCTION IF EXISTS numZeroes;`);
+query(`
+  CREATE OR REPLACE FUNCTION numZeroes(schedule bigint)
+  returns integer as $$
+  
+  DECLARE 
+    counter INTEGER := 0;
+    consecutiveOnes INTEGER := 0;
+    lastDigit INTEGER := 0;
+    startTime INTEGER := 21;
+    schedule_temp bigint := schedule;
+  BEGIN
+    WHILE schedule_temp > 0 LOOP
+      lastDigit := MOD(schedule_temp, 10);
+      IF (lastDigit = 1) THEN
+        RAISE NOTICE 'consecutive ones seen: %', consecutiveOnes;
+        consecutiveOnes := consecutiveOnes + 1;
+        IF (consecutiveOnes > 4) THEN
+           RAISE EXCEPTION '>4hr shift starting from % %.', startTime, ampm(startTime)
+           USING ERRCODE = '23514'; --check_violation
+        END IF;
+        counter := counter + 1; 
+      ELSE 
+        consecutiveOnes := 0; --reset count
+      END IF;
+      startTime := startTime - 1;
+      schedule_temp := schedule_temp / 10;
+    END LOOP;
+    RETURN counter;
+  END;
+  $$ language plpgsql;
+
+`)
+
+
+//Create the trigger
+query(`
+  CREATE OR REPLACE FUNCTION calculateTotalWorkingHours() 
+  RETURNS TRIGGER AS $$
+  DECLARE
+    counter INTEGER := 0;
+    schedule BIGINT := 0;
+    day char(3);
+    errorMsg text;
+    baseSalary integer := 0;
+  BEGIN
+    SELECT NEW.mon into schedule;
+    day := 'mon';
+    counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
+    SELECT NEW.tue into schedule;
+    day := 'tue';
+    counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
+    SELECT NEW.wed into schedule;
+    day := 'wed';
+    counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
+    SELECT NEW.thu into schedule;
+    day := 'thu';
+    counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
+    SELECT NEW.fri into schedule;
+    day := 'fri';
+    counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
+    SELECT NEW.sat into schedule;
+    day := 'sat';
+    counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
+    SELECT NEW.sun into schedule;
+    day := 'sun';
+    counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
+    IF counter < 10 THEN
+      RAISE NOTICE 'Less than 10 hours worked';
+    END IF;
+    IF counter > 48 THEN
+      RAISE NOTICE 'More than 48 hours worked';
+    END IF;
+  EXCEPTION
+    WHEN SQLSTATE '23514' THEN
+      GET STACKED DIAGNOSTICS errorMsg = MESSAGE_TEXT;
+      RAISE EXCEPTION 'Detected % on %.', errorMsg, day;
+  
+  baseSalary := counter * 8;
+  
+  INSERT INTO Salary VALUES (NEW.did, CURRENT_TIMESTAMP, baseSalary, 0.0);   -- in front end we stop them from updating
+  RETURN NULL;
+  END;
+   $$ LANGUAGE plpgsql;
+ `);
+
+ //set the trigger
+query(` DROP TRIGGER IF EXISTS part_time_rider_trigger ON Part_time_rider CASCADE;`);
+query(`
+  CREATE CONSTRAINT TRIGGER part_time_rider_trigger
+  AFTER INSERT
+  ON Part_time_rider
+  deferrable initially deferred
+  FOR EACH ROW
+  EXECUTE FUNCTION calculateTotalWorkingHours();
+`)
+
+/**
  * Trigger 2
- * Before an insertion of a finalised order into the delivery table, the total cost for that delivery and the number of reward points earned are calculated.
+ * Before an insertion of a finalised order into the delivery table, the total cost for that delivery (taken from the Places table) and the number of reward points (subtotal floored) earned are calculated.
  * The reward points are then added to the customer in the Customers table, and the total cost is recorded in the Places table.
  *
 */
 
 // Helper functions
 
-// Function 1:  Get subtotal for an order
+// Function 1:  Get subtotal in an order
 query(`DROP FUNCTION IF EXISTS getSubtotal;`);
 query(`
   CREATE OR REPLACE FUNCTION getSubtotal(oid VARCHAR(11))
   returns real as $$
     WITH current_orders AS
     (
-      SELECT qty, FIO.food_item_name, FIO.restaurant_name, F.price as price
+      SELECT FIO.qty, FIO.food_item_name, FIO.restaurant_name, F.price
       FROM food_items_in_orders FIO natural join Food_items F
       WHERE FIO.order_id = oid
     )
@@ -942,64 +1114,67 @@ query(`
   $$ language sql;
 `)
 
-// Function 2:  generated by Function 1
-// query(`
-// CREATE OR REPLACE FUNCTION food_items(oid VARCHAR(11)) 
-//   RETURNS table (subtotal real, qty integer)
-//   as $$
-    // WITH (SELECT qty, FIO.food_item_name, FIO.restaurant_name, price
-    // FROM food_items_in_orders FIO natural join food_items F
-    // WHERE FIO.order_id = oid) AS orders
-    // SELECT SUM(price * qty) as subtotal, SUM(qty) as count
-    // from orders;
-//   $$ language sql;
-//   CREATE OR REPLACE FUNCTION 
-//   subtotal(
-//     order_list table( qty INTEGER, 
-//                       food_item_name VARCHAR(30), 
-//                       restaurant_name VARCHAR(255), 
-//                       price real
-//                     )
-//           )
-//   (out subtotal real, out qty INTEGER)
-//   returns record 
-//   as $$
-//     SELECT SUM(price * qty), SUM(qty)
-//     from order_list;
-//   $$ language sql;
-// `)
-// // Create the trigger
-// query(`
-//   CREATE OR REPLACE FUNCTION compute_total_cost_and_rewards () RETURNS TRIGGER 
-//   AS $$ 
-//   DECLARE
-//     customer_id varchar(30);
-//   BEGIN
-//     -- get the cid
-//     SELECT P.cid INTO customer_id
-//     FROM Places P
-//     WHERE P.order_id = NEW.order_id;
-//     --
+// Function 2: Get qty of an order
+query(`DROP FUNCTION IF EXISTS getQty;`);
+query(`
+  CREATE OR REPLACE FUNCTION getQty(oid VARCHAR(11))
+  returns integer as $$
+    WITH current_orders AS
+    (
+      SELECT FIO.qty, FIO.food_item_name, FIO.restaurant_name, F.price
+      FROM food_items_in_orders FIO natural join Food_items F
+      WHERE FIO.order_id = oid
+    )
 
+    SELECT cast(SUM(qty) as integer) FROM current_orders;
+  $$ language sql;
+`)
 
-//   END 
-//   $$ LANGUAGE plpgsql;
+// Create the trigger
+query(`
+  CREATE OR REPLACE FUNCTION compute_total_cost_and_rewards () RETURNS TRIGGER 
+  AS $$ 
+  DECLARE
+    customer_id varchar(30);
+    subtotal real;
+    qty integer;
+    rp_gained integer;
+    BEGIN
+    -- get the cid
+    SELECT P.cid INTO customer_id
+    FROM Places P
+    WHERE P.order_id = NEW.order_id;
+    -- get subtotal
+    subtotal = getSubtotal(NEW.order_id);
+    -- get qty
+    qty = getQty(NEW.order_id);
+    -- calculate reward points gained (round down the subtotal)
+    rp_gained = FLOOR(subtotal) - NEW.reward_points_used;
+    -- update Places.totalCost to be Places.delivery_fee + subtotal
+    UPDATE Places
+      SET totalCost = delivery_fee + subtotal
+      WHERE Places.order_id = NEW.order_id;
+    -- update customer's reward points
+    UPDATE Customers
+      SET reward_points = reward_points + rp_gained
+      WHERE Customers.cid = customer_id;    
+    --return the row
+    return NULL;
+  END 
+  $$ LANGUAGE plpgsql;
 
-// `)
+`)
 
-// //set the trigger
-// query(`
-//   DROP TRIGGER IF EXISTS deliveries_trigger ON Deliveries CASCADE;
-//   CREATE TRIGGER deliveries_trigger
-//     BEFORE INSERT
-//     ON Deliveries
-//     FOR EACH ROW
-//     EXECUTE FUNCTION compute_total_cost_and_rewards();
-// `)
+//set the trigger
+query(` DROP TRIGGER IF EXISTS deliveries_trigger ON Deliveries CASCADE;`);
+query(`
+  CREATE TRIGGER deliveries_trigger
+  BEFORE INSERT
+  ON Deliveries
+  FOR EACH ROW
+  EXECUTE FUNCTION compute_total_cost_and_rewards();
+`)
 
-//insert data to test on
-
-//delete data
 
 /*
 query(`create or replace function fn_setPartTimeRider() returns trigger as

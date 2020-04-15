@@ -1073,7 +1073,8 @@ query(`
    $$ LANGUAGE plpgsql;
  `);
 
- //set the trigger
+
+ //Trigger 3, it updates the ratings for the restaurants and riders.  When a delivery is completed, the average ratings is calculated
 query(` DROP TRIGGER IF EXISTS part_time_rider_trigger ON Part_time_rider CASCADE;`);
 query(`
   CREATE CONSTRAINT TRIGGER part_time_rider_trigger
@@ -1083,6 +1084,64 @@ query(`
   FOR EACH ROW
   EXECUTE FUNCTION calculateTotalWorkingHours();
 `)
+
+query(`
+create or replace function fn_updateEveryThing() returns trigger as
+  $$
+  DECLARE
+  restaurant_rating real;
+  driver_rating real;
+  no_of_restaurants real;
+  no_of_drivers real;
+  BEGIN
+
+  select
+
+  -- update RESTAURANT Rating
+  restaurant_rating = ( select  sum(o.restaurant_rating)
+  FROM orders o
+  WHERE o.restaurant_name = new.restaurant_name);
+
+  no_of_restaurants = ( select  count(o.restaurant_rating)
+  FROM orders o
+  WHERE o.restaurant_name = new.restaurant_name);
+
+  UPDATE restaurants
+  SET sum_all_ratings = average_restaurant_rating / no_of_restaurants
+  WHERE restaurant_name = new.restaurant_name;
+
+  -- update rating for driver
+ driver_rating = (select  sum(d.delivery_rating)
+ FROM deliveries d
+ WHERE d.driver = new.driver);
+
+ no_of_drivers = (select  count(d.delivery_rating)
+ FROM deliveries d
+ WHERE d.driver = new.driver);
+
+ UPDATE Delivery_riders
+ SET sum_all_ratings = average_driver_rating / no_of_drivers
+ WHERE did = new.did;
+
+
+
+
+
+
+  return null;
+
+
+  end;
+$$ language plpgsql;
+`);
+
+query(`
+drop trigger if exists tr_updateEveryThing on orders;`);
+query(`create trigger tr_updateEveryThing
+  before INSERT
+  on deliveries
+  for each ROW
+execute function fn_updateEveryThing();`);
 
 /**
  * Trigger 2
@@ -1202,6 +1261,16 @@ query(`
   FOR EACH ROW
   EXECUTE FUNCTION compute_total_cost_and_rewards();
 `)
+
+
+
+// query 3, get the most popular hour and name in the past month
+query(`select fio.food_item_name, EXTRACT (HOUR from d.time_customer_placed_order), count(*) as count
+from Food_items_in_Orders fio, Deliveries d
+where fio.order_id = d.order_id AND d.time_customer_placed_order >= date_trunc('month', current_date - interval '1' month)
+  and d.time_customer_placed_order < date_trunc('month', current_date)
+group by fio.food_item_name,d.time_customer_placed_order
+order by count desc;`);
 
 
 /*

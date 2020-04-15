@@ -56,7 +56,7 @@ DROP TABLE IF EXISTS uses cascade;`);
 query(`
 DROP TABLE IF EXISTS Salary_Paid_Out cascade;`);
 
-// USERS 
+// USERS
 query(`
 create table Users(
     userid varchar(30),
@@ -135,68 +135,70 @@ create table Orders(
     order_id CHAR(11) UNIQUE,
 	  restaurant_review VARCHAR(255),
     restaurant_rating INTEGER,
+    did VARCHAR(30),
     primary key (order_id)
+    foreign key(did) references Delivery_riders(did) ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(1,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(1,null,null,lewis hamilton);`
 );
 
 query(`
 
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(2,'Good',4);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(2,'Good',4,Thomas Engine);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(3,'bad',1);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(3,'bad',1,null,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(4,'Great',5);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(4,'Great',5,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(5,'average',3);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(5,'average',3,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(6,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(6,null,null,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(7,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(7,null,null,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(8,'poor',2);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(8,'poor',2,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(9,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(9,null,null,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(10,null,4);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(10,null,4,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(11,'Good',4);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(11,'Good',4,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(12,'Good',4);`
+INSERT INTO orders(order_id,restaurant_review, ,restaurant_rating,did)
+VALUES(12,'Good',4,null);`
 );
 
 // PROMOTIONS
@@ -825,6 +827,16 @@ INSERT INTO salary(did,salary_date,base_salary,commission)
 VALUES('Thomas Engine','2010-10-10',100,10);`
 );
 
+//SALARY_PAID_OUT
+query(`
+create table Salary_Paid_Out(
+  day_Paid_Out Date,
+  total_amount_paid real default 0.00,
+  did varchar(30),
+  primary key (day_Paid_Out),
+  foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+
+);`);
 
 //FULL_TIME_RIDER
 query(`
@@ -894,7 +906,6 @@ create table Deliveries (
     building varchar(30),
     unit_num char(10),
     postal_code integer,
-    reward_points_used integer,
     primary key(order_id),
     foreign key(order_id) references Orders(order_id) on update cascade on delete cascade,
     foreign key(driver) references Delivery_Riders(did) on UPDATE cascade on delete cascade,
@@ -902,89 +913,32 @@ create table Deliveries (
 );`);
 
 query(`
-INSERT INTO deliveries(order_id, driver ,time_customer_placed_order , time_rider_departs_for_restaurant , time_rider_reach_restaurant , time_rider_departs_restaurant , time_rider_delivers_order , delivery_rating ,comments_for_rider , street_name, building, unit_num, postal_code, reward_points_used )
-VALUES (1,'lewis hamilton','2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221', 0);`
+INSERT INTO deliveries(order_id, driver ,time_customer_placed_order , time_rider_departs_for_restaurant , time_rider_reach_restaurant , time_rider_departs_restaurant , time_rider_delivers_order , delivery_rating ,comments_for_rider , street_name, building, unit_num, postal_code )
+VALUES (1,'lewis hamilton','2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221');`
 );
 
-
-/**
- * Trigger 2
- * Before an insertion of a finalised order into the delivery table, the total cost for that delivery and the number of reward points earned are calculated.
- * The reward points are then added to the customer in the Customers table, and the total cost is recorded in the Places table.
- *
-*/
-
-// Helper functions
-
-// Function 1:  Get subtotal in an order
-query(`DROP FUNCTION IF EXISTS getSubtotal;`);
 query(`
-  CREATE OR REPLACE FUNCTION getSubtotal(oid VARCHAR(11))
-  returns real as $$
-    WITH current_orders AS
-    (
-      SELECT FIO.qty, FIO.food_item_name, FIO.restaurant_name, F.price
-      FROM food_items_in_orders FIO natural join Food_items F
-      WHERE FIO.order_id = oid
-    )
+  create table shifts(
+   shift_id SERIAL,
+   shift_start_time timestamp,
+   shift_end_time timestamp,
+   shift2_start_time timestamp,
+   shift2_end_time timestamp,
+   primary key(shift_id);
 
-    SELECT SUM(price * CAST(qty as real)) FROM current_orders;
-  $$ language sql;
-`)
+);`);
 
-// Function 2: Get qty of an order
-query(`DROP FUNCTION IF EXISTS getQty;`);
-query(`
-  CREATE OR REPLACE FUNCTION getQty(oid VARCHAR(11))
-  returns integer as $$
-    WITH current_orders AS
-    (
-      SELECT FIO.qty, FIO.food_item_name, FIO.restaurant_name, F.price
-      FROM food_items_in_orders FIO natural join Food_items F
-      WHERE FIO.order_id = oid
-    )
+query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES(1,'10:00:00','12:00:00','15:00:00','17:00:00');`);
+query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES(2,'11:00:00','15:00:00','16:00:00','18:00:00');`);
+query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES(3,'12:00:00','16:00:00','17:00:00','21:00:00');`);
+query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES(4,'13:00:00','17:00:00','18:00:00','20:00:00');`);
 
-    SELECT cast(SUM(qty) as integer) FROM current_orders;
-  $$ language sql;
-`)
-// Create the trigger
-query(`
-  CREATE OR REPLACE FUNCTION compute_total_cost_and_rewards () RETURNS TRIGGER 
-  AS $$ 
-  DECLARE
-    customer_id varchar(30);
-    subtotal real;
-    qty integer;
-  BEGIN
-    -- get the cid
-    SELECT P.cid INTO customer_id
-    FROM Places P
-    WHERE P.order_id = NEW.order_id;
-    -- get subtotal
-    subtotal = getSubtotal(NEW.order_id);
-    -- get qty
-    qty = getQty(NEW.order_id);
-    -- calculate reward points gained
-    -- calculate change in reward points for 
 
-  END 
-  $$ LANGUAGE plpgsql;
 
-`)
-
-// //set the trigger
-// query(`
-//   DROP TRIGGER IF EXISTS deliveries_trigger ON Deliveries CASCADE;
-//   CREATE TRIGGER deliveries_trigger
-//     BEFORE INSERT
-//     ON Deliveries
-//     FOR EACH ROW
-//     EXECUTE FUNCTION compute_total_cost_and_rewards();
-// `)
-
-//insert data to test on
-
-//delete data
 
 /*
 query(`create or replace function fn_setPartTimeRider() returns trigger as
@@ -1479,3 +1433,32 @@ query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(3,1,1,'Chicken Rice');`)
 query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(1,2,2,'Cold cut trio');`)
+
+// Queries for FDS Manager
+query('select unique fds_promo as FDS Promotion from FDS_Promotion;') //see fds promotions
+query ('select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see rest promotions
+query('select unique fds_promo as FDS Promotion from FDS_Promotion union select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see all promotions
+query('select count(cid), count(order_id), sum(costs) from ?? group by Month(join_date)') // undone
+// each month, total number of new customers, total orders, total cost of all orders
+// each month and each customer who placed some order for that month, total number of orders placed by the customer for that month and the total cost of all these orders
+// for each hour and each delivery location area, total number of orders placed at that hour for that location area
+// each rider and each month, total number of orders delivered by the rider for that motnh, total hours worked, total salary earned, average delivery time, number of ratings, average ratings for that month
+
+
+// See available riders
+query(`select did as Name from Time_Entries where (clock_in != null and clock_out = null);`)
+
+// Restaurant related queries
+query('select unique category as FoodCategory from Food_items;')
+query('select food_item_name as Item, category as FoodCategory from Food_items group by category;')
+query('select unique food_item_name as Item from Food_items from Food_items order by category limit(5);')
+
+// Customer's 5 most recent addresses
+query('select cid as CustomerName, address as Address from Customers group by cid limit (5);')
+*/
+// Queries for customers
+// let customers view their reviews forthe restaurant
+
+// Queries for restaurant staff
+
+// Queries for delivery riders

@@ -799,13 +799,13 @@ create table Delivery_Riders(
 );`);
 
 query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
 VALUES('lewis hamilton',0,0,30,100);`
 );
 
 query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
-VALUES('Thomas Engine',4.5,100,-80,90);`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
+VALUES('Thomas Engine',4.5,100,-80,120);`
 );
 
 //SALARY

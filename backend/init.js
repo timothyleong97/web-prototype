@@ -908,8 +908,151 @@ VALUES (1,'lewis hamilton','2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1
 
 
 /**
+ * Trigger 1
+ *  schemas :Part_Time_Rider (
+    did varchar(30),
+    week_of_work DATE,
+    mon bigint,
+    tue bigint,
+    wed bigint,
+    thu bigint,
+    fri bigint,
+    sat bigint,
+    sun bigint,
+    primary key(did, week_of_work),
+    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+)
+
+create table Salary(
+    did varchar(30),
+    salary_date timestamp, -- date that we pay them
+    base_salary real default 0.00,
+    commission real default 0.00,
+    primary key (did, salary_date),
+    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+);
+ * Part timer schedule looks like this : 001001010... where 1 means working. Leading zeroes are dropped.
+ * Before an insertion of a schedule into the part-time_riders table, check if 
+ * 1. there are more than 4 consecutive zeroes for mon to sun,
+ * 2. the total number of zeroes from mon to sun is at least 10 and at most 48.
+ *
+*/
+
+// Helper functions
+
+//Function to return 'am' or 'pm' in exception statement.
+query('DROP FUNCTION IF EXISTS ampm;');
+query(`
+  CREATE OR REPLACE FUNCTION ampm(t integer) 
+  returns char(2) as $$
+    select case
+      when t >= 12 then 'pm'
+      else 'am'
+    end;
+  $$ language sql;
+`);
+
+//Function to calculate number of zeroes in one day. Raises exception if more than 4 
+//consecutive ones are spotted.
+query(`DROP FUNCTION IF EXISTS numZeroes;`);
+query(`
+  CREATE OR REPLACE FUNCTION numZeroes(schedule bigint)
+  returns integer as $$
+  
+  DECLARE 
+    counter INTEGER := 0;
+    consecutiveOnes INTEGER := 0;
+    lastDigit INTEGER := 0;
+    startTime INTEGER := 21;
+    schedule_temp INTEGER := 0;
+  BEGIN
+    LOOP
+      EXIT WHEN schedule_temp = 0;
+      lastDigit := MOD(schedule_temp, 10);
+      IF (lastDigit = 1) THEN
+        consecutiveOnes := consecutiveOnes + 1;
+        IF (consecutiveOnes > 4) THEN
+           RAISE EXCEPTION '>4hr shift starting at % %.', startTime, ampm(startTime)
+           USING ERRCODE = '23514'; --check_violation
+        END IF;
+        counter := counter + 1; 
+      ELSE 
+        consecutiveOnes := 0; --reset count
+      END IF;
+      startTime := startTime - 1;
+    END LOOP;
+    RETURN counter;
+  END;
+  $$ language plpgsql;
+
+`)
+
+
+//Create the trigger
+query(`
+  CREATE OR REPLACE FUNCTION calculateTotalWorkingHours() 
+  RETURNS TRIGGER AS $$
+  DECLARE
+    counter INTEGER := 0;
+    schedule BIGINT := 0;
+    day char(3);
+    errorMsg text;
+    baseSalary integer := 0;
+  BEGIN
+    SELECT NEW.mon into schedule;
+    day := 'mon';
+    counter := counter + numZeroes(schedule);
+    SELECT NEW.tue into schedule;
+    day := 'tue';
+    counter := counter + numZeroes(schedule);
+    SELECT NEW.wed into schedule;
+    day := 'wed';
+    counter := counter + numZeroes(schedule);
+    SELECT NEW.thu into schedule;
+    day := 'thu';
+    counter := counter + numZeroes(schedule);
+    SELECT NEW.fri into schedule;
+    day := 'fri';
+    counter := counter + numZeroes(schedule);
+    SELECT NEW.sat into schedule;
+    day := 'sat';
+    counter := counter + numZeroes(schedule);
+    SELECT NEW.sun into schedule;
+    day := 'sun';
+    counter := counter + numZeroes(schedule);
+    RETURN NULL;
+  EXCEPTION
+    WHEN SQLSTATE '23514' THEN
+      GET STACKED DIAGNOSTICS errorMsg = MESSAGE_TEXT;
+      RAISE EXCEPTION 'Detected % on %.', errorMsg, day;
+  IF (counter < 10) THEN
+    RAISE EXCEPTION 'Less than 10 hours worked';
+  END IF;
+  IF (counter > 48) THEN
+    RAISE EXCEPTION 'More than 48 hours worked';
+  END IF;
+  baseSalary := counter * 8;
+  
+  INSERT INTO Salary VALUES (NEW.did, CURRENT_TIMESTAMP, baseSalary, 0.0);   -- in front end we stop them from updating
+  RETURN NULL;
+  END;
+   $$ LANGUAGE plpgsql;
+ `);
+
+ //set the trigger
+query(` DROP TRIGGER IF EXISTS part_time_rider_trigger ON Part_time_rider CASCADE;`);
+query(`
+  CREATE CONSTRAINT TRIGGER part_time_rider_trigger
+  AFTER INSERT
+  ON Part_time_rider
+  deferrable initially deferred
+  FOR EACH ROW
+  EXECUTE FUNCTION calculateTotalWorkingHours();
+`)
+
+/**
  * Trigger 2
- * Before an insertion of a finalised order into the delivery table, the total cost for that delivery and the number of reward points earned are calculated.
+ * Before an insertion of a finalised order into the delivery table, the total cost for that delivery (taken from the Places table) and the number of reward points (subtotal floored) earned are calculated.
  * The reward points are then added to the customer in the Customers table, and the total cost is recorded in the Places table.
  *
 */

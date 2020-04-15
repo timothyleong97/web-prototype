@@ -13,7 +13,7 @@ export default ({ setAppUsername }) => {
       ref={ref}
       closeIcon
       trigger={
-        <Button color="orange" circular size="big">
+        <Button color="purple" circular size="big">
           Edit Profile
         </Button>
       }

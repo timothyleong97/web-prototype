@@ -23,7 +23,7 @@ const homePages = {
 };
 
 //Couch protected routes in the Fragments.
-const renderUserRoutes = (username, usertype) => {
+const renderUserRoutes = (username, usertype, ridertype) => {
   if (usertype === "customers") {
     return (
       <Fragment>
@@ -53,7 +53,16 @@ const renderUserRoutes = (username, usertype) => {
           path="/riderSummary"
           exact
           render={(props) => (
-            <RiderSummary {...props} username={username} usertype={usertype} />
+            <RiderSummary {...props} username={username} usertype={usertype}
+            ridertype={ridertype}/>
+          )}
+        />
+        <Route
+          path="/modifyRiderSchedule"
+          exact
+          render={(props) => (
+            <RiderSummary {...props} username={username} usertype={usertype}
+            ridertype={ridertype}/>
           )}
         />
       </Fragment>
@@ -107,7 +116,8 @@ const renderUserRoutes = (username, usertype) => {
 
 const App = () => {
   const [username, setUsername] = useState("");
-  const [usertype, setUsertype] = useState("");
+  const [usertype, setUsertype] = useState("delivery_riders");
+  const [ridertype, setRidertype] = useState("");
   console.log("App.js can see username:", username, "usertype:", usertype);
   return (
     <Router history={history}>
@@ -121,9 +131,8 @@ const App = () => {
                     src="../name.png"
                     style={{
                       width: 240,
-                      marginLeft: 10,
+                      marginLeft: 25,
                       paddingTop: 13,
-                      marginBottom: 5,
                     }}
                   />
                 </Link>
@@ -148,7 +157,7 @@ const App = () => {
                     {" "}
                     <EditProfile setAppUsername={setUsername} />
                     <Button
-                      color="orange"
+                      color="purple"
                       circular
                       size="big"
                       onClick={() => {
@@ -187,10 +196,11 @@ const App = () => {
                 {...props}
                 setUsername={setUsername}
                 setUsertype={setUsertype}
+                setRidertype={setRidertype}
               />
             )}
           />
-          {renderUserRoutes(username, usertype)}
+          {renderUserRoutes(username, usertype, ridertype)}
 
           <Route
             render={() => {

@@ -1,14 +1,33 @@
 import React from "react";
-import { List, Segment, Container, Header, Form } from "semantic-ui-react";
+import { List, Segment, Container, Header, Form, Grid, Button } from "semantic-ui-react";
+import { useHistory } from "react-router-dom";
 const options = [
     { key: 'f20', text: 'February 2020', value: 'feb20' },
     { key: 'm20', text: 'March 2020', value: 'mar20' },
     { key: 'a20', text: 'April 2020', value: 'apr20' },
   ]
-const RiderSummary = () => {
+const RiderSummary = (props) => {
+  let history = useHistory();
   return (
     <Container>
+      <Grid>
+    <Grid.Row columns="equal">
+      <Grid.Column floated="left">
       <Header as="h2" style={{marginTop: 20}}>Aaron Tan</Header>
+      </Grid.Column>
+      <Grid.Column floated="right">
+        <Button
+          floated="right"
+          circular
+          color="purple"
+          size="huge"
+          onClick={() => history.replace("/modifyRiderSchedule")}
+        >
+          Modify Work Schedule
+        </Button>
+      </Grid.Column>
+    </Grid.Row>
+  </Grid>
       <Form style = {{marginBottom: 20}}>
       <Form.Select
             fluid

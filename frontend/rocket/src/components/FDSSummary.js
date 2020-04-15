@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, Header, Form, List, Segment, Button, Grid, Tab } from "semantic-ui-react";
-import { useHistory, Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const options = [
   { key: "f20", text: "February 2020", value: "feb20" },

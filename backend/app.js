@@ -197,6 +197,20 @@ app.post("/login/:usertype", (req, res) => {
     });
 });
 
+app.post('/riderinfo', (req, res) => {
+  const {userid} = req.body;
+  client.query(`SELECT 1 FROM part_time_rider
+    WHERE did = '${userid}'`)
+  .then(result => {
+    if (result.rowCount === 1) {
+      res.send({rider: 'part_time'});
+    } else {
+      res.send({rider: 'full_time'});
+    }
+  })
+  .catch(err => console.log(err))
+})
+
 // -- EDIT PROFILE --
 
 /**

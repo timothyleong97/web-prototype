@@ -800,12 +800,12 @@ create table Delivery_Riders(
 
 query(`
 INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
-VALUES('lewis hamilton',0,0);`
+VALUES('lewis hamilton',0,0,30,100);`
 );
 
 query(`
 INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
-VALUES('Thomas Engine',4.5,100);`
+VALUES('Thomas Engine',4.5,100,-80,90);`
 );
 
 //SALARY
@@ -1434,4 +1434,33 @@ VALUES('10%OFF',2,0);`)
 query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(3,1,1,'Chicken Rice');`)
 query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
-VALUES(1,2,2,'Cold cut trio');`) 
+VALUES(1,2,2,'Cold cut trio');`)
+
+// Queries for FDS Manager
+query('select unique fds_promo as FDS Promotion from FDS_Promotion;') //see fds promotions
+query ('select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see rest promotions
+query('select unique fds_promo as FDS Promotion from FDS_Promotion union select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see all promotions
+query('select count(cid), count(order_id), sum(costs) from ?? group by Month(join_date)') // undone
+// each month, total number of new customers, total orders, total cost of all orders
+// each month and each customer who placed some order for that month, total number of orders placed by the customer for that month and the total cost of all these orders
+// for each hour and each delivery location area, total number of orders placed at that hour for that location area
+// each rider and each month, total number of orders delivered by the rider for that motnh, total hours worked, total salary earned, average delivery time, number of ratings, average ratings for that month
+
+
+// See available riders
+query(`select did as Name from Time_Entries where (clock_in != null and clock_out = null);`)
+
+// Restaurant related queries
+query('select unique category as FoodCategory from Food_items;')
+query('select food_item_name as Item, category as FoodCategory from Food_items group by category;')
+query('select unique food_item_name as Item from Food_items from Food_items order by category limit(5);')
+
+// Customer's 5 most recent addresses
+query('select cid as CustomerName, address as Address from Customers group by cid limit (5);')
+*/
+// Queries for customers
+// let customers view their reviews forthe restaurant
+
+// Queries for restaurant staff
+
+// Queries for delivery riders

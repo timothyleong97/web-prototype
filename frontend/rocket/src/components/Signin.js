@@ -36,6 +36,12 @@ const Signin = (props) => {
     'fds_manager': '/fdsSummary'
   } // we use this to redirect the user to the relevant browsing pages after signin
 
+  const sideImage = {
+    'customers' : 'bg', 
+    'restaurant_staff': 'staff',
+    'delivery_riders' : 'rider',
+    'fds_manager': 'manager'
+  }
   //stateful variables
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState("");
@@ -69,12 +75,9 @@ const Signin = (props) => {
 
   return (
     <Grid textAlign="center" style={{ height: "50vh" }} verticalAlign="middle">
-      <Grid.Column style={{ maxWidth: 450 }}>
+      <Grid.Row>
+      <Grid.Column width={4}>
         <Header as="h2" color="purple" textAlign="center">
-          <Image
-            src="/logo.jpg"
-            style={{ width: "100px", paddingBottom: "5px" }}
-          />
           <Header.Content>Log-in as {display[userType]}</Header.Content>
         </Header>
         <Form size="large" onSubmit={submitLogin} error={err}>
@@ -113,6 +116,10 @@ const Signin = (props) => {
           </Segment>
         </Form>
       </Grid.Column>
+      <Grid.Column width={4}>
+              <Image src = {"/" + (sideImage[userType]) + ".jpg"} fluid />
+            </Grid.Column>
+          </Grid.Row>
     </Grid>
   );
 };

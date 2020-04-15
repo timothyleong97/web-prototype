@@ -55,6 +55,8 @@ query(`
 DROP TABLE IF EXISTS uses cascade;`);
 query(`
 DROP TABLE IF EXISTS Salary_Paid_Out cascade;`);
+query(`
+DROP TABLE IF EXISTS shifts;`);
 
 // USERS
 query(`
@@ -162,18 +164,18 @@ create table Orders(
 
 query(`
 INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(1,null,null,lewis hamilton);`
+VALUES(1,null,null,'lewis hamilton');`
 );
 
 query(`
 
 INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(2,'Good',4,Thomas Engine);`
+VALUES(2,'Good',4,'Thomas Engine');`
 );
 
 query(`
 INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(3,'bad',1,null,null);`
+VALUES(3,'bad',1,null);`
 );
 
 query(`
@@ -217,7 +219,7 @@ VALUES(11,'Good',4,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, ,restaurant_rating,did)
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
 VALUES(12,'Good',4,null);`
 );
 
@@ -1000,10 +1002,11 @@ query(`
     startTime INTEGER := 21;
     schedule_temp INTEGER := 0;
   BEGIN
-    LOOP
-      EXIT WHEN schedule_temp = 0;
+    RAISE NOTICE 'inside numzeros';
+    WHILE schedule_temp > 0 LOOP
       lastDigit := MOD(schedule_temp, 10);
       IF (lastDigit = 1) THEN
+        RAISE NOTICE 'consecutive ones seen: %', consecutiveOnes;
         consecutiveOnes := consecutiveOnes + 1;
         IF (consecutiveOnes > 4) THEN
            RAISE EXCEPTION '>4hr shift starting at % %.', startTime, ampm(startTime)

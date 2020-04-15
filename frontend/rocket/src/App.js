@@ -14,6 +14,7 @@ import EditProfile from "./components/EditProfile";
 import CategoryDisplay from "./components/CategoryDisplay";
 import AddNewRider from "./components/AddNewRider";
 import AddNewStaff from "./components/AddNewStaff";
+import ModifyRiderSchedule from "./components/ModifyRiderSchedule";
 
 const homePages = {
   customers: "/catalogue",
@@ -53,20 +54,16 @@ const renderUserRoutes = (username, usertype, ridertype) => {
           path="/riderSummary"
           exact
           render={(props) => (
-<<<<<<< HEAD
             <RiderSummary {...props} username={username} usertype={usertype}
-            ridertype={ridertype}/>
+              ridertype={ridertype} />
           )}
         />
         <Route
           path="/modifyRiderSchedule"
           exact
           render={(props) => (
-            <RiderSummary {...props} username={username} usertype={usertype}
-            ridertype={ridertype}/>
-=======
-            <RiderSummary {...props} username={username} usertype={usertype}/>
->>>>>>> master
+            <ModifyRiderSchedule {...props} username={username} usertype={usertype}
+              ridertype={ridertype} />
           )}
         />
       </Fragment>
@@ -120,14 +117,8 @@ const renderUserRoutes = (username, usertype, ridertype) => {
 
 const App = () => {
   const [username, setUsername] = useState("");
-<<<<<<< HEAD
   const [usertype, setUsertype] = useState("delivery_riders");
-  const [ridertype, setRidertype] = useState("");
-=======
-  const [usertype, setUsertype] = useState("");
-  const [ridertype, setRidertype] = useState("");
-
->>>>>>> master
+  const [ridertype, setRidertype] = useState("part_time");
   console.log("App.js can see username:", username, "usertype:", usertype);
   return (
     <Router history={history}>
@@ -148,11 +139,7 @@ const App = () => {
                     src="../name.png"
                     style={{
                       width: 240,
-<<<<<<< HEAD
                       marginLeft: 25,
-=======
-                      marginLeft: 15,
->>>>>>> master
                       paddingTop: 13,
                     }}
                   />
@@ -191,8 +178,8 @@ const App = () => {
                   </Grid.Column>
                 </Fragment>
               ) : (
-                ""
-              )}
+                  ""
+                )}
             </Grid.Row>
           </Grid>
         </Header>

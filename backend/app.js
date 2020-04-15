@@ -199,28 +199,17 @@ app.post("/login/:usertype", (req, res) => {
 
 app.post('/riderinfo', (req, res) => {
   const {userid} = req.body;
-<<<<<<< HEAD
   client.query(`SELECT 1 FROM part_time_rider
     WHERE did = '${userid}'`)
-=======
-  client.query(`SELECT 1 FROM part_time_rider where did = '${userid}'`)
->>>>>>> master
   .then(result => {
     if (result.rowCount === 1) {
       res.send({rider: 'part_time'});
     } else {
-<<<<<<< HEAD
-      res.send({rider: 'full_time'});
-    }
-  })
-  .catch(err => console.log(err))
-=======
       res.send({rider: 'full_time'})
     }
 
   })
   .catch(err => console.log(err));
->>>>>>> master
 })
 
 // -- EDIT PROFILE --

@@ -73,6 +73,7 @@ const Splash = () => {
       </Container>
       <footer
         style={{
+          
           backgroundColor: "#eac012",
           height: "10vh",
           position: "fixed",
@@ -82,7 +83,7 @@ const Splash = () => {
       >
         <Grid columns="equal">
           <Grid.Row>
-            <Grid.Column width={3}></Grid.Column>
+            <Grid.Column width={4}></Grid.Column>
             <Grid.Column style={footerStyle}>
               <Link to="/signin/delivery_riders">
                 <Header>Rocket Rider</Header>
@@ -98,7 +99,7 @@ const Splash = () => {
                 <Header>FDS Manager</Header>
               </Link>
             </Grid.Column>
-            <Grid.Column width={3}></Grid.Column>
+            <Grid.Column width={4}></Grid.Column>
           </Grid.Row>
         </Grid>
       </footer>

@@ -56,7 +56,7 @@ DROP TABLE IF EXISTS uses cascade;`);
 query(`
 DROP TABLE IF EXISTS Salary_Paid_Out cascade;`);
 
-// USERS 
+// USERS
 query(`
 create table Users(
     userid varchar(30),
@@ -127,7 +127,27 @@ query(`
 INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
 VALUES('Jay Park','jay',0,'2019-12-07', '4228-1144-1040-0000');`
 );
+//DELIVERY_RIDERS
+query(`
+create table Delivery_Riders(
+    did varchar(30),
+    sum_all_ratings integer,
+    num_deliveries integer,
+    primary key(did),
+    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
+    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
+    foreign key(did) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
+VALUES('lewis hamilton',0,0,30,100);`
+);
+
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
+VALUES('Thomas Engine',4.5,100,-80,120);`
+);
 
 // ORDERS
 query(`
@@ -135,68 +155,70 @@ create table Orders(
     order_id CHAR(11) UNIQUE,
 	  restaurant_review VARCHAR(255),
     restaurant_rating INTEGER,
-    primary key (order_id)
+    did VARCHAR(30),
+    primary key (order_id),
+    foreign key(did) references Delivery_riders(did) ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(1,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(1,null,null,lewis hamilton);`
 );
 
 query(`
 
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(2,'Good',4);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(2,'Good',4,Thomas Engine);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(3,'bad',1);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(3,'bad',1,null,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(4,'Great',5);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(4,'Great',5,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(5,'average',3);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(5,'average',3,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(6,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(6,null,null,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(7,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(7,null,null,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(8,'poor',2);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(8,'poor',2,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(9,null,null);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(9,null,null,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(10,null,4);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(10,null,4,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(11,'Good',4);`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(11,'Good',4,null);`
 );
 
 query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
-VALUES(12,'Good',4);`
+INSERT INTO orders(order_id,restaurant_review, ,restaurant_rating,did)
+VALUES(12,'Good',4,null);`
 );
 
 // PROMOTIONS
@@ -784,25 +806,7 @@ INSERT INTO restaurant_staff(staff_id)
 VALUES('Akon');`
 );
 
-//DELIVERY_RIDERS
-query(`
-create table Delivery_Riders(
-    did varchar(30),
-    sum_all_ratings integer,
-    num_deliveries integer,
-    primary key(did),
-    foreign key(did) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
-);`);
 
-query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
-VALUES('lewis hamilton',0,0);`
-);
-
-query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
-VALUES('Thomas Engine',4.5,100);`
-);
 
 //SALARY
 query(`
@@ -825,11 +829,22 @@ INSERT INTO salary(did,salary_date,base_salary,commission)
 VALUES('Thomas Engine','2010-10-10',100,10);`
 );
 
+//SALARY_PAID_OUT
+query(`
+create table Salary_Paid_Out(
+  day_Paid_Out Date,
+  total_amount_paid real default 0.00,
+  did varchar(30),
+  primary key (day_Paid_Out),
+  foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+
+);`);
 
 //FULL_TIME_RIDER
 query(`
 create table Full_Time_Rider(
     did varchar(30),
+    month_of_work DATE,
     wws_start_day char(3),
     day1_shift integer,
     day2_shift integer,
@@ -894,7 +909,6 @@ create table Deliveries (
     building varchar(30),
     unit_num char(10),
     postal_code integer,
-    reward_points_used integer,
     primary key(order_id),
     foreign key(order_id) references Orders(order_id) on update cascade on delete cascade,
     foreign key(driver) references Delivery_Riders(did) on UPDATE cascade on delete cascade,
@@ -902,9 +916,29 @@ create table Deliveries (
 );`);
 
 query(`
-INSERT INTO deliveries(order_id, driver ,time_customer_placed_order , time_rider_departs_for_restaurant , time_rider_reach_restaurant , time_rider_departs_restaurant , time_rider_delivers_order , delivery_rating ,comments_for_rider , street_name, building, unit_num, postal_code, reward_points_used )
-VALUES (1,'lewis hamilton','2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221', 0);`
+INSERT INTO deliveries(order_id, driver ,time_customer_placed_order , time_rider_departs_for_restaurant , time_rider_reach_restaurant , time_rider_departs_restaurant , time_rider_delivers_order , delivery_rating ,comments_for_rider , street_name, building, unit_num, postal_code )
+VALUES (1,'lewis hamilton','2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221');`
 );
+
+query(`
+  create table shifts(
+   shift_id SERIAL,
+   shift_start_time timestamp,
+   shift_end_time timestamp,
+   shift2_start_time timestamp,
+   shift2_end_time timestamp,
+   primary key(shift_id)
+
+);`);
+
+query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES(1,'2016-06-22 10:00:00','2016-06-22 12:00:00','2016-06-22 15:00:00','2016-06-22 17:00:00');`);
+query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES(2,'2016-06-22 11:00:00','2016-06-22 15:00:00','2016-06-22 16:00:00','2016-06-22 18:00:00');`);
+query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES(3,'2016-06-22 12:00:00','2016-06-22 16:00:00','2016-06-22 17:00:00','2016-06-22 21:00:00');`);
+query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
+VALUES(4,'2016-06-22 13:00:00','2016-06-22 17:00:00','2016-06-22 18:00:00','2016-06-22 20:00:00');`);
 
 
 /**

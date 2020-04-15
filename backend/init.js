@@ -136,19 +136,18 @@ create table Delivery_Riders(
     sum_all_ratings integer,
     num_deliveries integer,
     primary key(did),
-    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
-    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
+
     foreign key(did) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 
 query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
-VALUES('lewis hamilton',0,0,30,100);`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('lewis hamilton',0,0);`
 );
 
 query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
-VALUES('Thomas Engine',4.5,100,-80,120);`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('Thomas Engine',4.5,100);`
 );
 
 // ORDERS
@@ -845,8 +844,8 @@ create table Full_Time_Rider(
 );`);
 
 query(`
-INSERT INTO FULL_TIME_RIDER(did, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
-VALUES('lewis hamilton','mon',1,1,1,1,1);`
+INSERT INTO FULL_TIME_RIDER(did,month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('lewis hamilton','2020-04-15','mon',1,1,1,1,1);`
 );
 
 
@@ -955,11 +954,11 @@ create table Salary(
     foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
 );
  * Part timer schedule looks like this : 001001010... where 1 means working. Leading zeroes are dropped.
- * Before an insertion of a schedule into the part-time_riders table, check if 
+ * Before an insertion of a schedule into the part-time_riders table, check if
  * 1. there are more than 4 consecutive zeroes for mon to sun,
  * 2. the total number of zeroes from mon to sun is at least 10 and at most 48.
- * 
- * To test: 
+ *
+ * To test:
  * --insert into users values ('Timothy', 'password');
  * --insert into delivery_riders values ('Timothy', 0 , 0 ,0, 0)
  * --insert into part_time_rider values ('Timothy', '2020-10-25', 110111011101,110111011101,110111011101,110111011101,110111011101,110111011101,110111011101)
@@ -974,7 +973,7 @@ create table Salary(
 //Function to return 'am' or 'pm' in exception statement.
 query('DROP FUNCTION IF EXISTS ampm;');
 query(`
-  CREATE OR REPLACE FUNCTION ampm(t integer) 
+  CREATE OR REPLACE FUNCTION ampm(t integer)
   returns char(2) as $$
     select case
       when t >= 12 then 'pm'
@@ -983,14 +982,14 @@ query(`
   $$ language sql;
 `);
 
-//Function to calculate number of zeroes in one day. Raises exception if more than 4 
+//Function to calculate number of zeroes in one day. Raises exception if more than 4
 //consecutive ones are spotted.
 query(`DROP FUNCTION IF EXISTS numZeroes;`);
 query(`
   CREATE OR REPLACE FUNCTION numZeroes(schedule bigint)
   returns integer as $$
-  
-  DECLARE 
+
+  DECLARE
     counter INTEGER := 0;
     consecutiveOnes INTEGER := 0;
     lastDigit INTEGER := 0;
@@ -1006,8 +1005,8 @@ query(`
            RAISE EXCEPTION '>4hr shift starting from % %.', startTime, ampm(startTime)
            USING ERRCODE = '23514'; --check_violation
         END IF;
-        counter := counter + 1; 
-      ELSE 
+        counter := counter + 1;
+      ELSE
         consecutiveOnes := 0; --reset count
       END IF;
       startTime := startTime - 1;
@@ -1022,7 +1021,7 @@ query(`
 
 //Create the trigger
 query(`
-  CREATE OR REPLACE FUNCTION calculateTotalWorkingHours() 
+  CREATE OR REPLACE FUNCTION calculateTotalWorkingHours()
   RETURNS TRIGGER AS $$
   DECLARE
     counter INTEGER := 0;
@@ -1069,9 +1068,9 @@ query(`
     WHEN SQLSTATE '23514' THEN
       GET STACKED DIAGNOSTICS errorMsg = MESSAGE_TEXT;
       RAISE EXCEPTION 'Detected % on %.', errorMsg, day;
-  
+
   baseSalary := counter * 8;
-  
+
   INSERT INTO Salary VALUES (NEW.did, CURRENT_TIMESTAMP, baseSalary, 0.0);   -- in front end we stop them from updating
   RETURN NULL;
   END;
@@ -1132,8 +1131,8 @@ query(`
 
 // Create the trigger
 query(`
-  CREATE OR REPLACE FUNCTION compute_total_cost_and_rewards () RETURNS TRIGGER 
-  AS $$ 
+  CREATE OR REPLACE FUNCTION compute_total_cost_and_rewards () RETURNS TRIGGER
+  AS $$
   DECLARE
     customer_id varchar(30);
     subtotal real;
@@ -1157,10 +1156,10 @@ query(`
     -- update customer's reward points
     UPDATE Customers
       SET reward_points = reward_points + rp_gained
-      WHERE Customers.cid = customer_id;    
+      WHERE Customers.cid = customer_id;
     --return the row
     return NULL;
-  END 
+  END
   $$ LANGUAGE plpgsql;
 
 `)

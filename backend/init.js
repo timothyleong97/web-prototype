@@ -964,6 +964,8 @@ query(`
     subtotal = getSubtotal(NEW.order_id);
     -- get qty
     qty = getQty(NEW.order_id);
+    -- calculate reward points gained
+    -- calculate change in reward points for 
 
   END 
   $$ LANGUAGE plpgsql;

@@ -72,7 +72,7 @@ create table Customers(
 
 create table Orders(
     order_id CHAR(11) UNIQUE,
-	  restaurant_review VARCHAR(255),
+	restaurant_review VARCHAR(255),
     restaurant_rating INTEGER,
     did VARCHAR(30),
     primary key (order_id),
@@ -83,7 +83,7 @@ create table Orders(
 
 create table Promotions (
     promo_code CHAR(10) UNIQUE,
-	  promo_start_date date NOT NULL,
+	promo_start_date date NOT NULL,
     promo_end_date date NOT NULL,
     promo_detail VARCHAR(255),
     primary key (promo_code)
@@ -143,13 +143,13 @@ create table Food_items(
 --FOOD_ITEMS_IN_ORDERS
 
  create table Food_items_in_Orders(
-   qty INTEGER,
-   order_id VARCHAR(11),
-   food_item_name VARCHAR(30),
-   restaurant_name VARCHAR(255) not null,
-   primary key(order_id,food_item_name),
-   foreign key(order_id) references Orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
-   foreign key(restaurant_name,food_item_name) references Food_items(restaurant_name,food_item_name) ON DELETE CASCADE ON UPDATE CASCADE
+    qty INTEGER,
+    order_id VARCHAR(11),
+    food_item_name VARCHAR(30),
+    restaurant_name VARCHAR(255) not null,
+    primary key(order_id,food_item_name),
+    foreign key(order_id) references Orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    foreign key(restaurant_name,food_item_name) references Food_items(restaurant_name,food_item_name) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 --FDS_PROMOTION
@@ -202,11 +202,11 @@ create table Salary(
 
 -- SALARY_PAID_OUT
 create table Salary_Paid_Out(
-  day_Paid_Out Date,
-  total_amount_paid real default 0.00,
-  did varchar(30),
-  primary key (day_Paid_Out),
-  foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+    day_Paid_Out Date,
+    total_amount_paid real default 0.00,
+    did varchar(30),
+    primary key (day_Paid_Out),
+    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
 
 );
 

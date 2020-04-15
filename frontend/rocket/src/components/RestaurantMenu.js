@@ -41,7 +41,7 @@ const RestaurantMenu = (props) => {
         <Table.Row disabled={qtyleft <= 0} key={food_item_name}>
           <Table.Cell collapsing>{formatter.format(price)}</Table.Cell>
           <Table.Cell>{food_item_name}</Table.Cell>
-          <Table.Cell>{qtyleft}</Table.Cell>
+          <Table.Cell textAlign="left">{qtyleft}</Table.Cell>
           <Table.Cell collapsing textAlign="center">
             {qtyleft > 0 ? (
               <Fragment>
@@ -133,7 +133,7 @@ const RestaurantMenu = (props) => {
       <Button onClick={() => history.push("/catalogue")}>
         Back to Catalogue
       </Button>
-      <Table singleLine>
+      <Table singleLine columns={4}>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell colSpan="2">{name}</Table.HeaderCell>
@@ -150,7 +150,7 @@ const RestaurantMenu = (props) => {
           <Table.Row>
             <Table.HeaderCell collapsing>Price</Table.HeaderCell>
             <Table.HeaderCell>Item Name</Table.HeaderCell>
-            <Table.HeaderCell>Qty left</Table.HeaderCell>
+            <Table.HeaderCell textAlign="left">Qty left</Table.HeaderCell>
             <Table.HeaderCell collapsing textAlign="center">
               Order
             </Table.HeaderCell>

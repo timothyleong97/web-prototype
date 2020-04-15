@@ -844,6 +844,7 @@ create table Salary_Paid_Out(
 query(`
 create table Full_Time_Rider(
     did varchar(30),
+    month_of_work DATE,
     wws_start_day char(3),
     day1_shift integer,
     day2_shift integer,

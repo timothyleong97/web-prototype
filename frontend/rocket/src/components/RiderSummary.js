@@ -7,6 +7,7 @@ const options = [
   ]
 const RiderSummary = () => {
   return (
+
     <Container>
       <Header as="h2" style={{marginTop: 20}}>Aaron Tan</Header>
       <Form style = {{marginBottom: 20}}>

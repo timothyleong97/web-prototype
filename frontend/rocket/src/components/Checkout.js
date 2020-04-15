@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Form,
@@ -12,8 +12,8 @@ import SubtotalAndDeliveryFee from "./CheckoutComponents/SubtotalAndDeliveryFee"
 import RewardsAndPromoCode from "./CheckoutComponents/RewardsAndPromoCode";
 import PaymentDropdown from "./CheckoutComponents/PaymentDropdown";
 import filterOrders from "./CheckoutComponents/filterOrders";
+import axiosClient from './importables/axiosClient';
 
-const payment = ["Cash on Delivery", "Visa 3271", "Amex 0311"];
 //menu is an array of jsons that look like
 /*{
         food_item_name: 'Cold cut trio',
@@ -25,9 +25,37 @@ const payment = ["Cash on Delivery", "Visa 3271", "Amex 0311"];
         rid: '2'
 } and qty is an array of integers.
 */
-const Checkout = ({ menu, qty }) => {
+const Checkout = ({
+  menu,
+  qty,
+  street,
+  setStreet,
+  building,
+  setBuilding,
+  postal,
+  setPostal,
+  unit,
+  setUnit,
+  rewards,
+  cid
+}) => {
   const orders = filterOrders(menu, qty);
   const [subtotal, setSubtotal] = useState(0);
+  const [payment, setPayment] = useState([]);
+  
+  useEffect(()=> {
+    if (payment.length === 0) {
+      let temp = [];
+      temp.push("Cash on Delivery");
+      axiosClient.get(`/payment/${cid}`)
+      .then(({data})=>{
+        temp.push(data.credit_card);
+        setPayment(temp);
+      })
+      .catch(err => console.log(err));
+    }
+  });
+  
   return (
     <Form style={{ marginTop: 20 }}>
       <Form.Field>
@@ -36,11 +64,31 @@ const Checkout = ({ menu, qty }) => {
           fluid
           label="Street name"
           placeholder="Street name"
+          value={street}
+          onChange={(_, { value }) => setStreet(value)}
         />
         <Form.Input
           fluid
-          label="Building number"
-          placeholder="Building number"
+          label="Building name/number"
+          placeholder="Building name/number"
+          value={building}
+          onChange={(_, { value }) => setBuilding(value)}
+        />
+      </Form.Field>
+      <Form.Field>
+        <Form.Input
+          fluid
+          label="Postal code"
+          placeholder="Postal code"
+          value={postal}
+          onChange={(_, { value }) => setPostal(value)}
+        />
+        <Form.Input
+          fluid
+          label="Unit number"
+          placeholder="Unit number"
+          value={unit}
+          onChange={(_, { value }) => setUnit(value)}
         />
       </Form.Field>
       <Divider />
@@ -51,7 +99,7 @@ const Checkout = ({ menu, qty }) => {
         <CheckoutItems orders={orders} />
       </Segment>
 
-      <RewardsAndPromoCode />
+      <RewardsAndPromoCode rewards={rewards}/>
 
       <Divider />
       <Header>Payment Method</Header>

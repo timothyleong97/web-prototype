@@ -1,5 +1,11 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { Container, Table, Button, Statistic, Divider } from "semantic-ui-react";
+import {
+  Container,
+  Table,
+  Button,
+  Statistic,
+  Divider,
+} from "semantic-ui-react";
 import history from "./importables/history";
 import axiosClient from "./importables/axiosClient";
 import Checkout from "./Checkout";
@@ -8,7 +14,12 @@ const RestaurantMenu = (props) => {
   const name = decodeURI(props.match.params.name);
   const [menu, setMenu] = useState([]);
   const [qty, setQty] = useState([]);
+  const [street, setStreet] = useState("");
+  const [building, setBuilding] = useState("");
+  const [postal, setPostal] = useState("");
+  const [unit, setUnit] = useState("");
   const [goCheckout, setGoCheckout] = useState(false);
+  const [rewards, setRewards] = useState(0);
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -80,6 +91,13 @@ const RestaurantMenu = (props) => {
           setMenu(data);
         })
         .catch((err) => console.log(err));
+
+      axiosClient
+        .get(`/rewards/${props.username}`)
+        .then(({ data }) => {
+          setRewards(data.reward_points);
+        })
+        .catch((err) => console.log(err));
     }
   });
 
@@ -94,8 +112,21 @@ const RestaurantMenu = (props) => {
     } */
   return goCheckout ? (
     <Container>
-      <Button onClick={()=> setGoCheckout(false)}>Back to menu</Button>
-      <Checkout menu={menu} qty={qty}/>
+      <Button onClick={() => setGoCheckout(false)}>Back to menu</Button>
+      <Checkout
+        menu={menu}
+        qty={qty}
+        street={street}
+        setStreet={setStreet}
+        building={building}
+        setBuilding={setBuilding}
+        postal={postal}
+        setPostal={setPostal}
+        unit={unit}
+        setUnit={setUnit}
+        rewards={rewards}
+        cid={props.username}
+      />
     </Container>
   ) : (
     <Container>
@@ -107,8 +138,7 @@ const RestaurantMenu = (props) => {
           <Table.Row>
             <Table.HeaderCell colSpan="2">{name}</Table.HeaderCell>
             <Table.HeaderCell colSpan="1">
-              Subtotal:{" "}
-              {formatter.format(getSubTotal())}
+              Subtotal: {formatter.format(getSubTotal())}
             </Table.HeaderCell>
             <Table.HeaderCell colSpan="1">
               Minimum order amt:{" "}
@@ -133,7 +163,9 @@ const RestaurantMenu = (props) => {
         disabled={
           menu.length > 0 ? getSubTotal() < menu[0].min_order_amt : true
         }
-        onClick={() => {setGoCheckout(true)}}
+        onClick={() => {
+          setGoCheckout(true);
+        }}
       >
         Proceed to checkout
       </Button>

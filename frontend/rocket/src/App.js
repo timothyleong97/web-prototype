@@ -51,7 +51,7 @@ const renderUserRoutes = (username, usertype) => {
           path="/riderSummary"
           exact
           render={(props) => (
-            <RiderSummary {...props} username={username} usertype={usertype} />
+            <RiderSummary {...props} username={username} usertype={usertype}/>
           )}
         />
       </Fragment>
@@ -92,13 +92,20 @@ const renderUserRoutes = (username, usertype) => {
 const App = () => {
   const [username, setUsername] = useState("");
   const [usertype, setUsertype] = useState("");
-
+  const [ridertype, setRidertype] = useState("");
 
   console.log("App.js can see username:", username, "usertype:", usertype);
   return (
     <Router history={history}>
       <div>
-        <Header as="h1" style={{ backgroundColor: "#eac012", height: "14vh" }}>
+        <Header
+          as="h1"
+          style={{
+            backgroundColor: "#eac012",
+            height: "14vh",
+            paddingLeft: 10,
+          }}
+        >
           <Grid>
             <Grid.Row>
               <Grid.Column floated="left" width={3} verticalAlign="middle">
@@ -107,7 +114,7 @@ const App = () => {
                     src="../name.png"
                     style={{
                       width: 240,
-                      marginLeft: 10,
+                      marginLeft: 15,
                       paddingTop: 13,
                       marginBottom: 5,
                     }}
@@ -128,7 +135,7 @@ const App = () => {
                   <Grid.Column
                     floated="right"
                     verticalAlign="middle"
-                    style={{marginTop: 10 }}
+                    style={{ marginTop: 10 }}
                     width={4}
                   >
                     {" "}
@@ -173,6 +180,7 @@ const App = () => {
                 {...props}
                 setUsername={setUsername}
                 setUsertype={setUsertype}
+                setRidertype={setRidertype}
               />
             )}
           />

@@ -197,6 +197,20 @@ app.post("/login/:usertype", (req, res) => {
     });
 });
 
+app.post('/riderinfo', (req, res) => {
+  const {userid} = req.body;
+  client.query(`SELECT 1 FROM part_time_rider where did = '${userid}'`)
+  .then(result => {
+    if (result.rowCount === 1) {
+      res.send({rider: 'part_time'});
+    } else {
+      res.send({rider: 'full_time'})
+    }
+
+  })
+  .catch(err => console.log(err));
+})
+
 // -- EDIT PROFILE --
 
 /**
@@ -363,7 +377,26 @@ app.post("/option", (req, res) => {
     .catch((err) => console.log(err));
 });
 
+// --CHECKOUT--
+app.get('/rewards/:cid', (req, res)=> {
+  const cid = req.params.cid;
+  client.query(`SELECT reward_points 
+                FROM customers 
+                WHERE cid = '${cid}';
+                `
+  ).then(result => res.send(result.rows[0]))
+  .catch(err => res.send({status: 500}))
+})
 
+app.get('/payment/:cid', (req, res)=> {
+  const cid = req.params.cid;
+  client.query(`SELECT credit_card
+                FROM customers 
+                WHERE cid = '${cid}';
+                `
+  ).then(result => res.send(result.rows[0]))
+  .catch(err => res.send({status: 500}))
+})
 //Don't modify below this comment
 app.listen(port, () => {
   console.log("Backend server is up on port " + port);

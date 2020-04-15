@@ -81,7 +81,7 @@ class ModifyRiderSchedule extends Component {
                             if (errors.length !== 0) {
                                 this.setState({ error: errors });
                             } else {
-                                axiosClient.post("/modifyRiderSchedule", {
+                                axiosClient.post("/modifyFullTimeRiderSchedule", {
                                     userid: this.props.username,
                                     startDay: this.state.startDay,
                                     day1: this.state.day1,

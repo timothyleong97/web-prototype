@@ -26,10 +26,6 @@ DROP TABLE IF EXISTS food_items_in_orders cascade;`);
 query(`
 DROP TABLE IF EXISTS full_time_rider cascade;`);
 query(`
-DROP TABLE IF EXISTS opening_hours_template cascade;`);
-query(`
-DROP TABLE IF EXISTS options cascade;`);
-query(`
 DROP TABLE IF EXISTS orders cascade;`);
 query(`
 DROP TABLE IF EXISTS part_time_rider cascade;`);
@@ -46,15 +42,7 @@ DROP TABLE IF EXISTS restaurants cascade;`);
 query(`
 DROP TABLE IF EXISTS salary cascade;`);
 query(`
-DROP TABLE IF EXISTS set_meals cascade;`);
-query(`
-DROP TABLE IF EXISTS time_entries cascade;`);
-query(`
 DROP TABLE IF EXISTS Users cascade;`);
-query(`
-DROP TABLE IF EXISTS uses cascade;`);
-query(`
-DROP TABLE IF EXISTS Salary_Paid_Out cascade;`);
 query(`
 DROP TABLE IF EXISTS shifts;`);
 
@@ -133,186 +121,21 @@ VALUES('Jay Park','jay',0,'2019-12-07', '4228-1144-1040-0000');`
 query(`
 create table Delivery_Riders(
     did varchar(30),
-    sum_all_ratings integer,
+    sum_all_ratings real,
     num_deliveries integer,
     primary key(did),
-    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
-    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
+
     foreign key(did) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 
 query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
-VALUES('lewis hamilton',0,0,30,100);`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('lewis hamilton',0,0);`
 );
 
 query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
-VALUES('Thomas Engine',4.5,100,-80,120);`
-);
-
-// ORDERS
-query(`
-create table Orders(
-    order_id CHAR(11) UNIQUE,
-	  restaurant_review VARCHAR(255),
-    restaurant_rating INTEGER,
-    did VARCHAR(30),
-    primary key (order_id),
-    foreign key(did) references Delivery_riders(did) ON DELETE CASCADE ON UPDATE CASCADE
-);`);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(1,null,null,'lewis hamilton');`
-);
-
-query(`
-
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(2,'Good',4,'Thomas Engine');`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(3,'bad',1,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(4,'Great',5,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(5,'average',3,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(6,null,null,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(7,null,null,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(8,'poor',2,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(9,null,null,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(10,null,4,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(11,'Good',4,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review,restaurant_rating,did)
-VALUES(12,'Good',4,null);`
-);
-
-// PROMOTIONS
-query(`
-create table Promotions (
-    promo_code CHAR(10) UNIQUE,
-	  promo_start_date date NOT NULL,
-    promo_end_date date NOT NULL,
-    promo_detail VARCHAR(255),
-    primary key (promo_code)
-);`);
-
-query(`
-INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
-VALUES('10%OFF','2020-04-07','2020-05-08','10%OFFEVERYTHING');`
-);
-
-query(`
-INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
-VALUES('FFS','2020-04-07','2020-04-15','FireSale');`
-);
-
-// PLACES
-query(`
-create table Places(
-    order_id CHAR(11),
-  	cid varchar(30) NOT NULL,
-    delivery_fee real default 0.00,
-    totalCost real default 0.00,
-    primary key(order_id, cid),
-    foreign key(order_id) references orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    foreign key(cid) references Customers(cid) ON DELETE CASCADE ON UPDATE CASCADE
-);`);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(1,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(2,'undertaker');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(3,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(4,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(5,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(6,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(7,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(8,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(9,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(10,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(11,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(12,'Jay Park');`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('Thomas Engine',4.5,100);`
 );
 
 //ADDRESSES
@@ -481,6 +304,7 @@ VALUES('16711 Carpenter Park','52','09-171','586172', 48.006667, -145.150314);`)
 query(`
 create table Restaurants(
     min_order_amt real,
+    sum_all_ratings real,
     street_name char(30),
     building varchar(30),
     unit_num char(10),
@@ -491,44 +315,214 @@ create table Restaurants(
 );`);
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(60,'1 Jurong East','haven way','01-10','21221','Dian Xiao er');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(60,4.4,'1 Jurong East','haven way','01-10','21221','Dian Xiao er');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(20,'2 Tampines East','24','10-02','123421','SubWay');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(20,3.5,'2 Tampines East','24','10-02','123421','SubWay');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(10,'123 Outram park','serene','110-02','121121','Macdonald');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,2.2,'123 Outram park','serene','110-02','121121','Macdonald');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(20,'21 Toa payoh','214','01-02','124421','PokeBowl');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(20,4.3,'21 Toa payoh','214','01-02','124421','PokeBowl');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(50,'21 Toa payoh','214','01-02','124421','Crystal Jade');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(50,3.9,'21 Toa payoh','214','01-02','124421','Crystal Jade');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(10,'20 Shenton Way','102','05-12','102321','Tian tian chicken rice');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,5.0,'20 Shenton Way','102','05-12','102321','Tian tian chicken rice');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(30,'50 Beach rd','1','01-12','101221','Soup spoon');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(30,3.4,'50 Beach rd','1','01-12','101221','Soup spoon');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(10,'50 Beach rd','1','01-12','101221','Char grill bar');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,4.0,'50 Beach rd','1','01-12','101221','Char grill bar');`
 );
+
+// ORDERS
+query(`
+create table Orders(
+    order_id CHAR(11) UNIQUE,
+	  restaurant_review VARCHAR(255),
+    restaurant_rating INTEGER,
+    restaurant_name VARCHAR(255),
+    did VARCHAR(30),
+    primary key (order_id),
+    foreign key(did) references Delivery_riders(did) ON DELETE CASCADE ON UPDATE CASCADE,
+    foreign key(restaurant_name) references restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(1,null,null,'lewis hamilton');`
+);
+
+query(`
+
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(2,'Good',4,'Thomas Engine');`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(3,'bad',1,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(4,'Great',5,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(5,'average',3,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(6,null,null,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(7,null,null,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(8,'poor',2,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(9,null,null,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(10,null,4,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(11,'Good',4,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review,restaurant_rating,did)
+VALUES(12,'Good',4,null);`
+);
+
+// PROMOTIONS
+query(`
+create table Promotions (
+    promo_code CHAR(10) UNIQUE,
+	  promo_start_date date NOT NULL,
+    promo_end_date date NOT NULL,
+    promo_detail VARCHAR(255),
+    primary key (promo_code)
+);`);
+
+query(`
+INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
+VALUES('10%OFF','2020-04-07','2020-05-08','10%OFFEVERYTHING');`
+);
+
+query(`
+INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
+VALUES('FFS','2020-04-07','2020-04-15','FireSale');`
+);
+
+// PLACES
+query(`
+create table Places(
+    order_id CHAR(11),
+  	cid varchar(30) NOT NULL,
+    delivery_fee real default 0.00,
+    total_cost real default 0.00,
+    primary key(order_id, cid),
+    foreign key(order_id) references orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    foreign key(cid) references Customers(cid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(1,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(2,'undertaker');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(3,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(4,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(5,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(6,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(7,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(8,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(9,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(10,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(11,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(12,'Jay Park');`
+);
+
+
+
+
 
 //FOOD_ITEMS
 query(`
@@ -846,7 +840,7 @@ create table Full_Time_Rider(
 
 query(`
 INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
-VALUES('lewis hamilton', '2020-05-01', 'mon',1,1,1,1,1);`
+VALUES('lewis hamilton','2010-10-10','mon',1,1,1,1,1);`
 );
 
 
@@ -898,6 +892,7 @@ create table Deliveries (
     building varchar(30),
     unit_num char(10),
     postal_code integer,
+    reward_points_used integer,
     primary key(order_id),
     foreign key(order_id) references Orders(order_id) on update cascade on delete cascade,
     foreign key(driver) references Delivery_Riders(did) on UPDATE cascade on delete cascade,
@@ -971,11 +966,11 @@ create table Salary(
     foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
 );
  * Part timer schedule looks like this : 001001010... where 1 means working. Leading zeroes are dropped.
- * Before an insertion of a schedule into the part-time_riders table, check if 
+ * Before an insertion of a schedule into the part-time_riders table, check if
  * 1. there are more than 4 consecutive zeroes for mon to sun,
  * 2. the total number of zeroes from mon to sun is at least 10 and at most 48.
- * 
- * To test: 
+ *
+ * To test:
  * --insert into users values ('Timothy', 'password');
  * --insert into delivery_riders values ('Timothy', 0 , 0 ,0, 0)
  * --insert into part_time_rider values ('Timothy', '2020-10-25', 110111011101,110111011101,110111011101,110111011101,110111011101,110111011101,110111011101)
@@ -990,7 +985,7 @@ create table Salary(
 //Function to return 'am' or 'pm' in exception statement.
 query('DROP FUNCTION IF EXISTS ampm;');
 query(`
-  CREATE OR REPLACE FUNCTION ampm(t integer) 
+  CREATE OR REPLACE FUNCTION ampm(t integer)
   returns char(2) as $$
     select case
       when t >= 12 then 'pm'
@@ -999,14 +994,14 @@ query(`
   $$ language sql;
 `);
 
-//Function to calculate number of zeroes in one day. Raises exception if more than 4 
+//Function to calculate number of zeroes in one day. Raises exception if more than 4
 //consecutive ones are spotted.
 query(`DROP FUNCTION IF EXISTS numZeroes;`);
 query(`
   CREATE OR REPLACE FUNCTION numZeroes(schedule bigint)
   returns integer as $$
-  
-  DECLARE 
+
+  DECLARE
     counter INTEGER := 0;
     consecutiveOnes INTEGER := 0;
     lastDigit INTEGER := 0;
@@ -1022,8 +1017,8 @@ query(`
            RAISE EXCEPTION '>4hr shift starting from % %.', startTime, ampm(startTime)
            USING ERRCODE = '23514'; --check_violation
         END IF;
-        counter := counter + 1; 
-      ELSE 
+        counter := counter + 1;
+      ELSE
         consecutiveOnes := 0; --reset count
       END IF;
       startTime := startTime - 1;
@@ -1038,7 +1033,7 @@ query(`
 
 //Create the trigger
 query(`
-  CREATE OR REPLACE FUNCTION calculateTotalWorkingHours() 
+  CREATE OR REPLACE FUNCTION calculateTotalWorkingHours()
   RETURNS TRIGGER AS $$
   DECLARE
     counter INTEGER := 0;
@@ -1085,16 +1080,17 @@ query(`
     WHEN SQLSTATE '23514' THEN
       GET STACKED DIAGNOSTICS errorMsg = MESSAGE_TEXT;
       RAISE EXCEPTION 'Detected % on %.', errorMsg, day;
-  
+
   baseSalary := counter * 8;
-  
+
   INSERT INTO Salary VALUES (NEW.did, CURRENT_TIMESTAMP, baseSalary, 0.0);   -- in front end we stop them from updating
   RETURN NULL;
   END;
    $$ LANGUAGE plpgsql;
  `);
 
- //set the trigger
+
+ //Trigger 3, it updates the ratings for the restaurants and riders.  When a delivery is completed, the average ratings is calculated
 query(` DROP TRIGGER IF EXISTS part_time_rider_trigger ON Part_time_rider CASCADE;`);
 query(`
   CREATE CONSTRAINT TRIGGER part_time_rider_trigger
@@ -1105,11 +1101,89 @@ query(`
   EXECUTE FUNCTION calculateTotalWorkingHours();
 `)
 
+query(`
+create or replace function fn_updateEveryThing() returns trigger as
+  $$
+  DECLARE
+  restaurant_rating real;
+  driver_rating real;
+  no_of_restaurants real;
+  no_of_drivers real;
+  BEGIN
+
+  select
+
+  -- update RESTAURANT Rating
+  restaurant_rating = ( select  sum(o.restaurant_rating)
+  FROM orders o
+  WHERE o.restaurant_name = new.restaurant_name);
+
+  no_of_restaurants = ( select  count(o.restaurant_rating)
+  FROM orders o
+  WHERE o.restaurant_name = new.restaurant_name);
+
+  UPDATE restaurants
+  SET sum_all_ratings = average_restaurant_rating / no_of_restaurants
+  WHERE restaurant_name = new.restaurant_name;
+
+  -- update rating for driver
+ driver_rating = (select  sum(d.delivery_rating)
+ FROM deliveries d
+ WHERE d.driver = new.driver);
+
+ no_of_drivers = (select  count(d.delivery_rating)
+ FROM deliveries d
+ WHERE d.driver = new.driver);
+
+ UPDATE Delivery_riders
+ SET sum_all_ratings = average_driver_rating / no_of_drivers
+ WHERE did = new.did;
+
+
+
+
+
+
+  return null;
+
+
+  end;
+$$ language plpgsql;
+`);
+
+query(`
+drop trigger if exists tr_updateEveryThing on orders;`);
+query(`create trigger tr_updateEveryThing
+  before INSERT
+  on deliveries
+  for each ROW
+execute function fn_updateEveryThing();`);
+
 /**
  * Trigger 2
  * Before an insertion of a finalised order into the delivery table, the total cost for that delivery (taken from the Places table) and the number of reward points (subtotal floored) earned are calculated.
  * The reward points are then added to the customer in the Customers table, and the total cost is recorded in the Places table.
+ * The delivery fee is inserted into the commission field of the Salary table
+ * The num_deliveries is inserted into the Delivery_riders table
  *
+ * --create a bogus customer
+--insert into users values ('test_customer', 'password');
+--insert into customers values ('test_customer', 'customer 1', 100, '2020-02-10', '1234-5642-2332-2353');
+
+--create a bogus driver
+--insert into users values ('test_rider', 'password');
+--insert into delivery_riders values ('test_rider', 200, 40, 0, 0);
+--insert into salary values ('test_rider', '2010-10-10 00:00:00', 100, 10);
+
+--create an order
+--insert into orders values (5000, null, null, 'test_rider');
+--insert into food_items_in_orders values (3, 5000, 'Chicken Rice', 'Dian Xiao er');
+--insert into Places values (5000, 'test_customer', 3, 0);
+
+-- select * from deliveries
+-- create a delivery
+--insert into deliveries values (5000, 'test_rider', '2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221', 20)
+
 */
 
 // Helper functions
@@ -1148,13 +1222,14 @@ query(`
 
 // Create the trigger
 query(`
-  CREATE OR REPLACE FUNCTION compute_total_cost_and_rewards () RETURNS TRIGGER 
-  AS $$ 
+  CREATE OR REPLACE FUNCTION compute_total_cost_and_rewards () RETURNS TRIGGER
+  AS $$
   DECLARE
     customer_id varchar(30);
     subtotal real;
     qty integer;
     rp_gained integer;
+    delivery_cost real;
     BEGIN
     -- get the cid
     SELECT P.cid INTO customer_id
@@ -1173,23 +1248,45 @@ query(`
     -- update customer's reward points
     UPDATE Customers
       SET reward_points = reward_points + rp_gained
-      WHERE Customers.cid = customer_id;    
-    --return the row
+      WHERE Customers.cid = customer_id;
+    -- update salary
+    SELECT P.delivery_fee into delivery_cost
+    From Places P
+    WHERE P.order_id = NEW.order_id;
+
+    UPDATE Salary
+      SET commission = commission + delivery_cost
+      WHERE NEW.driver = did;
+    -- update Delivery_riders
+    UPDATE Delivery_riders
+      SET num_deliveries = num_deliveries + 1
+      WHERE NEW.driver = did;
+    --return
     return NULL;
-  END 
+  END
   $$ LANGUAGE plpgsql;
 
 `)
-
+/***/
 //set the trigger
 query(` DROP TRIGGER IF EXISTS deliveries_trigger ON Deliveries CASCADE;`);
 query(`
   CREATE TRIGGER deliveries_trigger
-  BEFORE INSERT
+  AFTER INSERT
   ON Deliveries
   FOR EACH ROW
   EXECUTE FUNCTION compute_total_cost_and_rewards();
 `)
+
+
+
+// query 3, get the most popular hour and name in the past month
+query(`select fio.food_item_name, EXTRACT (HOUR from d.time_customer_placed_order), count(*) as count
+from Food_items_in_Orders fio, Deliveries d
+where fio.order_id = d.order_id AND d.time_customer_placed_order >= date_trunc('month', current_date - interval '1' month)
+  and d.time_customer_placed_order < date_trunc('month', current_date)
+group by fio.food_item_name,d.time_customer_placed_order
+order by count desc;`);
 
 
 /*

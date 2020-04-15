@@ -42,6 +42,7 @@ const Checkout = ({
   const orders = filterOrders(menu, qty);
   const [subtotal, setSubtotal] = useState(0);
   const [payment, setPayment] = useState([]);
+  const [delivery, setDelivery] = useState(0);
   
   useEffect(()=> {
     if (payment.length === 0) {
@@ -106,7 +107,7 @@ const Checkout = ({
       <PaymentDropdown payment={payment} />
 
       <Divider />
-      <SubtotalAndDeliveryFee orders={orders} setSubtotal={setSubtotal} />
+      <SubtotalAndDeliveryFee orders={orders} setSubtotal={setSubtotal} setDelivery={setDelivery} />
       <Divider />
       <Grid>
         <Grid.Row>
@@ -117,7 +118,7 @@ const Checkout = ({
             {new Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
-            }).format(5 + subtotal)}
+            }).format(delivery + subtotal)}
           </Grid.Column>
         </Grid.Row>
       </Grid>

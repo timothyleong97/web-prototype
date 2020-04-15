@@ -66,7 +66,7 @@ const Splash = () => {
               </Button>
             </Grid.Column>
             <Grid.Column width={9}>
-              <Image src="./bg.jpg" fluid />
+              <Image src="./bg.jpg" fluid style={{borderRadius: 10}}/>
             </Grid.Column>
           </Grid.Row>
         </Grid>

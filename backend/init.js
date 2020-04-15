@@ -971,6 +971,14 @@ create table Salary(
  * Before an insertion of a schedule into the part-time_riders table, check if 
  * 1. there are more than 4 consecutive zeroes for mon to sun,
  * 2. the total number of zeroes from mon to sun is at least 10 and at most 48.
+ * 
+ * To test: 
+ * --insert into users values ('Timothy', 'password');
+ * --insert into delivery_riders values ('Timothy', 0 , 0 ,0, 0)
+ * --insert into part_time_rider values ('Timothy', '2020-10-25', 110111011101,110111011101,110111011101,110111011101,110111011101,110111011101,110111011101)
+ * --delete from part_time_rider where did = 'Timothy'
+ * --insert into part_time_rider values ('Timothy', '2010-9-25', 011111010101, 010101010101,010101011111,010101010101,010101010101,010101010101,010101010101)
+
  *
 */
 
@@ -1008,7 +1016,7 @@ query(`
         RAISE NOTICE 'consecutive ones seen: %', consecutiveOnes;
         consecutiveOnes := consecutiveOnes + 1;
         IF (consecutiveOnes > 4) THEN
-           RAISE EXCEPTION '>4hr shift starting at % %.', startTime, ampm(startTime)
+           RAISE EXCEPTION '>4hr shift starting from % %.', startTime, ampm(startTime)
            USING ERRCODE = '23514'; --check_violation
         END IF;
         counter := counter + 1; 
@@ -1039,35 +1047,42 @@ query(`
     SELECT NEW.mon into schedule;
     day := 'mon';
     counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.tue into schedule;
     day := 'tue';
     counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.wed into schedule;
     day := 'wed';
     counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.thu into schedule;
     day := 'thu';
     counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.fri into schedule;
     day := 'fri';
     counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.sat into schedule;
     day := 'sat';
     counter := counter + numZeroes(schedule);
+    RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.sun into schedule;
     day := 'sun';
     counter := counter + numZeroes(schedule);
-    RETURN NULL;
+    RAISE NOTICE '% hours worked cumulatively', counter;
+    IF counter < 10 THEN
+      RAISE NOTICE 'Less than 10 hours worked';
+    END IF;
+    IF counter > 48 THEN
+      RAISE NOTICE 'More than 48 hours worked';
+    END IF;
   EXCEPTION
     WHEN SQLSTATE '23514' THEN
       GET STACKED DIAGNOSTICS errorMsg = MESSAGE_TEXT;
       RAISE EXCEPTION 'Detected % on %.', errorMsg, day;
-  IF (counter < 10) THEN
-    RAISE EXCEPTION 'Less than 10 hours worked';
-  END IF;
-  IF (counter > 48) THEN
-    RAISE EXCEPTION 'More than 48 hours worked';
-  END IF;
+  
   baseSalary := counter * 8;
   
   INSERT INTO Salary VALUES (NEW.did, CURRENT_TIMESTAMP, baseSalary, 0.0);   -- in front end we stop them from updating

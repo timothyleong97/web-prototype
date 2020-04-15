@@ -150,170 +150,6 @@ INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
 VALUES('Thomas Engine',4.5,100);`
 );
 
-// ORDERS
-query(`
-create table Orders(
-    order_id CHAR(11) UNIQUE,
-	  restaurant_review VARCHAR(255),
-    restaurant_rating INTEGER,
-    did VARCHAR(30),
-    primary key (order_id),
-    foreign key(did) references Delivery_riders(did) ON DELETE CASCADE ON UPDATE CASCADE
-);`);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(1,null,null,'lewis hamilton');`
-);
-
-query(`
-
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(2,'Good',4,'Thomas Engine');`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(3,'bad',1,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(4,'Great',5,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(5,'average',3,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(6,null,null,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(7,null,null,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(8,'poor',2,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(9,null,null,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(10,null,4,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
-VALUES(11,'Good',4,null);`
-);
-
-query(`
-INSERT INTO orders(order_id,restaurant_review,restaurant_rating,did)
-VALUES(12,'Good',4,null);`
-);
-
-// PROMOTIONS
-query(`
-create table Promotions (
-    promo_code CHAR(10) UNIQUE,
-	  promo_start_date date NOT NULL,
-    promo_end_date date NOT NULL,
-    promo_detail VARCHAR(255),
-    primary key (promo_code)
-);`);
-
-query(`
-INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
-VALUES('10%OFF','2020-04-07','2020-05-08','10%OFFEVERYTHING');`
-);
-
-query(`
-INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
-VALUES('FFS','2020-04-07','2020-04-15','FireSale');`
-);
-
-// PLACES
-query(`
-create table Places(
-    order_id CHAR(11),
-  	cid varchar(30) NOT NULL,
-    delivery_fee real default 0.00,
-    total_cost real default 0.00,
-    primary key(order_id, cid),
-    foreign key(order_id) references orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    foreign key(cid) references Customers(cid) ON DELETE CASCADE ON UPDATE CASCADE
-);`);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(1,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(2,'undertaker');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(3,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(4,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(5,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(6,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(7,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(8,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(9,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(10,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(11,'Jay Park');`
-);
-
-query(`
-INSERT INTO places(order_id,cid)
-VALUES(12,'Jay Park');`
-);
-
 //ADDRESSES
 query(`
 create table Addresses(
@@ -528,6 +364,176 @@ query(`
 INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
 VALUES(10,'50 Beach rd','1','01-12','101221','Char grill bar');`
 );
+
+// ORDERS
+query(`
+create table Orders(
+    order_id CHAR(11) UNIQUE,
+	  restaurant_review VARCHAR(255),
+    restaurant_rating INTEGER,
+    restaurant_name VARCHAR(255),
+    did VARCHAR(30),
+    primary key (order_id),
+    foreign key(did) references Delivery_riders(did) ON DELETE CASCADE ON UPDATE CASCADE,
+    foreign key(restaurant_name) references restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(1,null,null,'lewis hamilton');`
+);
+
+query(`
+
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(2,'Good',4,'Thomas Engine');`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(3,'bad',1,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(4,'Great',5,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(5,'average',3,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(6,null,null,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(7,null,null,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(8,'poor',2,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(9,null,null,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(10,null,4,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating,did)
+VALUES(11,'Good',4,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review,restaurant_rating,did)
+VALUES(12,'Good',4,null);`
+);
+
+// PROMOTIONS
+query(`
+create table Promotions (
+    promo_code CHAR(10) UNIQUE,
+	  promo_start_date date NOT NULL,
+    promo_end_date date NOT NULL,
+    promo_detail VARCHAR(255),
+    primary key (promo_code)
+);`);
+
+query(`
+INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
+VALUES('10%OFF','2020-04-07','2020-05-08','10%OFFEVERYTHING');`
+);
+
+query(`
+INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
+VALUES('FFS','2020-04-07','2020-04-15','FireSale');`
+);
+
+// PLACES
+query(`
+create table Places(
+    order_id CHAR(11),
+  	cid varchar(30) NOT NULL,
+    delivery_fee real default 0.00,
+    total_cost real default 0.00,
+    primary key(order_id, cid),
+    foreign key(order_id) references orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    foreign key(cid) references Customers(cid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(1,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(2,'undertaker');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(3,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(4,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(5,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(6,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(7,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(8,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(9,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(10,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(11,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(12,'Jay Park');`
+);
+
+
+
+
 
 //FOOD_ITEMS
 query(`
@@ -1095,9 +1101,9 @@ query(`
  * The reward points are then added to the customer in the Customers table, and the total cost is recorded in the Places table.
  * The delivery fee is inserted into the commission field of the Salary table
  * The num_deliveries is inserted into the Delivery_riders table
- * 
+ *
  * --create a bogus customer
---insert into users values ('test_customer', 'password'); 
+--insert into users values ('test_customer', 'password');
 --insert into customers values ('test_customer', 'customer 1', 100, '2020-02-10', '1234-5642-2332-2353');
 
 --create a bogus driver
@@ -1112,7 +1118,7 @@ query(`
 
 -- select * from deliveries
 -- create a delivery
---insert into deliveries values (5000, 'test_rider', '2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221', 20) 
+--insert into deliveries values (5000, 'test_rider', '2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221', 20)
 
 */
 
@@ -1186,11 +1192,11 @@ query(`
 
     UPDATE Salary
       SET commission = commission + delivery_cost
-      WHERE NEW.driver = did;     
+      WHERE NEW.driver = did;
     -- update Delivery_riders
     UPDATE Delivery_riders
       SET num_deliveries = num_deliveries + 1
-      WHERE NEW.driver = did; 
+      WHERE NEW.driver = did;
     --return
     return NULL;
   END

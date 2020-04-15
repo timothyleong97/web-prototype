@@ -947,6 +947,7 @@ query(`
     SELECT cast(SUM(qty) as integer) FROM current_orders;
   $$ language sql;
 `)
+
 // Create the trigger
 query(`
   CREATE OR REPLACE FUNCTION compute_total_cost_and_rewards () RETURNS TRIGGER 
@@ -955,7 +956,8 @@ query(`
     customer_id varchar(30);
     subtotal real;
     qty integer;
-  BEGIN
+    rp_gained integer;
+    BEGIN
     -- get the cid
     SELECT P.cid INTO customer_id
     FROM Places P
@@ -964,27 +966,33 @@ query(`
     subtotal = getSubtotal(NEW.order_id);
     -- get qty
     qty = getQty(NEW.order_id);
-    -- calculate reward points gained
-    -- calculate change in reward points for 
-
+    -- calculate reward points gained (round down the subtotal)
+    rp_gained = FLOOR(subtotal) - NEW.reward_points_used;
+    -- update Places.totalCost to be Places.delivery_fee + subtotal
+    UPDATE Places
+      SET totalCost = delivery_fee + subtotal
+      WHERE Places.order_id = NEW.order_id;
+    -- update customer's reward points
+    UPDATE Customers
+      SET reward_points = reward_points + rp_gained
+      WHERE Customers.cid = customer_id;    
+    --return the row
+    return NULL;
   END 
   $$ LANGUAGE plpgsql;
 
 `)
 
-// //set the trigger
-// query(`
-//   DROP TRIGGER IF EXISTS deliveries_trigger ON Deliveries CASCADE;
-//   CREATE TRIGGER deliveries_trigger
-//     BEFORE INSERT
-//     ON Deliveries
-//     FOR EACH ROW
-//     EXECUTE FUNCTION compute_total_cost_and_rewards();
-// `)
+//set the trigger
+query(` DROP TRIGGER IF EXISTS deliveries_trigger ON Deliveries CASCADE;`);
+query(`
+  CREATE TRIGGER deliveries_trigger
+  BEFORE INSERT
+  ON Deliveries
+  FOR EACH ROW
+  EXECUTE FUNCTION compute_total_cost_and_rewards();
+`)
 
-//insert data to test on
-
-//delete data
 
 /*
 query(`create or replace function fn_setPartTimeRider() returns trigger as
@@ -1479,3 +1487,4 @@ query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(3,1,1,'Chicken Rice');`)
 query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(1,2,2,'Cold cut trio');`)
+*/

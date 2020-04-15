@@ -791,7 +791,9 @@ VALUES('Manager');`
 query(`
 create table Restaurant_Staff(
     staff_id varchar(30) primary key,
-    foreign key(staff_id) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+    restaurant_name VARCHAR(255), 
+    foreign key(staff_id) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE,
+    foreign key(restaurant_name) REFERENCES Restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 query(`
 INSERT INTO restaurant_staff(staff_id)

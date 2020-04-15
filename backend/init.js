@@ -26,10 +26,6 @@ DROP TABLE IF EXISTS food_items_in_orders cascade;`);
 query(`
 DROP TABLE IF EXISTS full_time_rider cascade;`);
 query(`
-DROP TABLE IF EXISTS opening_hours_template cascade;`);
-query(`
-DROP TABLE IF EXISTS options cascade;`);
-query(`
 DROP TABLE IF EXISTS orders cascade;`);
 query(`
 DROP TABLE IF EXISTS part_time_rider cascade;`);
@@ -46,15 +42,7 @@ DROP TABLE IF EXISTS restaurants cascade;`);
 query(`
 DROP TABLE IF EXISTS salary cascade;`);
 query(`
-DROP TABLE IF EXISTS set_meals cascade;`);
-query(`
-DROP TABLE IF EXISTS time_entries cascade;`);
-query(`
 DROP TABLE IF EXISTS Users cascade;`);
-query(`
-DROP TABLE IF EXISTS uses cascade;`);
-query(`
-DROP TABLE IF EXISTS Salary_Paid_Out cascade;`);
 query(`
 DROP TABLE IF EXISTS shifts;`);
 

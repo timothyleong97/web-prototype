@@ -840,13 +840,13 @@ create table Full_Time_Rider(
     day3_shift integer,
     day4_shift integer,
     day5_shift integer,
-    primary key(did),
+    primary key(did, month_of_work),
     foreign key(did) REFERENCES Delivery_Riders ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 
 query(`
-INSERT INTO FULL_TIME_RIDER(did, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
-VALUES('lewis hamilton','mon',1,1,1,1,1);`
+INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('lewis hamilton','2010-10-10','mon',1,1,1,1,1);`
 );
 
 
@@ -898,6 +898,7 @@ create table Deliveries (
     building varchar(30),
     unit_num char(10),
     postal_code integer,
+    reward_points_used integer,
     primary key(order_id),
     foreign key(order_id) references Orders(order_id) on update cascade on delete cascade,
     foreign key(driver) references Delivery_Riders(did) on UPDATE cascade on delete cascade,
@@ -1093,7 +1094,25 @@ query(`
  * Trigger 2
  * Before an insertion of a finalised order into the delivery table, the total cost for that delivery (taken from the Places table) and the number of reward points (subtotal floored) earned are calculated.
  * The reward points are then added to the customer in the Customers table, and the total cost is recorded in the Places table.
- *
+ * The delivery fee is inserted into the commission field of the Salary table
+ * The num_deliveries is inserted into the Delivery_riders table
+ * 
+ * --create a bogus customer
+--insert into users values ('test_customer', 'password'); 
+--insert into customers values ('test_customer', 'customer 1', 100, '2020-02-10', '1234-5642-2332-2353')
+
+--create a bogus driver
+--insert into users values ('test_rider', 'password');
+--insert into delivery_riders values ('test_rider', 200, 40, 0, 0);
+select * from places
+--create an order
+--insert into orders values (5000, null, null, 'test_rider');
+--insert into food_items_in_orders values (3, 5000, 'Chicken Rice', 'Dian Xiao er');
+--insert into Places values (5000, 'test_customer', 3, 0);
+
+-- select * from deliveries
+-- create a delivery
+-- insert into deliveries values (5000, 'test_rider', null, null, null, null, null, 5, 'Good', '1 Jurong East', 'haven way', '01-10', 1234, 20) 
 */
 
 // Helper functions
@@ -1139,6 +1158,7 @@ query(`
     subtotal real;
     qty integer;
     rp_gained integer;
+    delivery_cost real;
     BEGIN
     -- get the cid
     SELECT P.cid INTO customer_id
@@ -1157,19 +1177,31 @@ query(`
     -- update customer's reward points
     UPDATE Customers
       SET reward_points = reward_points + rp_gained
-      WHERE Customers.cid = customer_id;    
-    --return the row
+      WHERE Customers.cid = customer_id;
+    -- update salary
+    SELECT P.delivery_fee into delivery_cost
+    From Places P
+    WHERE P.order_id = NEW.order_id;
+
+    UPDATE Salary
+      SET commission = commission + delivery_cost
+      WHERE NEW.driver = did;     
+    -- update Delivery_riders
+    UPDATE Delivery_riders
+      SET num_deliveries = num_deliveries + 1
+      WHERE NEW.driver = did; 
+    --return
     return NULL;
   END 
   $$ LANGUAGE plpgsql;
 
 `)
-
+/***/
 //set the trigger
 query(` DROP TRIGGER IF EXISTS deliveries_trigger ON Deliveries CASCADE;`);
 query(`
   CREATE TRIGGER deliveries_trigger
-  BEFORE INSERT
+  AFTER INSERT
   ON Deliveries
   FOR EACH ROW
   EXECUTE FUNCTION compute_total_cost_and_rewards();

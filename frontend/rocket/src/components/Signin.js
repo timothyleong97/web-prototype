@@ -117,7 +117,7 @@ const Signin = (props) => {
         </Form>
       </Grid.Column>
       <Grid.Column width={4}>
-              <Image src = {"/" + (sideImage[userType]) + ".jpg"} fluid />
+              <Image src = {"/" + (sideImage[userType]) + ".jpg"} fluid style={{borderRadius: 10}}/>
             </Grid.Column>
           </Grid.Row>
     </Grid>

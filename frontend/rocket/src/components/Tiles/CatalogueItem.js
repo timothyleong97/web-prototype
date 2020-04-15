@@ -7,11 +7,11 @@ const square = {
     width: 300, 
     height: 150, 
     backgroundColor: '#bfbfbf', 
-    borderRadius:0, 
+    borderRadius:10, 
     verticalAlign:'middle',
     paddingTop: 55,
     color: 'black',
-    marginTop: 15
+    marginTop: 15,
 }
 
 /**

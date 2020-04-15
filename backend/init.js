@@ -1098,12 +1098,13 @@ query(`
  * 
  * --create a bogus customer
 --insert into users values ('test_customer', 'password'); 
---insert into customers values ('test_customer', 'customer 1', 100, '2020-02-10', '1234-5642-2332-2353')
+--insert into customers values ('test_customer', 'customer 1', 100, '2020-02-10', '1234-5642-2332-2353');
 
 --create a bogus driver
 --insert into users values ('test_rider', 'password');
 --insert into delivery_riders values ('test_rider', 200, 40, 0, 0);
-select * from places
+--insert into salary values ('test_rider', '2010-10-10 00:00:00', 100, 10);
+
 --create an order
 --insert into orders values (5000, null, null, 'test_rider');
 --insert into food_items_in_orders values (3, 5000, 'Chicken Rice', 'Dian Xiao er');
@@ -1111,7 +1112,8 @@ select * from places
 
 -- select * from deliveries
 -- create a delivery
--- insert into deliveries values (5000, 'test_rider', null, null, null, null, null, 5, 'Good', '1 Jurong East', 'haven way', '01-10', 1234, 20) 
+--insert into deliveries values (5000, 'test_rider', '2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221', 20) 
+
 */
 
 // Helper functions

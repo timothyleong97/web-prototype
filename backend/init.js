@@ -127,7 +127,27 @@ query(`
 INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
 VALUES('Jay Park','jay',0,'2019-12-07', '4228-1144-1040-0000');`
 );
+//DELIVERY_RIDERS
+query(`
+create table Delivery_Riders(
+    did varchar(30),
+    sum_all_ratings integer,
+    num_deliveries integer,
+    primary key(did),
+    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
+    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
+    foreign key(did) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
+VALUES('lewis hamilton',0,0,30,100);`
+);
+
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
+VALUES('Thomas Engine',4.5,100,-80,120);`
+);
 
 // ORDERS
 query(`
@@ -786,27 +806,7 @@ INSERT INTO restaurant_staff(staff_id)
 VALUES('Akon');`
 );
 
-//DELIVERY_RIDERS
-query(`
-create table Delivery_Riders(
-    did varchar(30),
-    sum_all_ratings integer,
-    num_deliveries integer,
-    primary key(did),
-    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
-    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
-    foreign key(did) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
-);`);
 
-query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
-VALUES('lewis hamilton',0,0,30,100);`
-);
-
-query(`
-INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries,lon,lat)
-VALUES('Thomas Engine',4.5,100,-80,120);`
-);
 
 //SALARY
 query(`

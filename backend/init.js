@@ -808,13 +808,11 @@ INSERT INTO restaurant_staff(staff_id)
 VALUES('Akon');`
 );
 
-
-
 //SALARY
 query(`
 create table Salary(
     did varchar(30),
-    salary_date timestamp, -- date that we pay them
+    salary_date timestamp, -- time that we calculated their salary
     base_salary real default 0.00,
     commission real default 0.00,
     primary key (did, salary_date),
@@ -830,17 +828,6 @@ query(`
 INSERT INTO salary(did,salary_date,base_salary,commission)
 VALUES('Thomas Engine','2010-10-10',100,10);`
 );
-
-//SALARY_PAID_OUT
-query(`
-create table Salary_Paid_Out(
-  day_Paid_Out Date,
-  total_amount_paid real default 0.00,
-  did varchar(30),
-  primary key (day_Paid_Out),
-  foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
-
-);`);
 
 //FULL_TIME_RIDER
 query(`

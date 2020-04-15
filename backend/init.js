@@ -829,7 +829,7 @@ VALUES('Thomas Engine','2010-10-10',100,10);`
 query(`
 create table Full_Time_Rider(
     did varchar(30),
-    month_of_work DATE,
+    month_of_work DATE CHECK (month_of_work = '1970-01-01' OR month_of_work > CURRENT_DATE AND extract (day from month_of_work) = 1),
     wws_start_day char(3),
     day1_shift integer,
     day2_shift integer,
@@ -842,7 +842,7 @@ create table Full_Time_Rider(
 
 query(`
 INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
-VALUES('lewis hamilton','2010-10-10','mon',1,1,1,1,1);`
+VALUES('lewis hamilton','1970-01-01','mon',1,1,1,1,1);`
 );
 
 
@@ -850,7 +850,7 @@ VALUES('lewis hamilton','2010-10-10','mon',1,1,1,1,1);`
 query(`
 create table Part_Time_Rider (
     did varchar(30),
-    week_of_work DATE,
+    week_of_work DATE CHECK (week_of_work = '1970-01-01' OR week_of_work > CURRENT_DATE),
     mon bigint,
     tue bigint,
     wed bigint,
@@ -864,19 +864,8 @@ create table Part_Time_Rider (
 
 query(`
 INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
-VALUES('Thomas Engine','2017-10-25',0,10,0,0,10,10,0);`
+VALUES('Thomas Engine','1970-01-01', null, null, null, null, null, null, null);`
 );
-
-query(`
-INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
-VALUES('Thomas Engine','2020-10-25',0000100,10,0,0,10,10,0);`
-);
-
-query(`
-INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
-VALUES('Thomas Engine','2018-10-25',0000000,10,0,0,10,10,0);`
-);
-
 
 //DELIVERIES
 query(`
@@ -926,6 +915,39 @@ VALUES('2016-06-22 12:00:00','2016-06-22 16:00:00','2016-06-22 17:00:00','2016-0
 query(`INSERT INTO shifts(shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
 VALUES('2016-06-22 13:00:00','2016-06-22 17:00:00','2016-06-22 18:00:00','2016-06-22 20:00:00');`);
 
+// Trigger for full-time riders to ensure month is right
+query(`CREATE OR REPLACE FUNCTION fullTimeRidersConvertMonth() 
+    RETURNS TRIGGER AS $$
+    DECLARE
+    BEGIN
+    NEW.month_of_work = cast(date_trunc('month', NEW.month_of_work) as date);
+    RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;`)
+
+query(`DROP TRIGGER IF EXISTS full_time_month_trigger ON Full_Time_Rider;`)
+query(`CREATE TRIGGER full_time_month_trigger
+  BEFORE UPDATE OF month_of_work OR INSERT
+ON Full_Time_Rider
+FOR EACH ROW
+EXECUTE FUNCTION fullTimeRidersConvertMonth();`)  
+
+// Trigger for part-time riders to ensure month is right
+query(`CREATE OR REPLACE FUNCTION partTimeRidersConvertWeek() 
+    RETURNS TRIGGER AS $$
+    DECLARE
+    BEGIN
+    NEW.week_of_work = cast(date_trunc('week', NEW.week_of_work) as date);
+    RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;`)
+
+query(`DROP TRIGGER IF EXISTS part_time_week_trigger ON part_Time_Rider;`)
+query(`CREATE TRIGGER part_time_week_trigger
+  BEFORE UPDATE OF week_of_work OR INSERT
+ON part_Time_Rider
+FOR EACH ROW
+EXECUTE FUNCTION partTimeRidersConvertWeek();`)  
 
 /**
  * Trigger 1
@@ -1075,7 +1097,8 @@ query(`
    $$ LANGUAGE plpgsql;
  `);
 
- //set the trigger
+
+ //Trigger 3, it updates the ratings for the restaurants and riders.  When a delivery is completed, the average ratings is calculated
 query(` DROP TRIGGER IF EXISTS part_time_rider_trigger ON Part_time_rider CASCADE;`);
 query(`
   CREATE CONSTRAINT TRIGGER part_time_rider_trigger
@@ -1085,6 +1108,64 @@ query(`
   FOR EACH ROW
   EXECUTE FUNCTION calculateTotalWorkingHours();
 `)
+
+query(`
+create or replace function fn_updateEveryThing() returns trigger as
+  $$
+  DECLARE
+  restaurant_rating real;
+  driver_rating real;
+  no_of_restaurants real;
+  no_of_drivers real;
+  BEGIN
+
+  select
+
+  -- update RESTAURANT Rating
+  restaurant_rating = ( select  sum(o.restaurant_rating)
+  FROM orders o
+  WHERE o.restaurant_name = new.restaurant_name);
+
+  no_of_restaurants = ( select  count(o.restaurant_rating)
+  FROM orders o
+  WHERE o.restaurant_name = new.restaurant_name);
+
+  UPDATE restaurants
+  SET sum_all_ratings = average_restaurant_rating / no_of_restaurants
+  WHERE restaurant_name = new.restaurant_name;
+
+  -- update rating for driver
+ driver_rating = (select  sum(d.delivery_rating)
+ FROM deliveries d
+ WHERE d.driver = new.driver);
+
+ no_of_drivers = (select  count(d.delivery_rating)
+ FROM deliveries d
+ WHERE d.driver = new.driver);
+
+ UPDATE Delivery_riders
+ SET sum_all_ratings = average_driver_rating / no_of_drivers
+ WHERE did = new.did;
+
+
+
+
+
+
+  return null;
+
+
+  end;
+$$ language plpgsql;
+`);
+
+query(`
+drop trigger if exists tr_updateEveryThing on orders;`);
+query(`create trigger tr_updateEveryThing
+  before INSERT
+  on deliveries
+  for each ROW
+execute function fn_updateEveryThing();`);
 
 /**
  * Trigger 2
@@ -1204,6 +1285,16 @@ query(`
   FOR EACH ROW
   EXECUTE FUNCTION compute_total_cost_and_rewards();
 `)
+
+
+
+// query 3, get the most popular hour and name in the past month
+query(`select fio.food_item_name, EXTRACT (HOUR from d.time_customer_placed_order), count(*) as count
+from Food_items_in_Orders fio, Deliveries d
+where fio.order_id = d.order_id AND d.time_customer_placed_order >= date_trunc('month', current_date - interval '1' month)
+  and d.time_customer_placed_order < date_trunc('month', current_date)
+group by fio.food_item_name,d.time_customer_placed_order
+order by count desc;`);
 
 
 /*

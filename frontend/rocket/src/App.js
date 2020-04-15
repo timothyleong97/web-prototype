@@ -14,6 +14,7 @@ import EditProfile from "./components/EditProfile";
 import CategoryDisplay from "./components/CategoryDisplay";
 import AddNewRider from "./components/AddNewRider";
 import AddNewStaff from "./components/AddNewStaff";
+import ModifyRiderSchedule from "./components/ModifyRiderSchedule";
 
 const homePages = {
   customers: "/catalogue",
@@ -23,7 +24,7 @@ const homePages = {
 };
 
 //Couch protected routes in the Fragments.
-const renderUserRoutes = (username, usertype) => {
+const renderUserRoutes = (username, usertype, ridertype) => {
   if (usertype === "customers") {
     return (
       <Fragment>
@@ -53,7 +54,16 @@ const renderUserRoutes = (username, usertype) => {
           path="/riderSummary"
           exact
           render={(props) => (
-            <RiderSummary {...props} username={username} usertype={usertype}/>
+            <RiderSummary {...props} username={username} usertype={usertype}
+              ridertype={ridertype} />
+          )}
+        />
+        <Route
+          path="/modifyRiderSchedule"
+          exact
+          render={(props) => (
+            <ModifyRiderSchedule {...props} username={username} usertype={usertype}
+              ridertype={ridertype} />
           )}
         />
       </Fragment>
@@ -109,7 +119,6 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [usertype, setUsertype] = useState("");
   const [ridertype, setRidertype] = useState("");
-
   console.log("App.js can see username:", username, "usertype:", usertype);
   return (
     <Router history={history}>
@@ -130,9 +139,8 @@ const App = () => {
                     src="../name.png"
                     style={{
                       width: 240,
-                      marginLeft: 15,
+                      marginLeft: 25,
                       paddingTop: 13,
-                      marginBottom: 5,
                     }}
                   />
                 </Link>
@@ -157,7 +165,7 @@ const App = () => {
                     {" "}
                     <EditProfile setAppUsername={setUsername} />
                     <Button
-                      color="orange"
+                      color="purple"
                       circular
                       size="big"
                       onClick={() => {
@@ -170,8 +178,8 @@ const App = () => {
                   </Grid.Column>
                 </Fragment>
               ) : (
-                ""
-              )}
+                  ""
+                )}
             </Grid.Row>
           </Grid>
         </Header>
@@ -200,7 +208,7 @@ const App = () => {
               />
             )}
           />
-          {renderUserRoutes(username, usertype)}
+          {renderUserRoutes(username, usertype, ridertype)}
 
           <Route
             render={() => {

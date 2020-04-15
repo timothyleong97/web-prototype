@@ -156,7 +156,7 @@ create table Orders(
 	  restaurant_review VARCHAR(255),
     restaurant_rating INTEGER,
     did VARCHAR(30),
-    primary key (order_id)
+    primary key (order_id),
     foreign key(did) references Delivery_riders(did) ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 
@@ -927,18 +927,18 @@ query(`
    shift_end_time timestamp,
    shift2_start_time timestamp,
    shift2_end_time timestamp,
-   primary key(shift_id);
+   primary key(shift_id)
 
 );`);
 
 query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
-VALUES(1,'10:00:00','12:00:00','15:00:00','17:00:00');`);
+VALUES(1,'2016-06-22 10:00:00','2016-06-22 12:00:00','2016-06-22 15:00:00','2016-06-22 17:00:00');`);
 query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
-VALUES(2,'11:00:00','15:00:00','16:00:00','18:00:00');`);
+VALUES(2,'2016-06-22 11:00:00','2016-06-22 15:00:00','2016-06-22 16:00:00','2016-06-22 18:00:00');`);
 query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
-VALUES(3,'12:00:00','16:00:00','17:00:00','21:00:00');`);
+VALUES(3,'2016-06-22 12:00:00','2016-06-22 16:00:00','2016-06-22 17:00:00','2016-06-22 21:00:00');`);
 query(`INSERT INTO shifts(shift_id,shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
-VALUES(4,'13:00:00','17:00:00','18:00:00','20:00:00');`);
+VALUES(4,'2016-06-22 13:00:00','2016-06-22 17:00:00','2016-06-22 18:00:00','2016-06-22 20:00:00');`);
 
 
 

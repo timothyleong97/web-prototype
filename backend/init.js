@@ -793,6 +793,8 @@ create table Delivery_Riders(
     sum_all_ratings integer,
     num_deliveries integer,
     primary key(did),
+    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
+    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
     foreign key(did) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 

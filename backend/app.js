@@ -202,7 +202,7 @@ app.post('/riderinfo', (req, res) => {
   client.query(`SELECT 1 FROM part_time_rider
     WHERE did = '${userid}'`)
     .then(result => {
-      if (result.rowCount === 1) {
+      if (result.rowCount > 0) {
         res.send({ rider: 'part_time' });
       } else {
         res.send({ rider: 'full_time' })
@@ -292,7 +292,7 @@ app.post("/addNewRider", (req, res) => {
               if (type == "pt") {
                 client
                   .query(`INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
-                    VALUES($1,CURRENT_DATE,0,10,0,0,10,10,0);`,
+                    VALUES($1,null,null,null,null,null,null,null,null);`,
                     [username]
                   ).then((_) => {
                     res.send({ status: 100 }); //OK, Part Time
@@ -301,7 +301,7 @@ app.post("/addNewRider", (req, res) => {
               } else {
                 client
                   .query(`INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
-                    VALUES($1,CURRENT_DATE,'sun',1,1,1,1,1);`,
+                    VALUES($1,'1970-01-01',null,null,null,null,null,null);`,
                     [username]
                   ).then((_) => {
                     res.send({ status: 200 }); //OK, Full Time
@@ -397,19 +397,55 @@ app.post("/addNewStaff", (req, res) => {
  *          else send {status: 500}
  */
 app.post("/modifyFullTimeRiderSchedule", (req, res) => {
-  let { userid, startDay, day1, day2, day3, day4, day5 } = req.body;
+  let { userid, startDay, day1, day2, day3, day4, day5, month } = req.body;
   //First insert this person into Users
   client
     .query(
-      `UPDATE full_time_rider
-      SET wws_start_day = $2,
-      day1_shift = $3,
-      day2_shift = $4,
-      day3_shift = $5,
-      day4_shift = $6,
-      day5_shift = $7
-      WHERE did = $1`,
-      [userid, startDay, day1, day2, day3, day4, day5]
+      `INSERT INTO full_time_rider(did, month_of_work, wws_start_day, day1_shift,
+        day2_shift, day3_shift, day4_shift, day5_shift)
+      VALUES($1, $8, $2, $3, $4, $5, $6, $7)`,
+      [userid, startDay, day1, day2, day3, day4, day5, month]
+    )
+    .then((_) => {
+      res.send({ status: 200 }); //OK
+    })
+    .catch((error) => {
+      console.log("app.js signup api error", error);
+      res.send({
+        status: 500,
+        message: error.detail,
+      }); //BAD REQUEST
+    })
+});
+
+// --MODIFY PART TIME RIDER--
+
+/**
+ * What: A query to modify work schedule of Part Time Rider.
+ * req.body should be { 
+        userid: String,
+        userid: this.props.username,
+        week_of_work: 
+        mon: 
+        tue: 
+        wed: 
+        thu: 
+        fri: 
+        sat: 
+        sun:
+     } 
+ * possible responses from database is ok or unknown error
+ * Returns: if success, send back {status: 200},
+ *          else send {status: 500}
+ */
+app.post("/modifyPartTimeRiderSchedule", (req, res) => {
+  let { userid, week_of_work, mon, tue, wed, thu, fri, sat, sun} = req.body;
+  //First insert this person into Users
+  client
+    .query(
+      `INSERT INTO part_time_rider(did, week_of_work, mon, tue, wed, thu, fri, sat, sun)
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      [userid, week_of_work, mon, tue, wed, thu, fri, sat, sun]
     )
     .then((_) => {
       res.send({ status: 200 }); //OK

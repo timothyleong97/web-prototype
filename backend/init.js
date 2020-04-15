@@ -833,7 +833,7 @@ VALUES('Thomas Engine','2010-10-10',100,10);`
 query(`
 create table Full_Time_Rider(
     did varchar(30),
-    month_of_work DATE,
+    month_of_work DATE  CHECK (month_of_work = '1970-01-01' OR month_of_work > CURRENT_DATE AND extract (day from month_of_work) = 1),
     wws_start_day char(3),
     day1_shift integer,
     day2_shift integer,
@@ -845,8 +845,8 @@ create table Full_Time_Rider(
 );`);
 
 query(`
-INSERT INTO FULL_TIME_RIDER(did, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
-VALUES('lewis hamilton','mon',1,1,1,1,1);`
+INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('lewis hamilton', '2020-05-01', 'mon',1,1,1,1,1);`
 );
 
 
@@ -929,6 +929,22 @@ VALUES('2016-06-22 12:00:00','2016-06-22 16:00:00','2016-06-22 17:00:00','2016-0
 query(`INSERT INTO shifts(shift_start_time,shift_end_time,shift2_start_time,shift2_end_time)
 VALUES('2016-06-22 13:00:00','2016-06-22 17:00:00','2016-06-22 18:00:00','2016-06-22 20:00:00');`);
 
+// Trigger for full-time riders to ensure month is right
+query(`CREATE OR REPLACE FUNCTION fullTimeRidersConvertMonth() 
+    RETURNS TRIGGER AS $$
+    DECLARE
+    BEGIN
+    NEW.month_of_work = cast(date_trunc('month', NEW.month_of_work) as date);
+    RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;`)
+
+query(`DROP TRIGGER IF EXISTS full_time_month_trigger ON Full_Time_Rider;`)
+query(`CREATE TRIGGER full_time_month_trigger
+  BEFORE UPDATE OF month_of_work OR INSERT
+ON Full_Time_Rider
+FOR EACH ROW
+EXECUTE FUNCTION fullTimeRidersConvertMonth();`)  
 
 /**
  * Trigger 1

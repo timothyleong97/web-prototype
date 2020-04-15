@@ -53,6 +53,7 @@ const renderUserRoutes = (username, usertype, ridertype) => {
           path="/riderSummary"
           exact
           render={(props) => (
+<<<<<<< HEAD
             <RiderSummary {...props} username={username} usertype={usertype}
             ridertype={ridertype}/>
           )}
@@ -63,6 +64,9 @@ const renderUserRoutes = (username, usertype, ridertype) => {
           render={(props) => (
             <RiderSummary {...props} username={username} usertype={usertype}
             ridertype={ridertype}/>
+=======
+            <RiderSummary {...props} username={username} usertype={usertype}/>
+>>>>>>> master
           )}
         />
       </Fragment>
@@ -116,13 +120,26 @@ const renderUserRoutes = (username, usertype, ridertype) => {
 
 const App = () => {
   const [username, setUsername] = useState("");
+<<<<<<< HEAD
   const [usertype, setUsertype] = useState("delivery_riders");
   const [ridertype, setRidertype] = useState("");
+=======
+  const [usertype, setUsertype] = useState("");
+  const [ridertype, setRidertype] = useState("");
+
+>>>>>>> master
   console.log("App.js can see username:", username, "usertype:", usertype);
   return (
     <Router history={history}>
       <div>
-        <Header as="h1" style={{ backgroundColor: "#eac012", height: "14vh" }}>
+        <Header
+          as="h1"
+          style={{
+            backgroundColor: "#eac012",
+            height: "14vh",
+            paddingLeft: 10,
+          }}
+        >
           <Grid>
             <Grid.Row>
               <Grid.Column floated="left" width={3} verticalAlign="middle">
@@ -131,7 +148,11 @@ const App = () => {
                     src="../name.png"
                     style={{
                       width: 240,
+<<<<<<< HEAD
                       marginLeft: 25,
+=======
+                      marginLeft: 15,
+>>>>>>> master
                       paddingTop: 13,
                     }}
                   />
@@ -151,7 +172,7 @@ const App = () => {
                   <Grid.Column
                     floated="right"
                     verticalAlign="middle"
-                    style={{marginTop: 10 }}
+                    style={{ marginTop: 10 }}
                     width={4}
                   >
                     {" "}

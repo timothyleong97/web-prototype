@@ -199,16 +199,28 @@ app.post("/login/:usertype", (req, res) => {
 
 app.post('/riderinfo', (req, res) => {
   const {userid} = req.body;
+<<<<<<< HEAD
   client.query(`SELECT 1 FROM part_time_rider
     WHERE did = '${userid}'`)
+=======
+  client.query(`SELECT 1 FROM part_time_rider where did = '${userid}'`)
+>>>>>>> master
   .then(result => {
     if (result.rowCount === 1) {
       res.send({rider: 'part_time'});
     } else {
+<<<<<<< HEAD
       res.send({rider: 'full_time'});
     }
   })
   .catch(err => console.log(err))
+=======
+      res.send({rider: 'full_time'})
+    }
+
+  })
+  .catch(err => console.log(err));
+>>>>>>> master
 })
 
 // -- EDIT PROFILE --
@@ -407,7 +419,7 @@ app.get("/categories", (req, res) => {
 app.get("/restaurants", (req, res) => {
   client
     .query(
-      `SELECT DISTINCT restaurant_name
+      `SELECT restaurant_name
                 FROM restaurants`
     )
     .then((result) => {
@@ -432,7 +444,7 @@ app.get("/restaurants", (req, res) => {
     }
   ]
  */
-app.post("/fooditems", (req, res) => {
+app.post("/fooditems", (req, res) => { //FRONTEND NEEDS TO CHANGE
   let { name } = req.body;
   client
     .query(
@@ -443,9 +455,9 @@ app.post("/fooditems", (req, res) => {
       daily_limit, 
       num_orders_made, 
       min_order_amt, 
-      F.rid
+      F.restaurant_name
       FROM food_items F, restaurants R
-      where F.rid = R.rid
+      where F.restaurant_name = R.restaurant_name
       and R.restaurant_name = '${name}'
      `
     )
@@ -465,12 +477,12 @@ app.post("/fooditems", (req, res) => {
     }
   ]
  */
-app.post("/cuisineitems", (req, res) => {
+app.post("/cuisineitems", (req, res) => { //FRONTEND NEEDS TO CHANGE
   let { name } = req.body;
   client
     .query(
-      `SELECT food_item_name, price, daily_limit, num_orders_made, restaurant_name
-     FROM food_items natural join restaurants
+      `SELECT food_item_name, price, daily_limit, num_orders_made, F.restaurant_name
+     FROM food_items F natural join restaurants R
      where category = '${name}'
     `
     )
@@ -478,36 +490,27 @@ app.post("/cuisineitems", (req, res) => {
     .catch((err) => console.log(err));
 });
 
-/**
- * What: A query to return all the options for a food item.
- * Receives: Req.body = {rid: String, food_item_name: String}
- * Returns: An array of jsons. e.g  {
-      options_name: 'Size-small',
-      type_of_option: 'small',
-      addon_price: 0,
-      rid: '1',
-      food_item_name: 'Chicken Rice'
-    },
- */
 
-app.post("/option", (req, res) => {
-  let { rid, food_item_name } = req.body;
+// --CHECKOUT--
+app.get('/rewards/:cid', (req, res)=> {
+  const cid = req.params.cid;
+  client.query(`SELECT reward_points 
+                FROM customers 
+                WHERE cid = '${cid}';
+                `
+  ).then(result => res.send(result.rows[0]))
+  .catch(err => res.send({status: 500}))
+})
 
-  client
-    .query(
-      `SELECT *
-       FROM options
-       WHERE rid = '${rid}'
-       AND food_item_name = '${food_item_name}';
-      `
-    )
-    .then((result) => {
-      res.send(result.rows);
-    })
-    .catch((err) => console.log(err));
-});
-
-
+app.get('/payment/:cid', (req, res)=> {
+  const cid = req.params.cid;
+  client.query(`SELECT credit_card
+                FROM customers 
+                WHERE cid = '${cid}';
+                `
+  ).then(result => res.send(result.rows[0]))
+  .catch(err => res.send({status: 500}))
+})
 //Don't modify below this comment
 app.listen(port, () => {
   console.log("Backend server is up on port " + port);

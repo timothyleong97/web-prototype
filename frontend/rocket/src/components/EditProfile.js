@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import { Button, Header, Modal, Form, Input, Message } from "semantic-ui-react";
-import axiosClient from './importables/axiosClient';
 
 export default ({ setAppUsername }) => {
   const [username, setUsername] = useState("");

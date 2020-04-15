@@ -59,6 +59,13 @@ const Signin = (props) => {
           } else if (data.status === 200) {
             props.setUsername(username);
             props.setUsertype(userType);
+            if (userType === 'delivery_riders') {
+              axiosClient.post('/riderinfo', {userid: username}).then(
+                ({data}) => {
+                //data is {rider: 'part_time'}
+                props.setRidertype(data.rider);
+              }).catch(err => console.log(err))
+            }
             history.push(redirect[userType]); //sign-in redirect here
           }
         })

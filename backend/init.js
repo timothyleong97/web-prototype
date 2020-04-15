@@ -3,211 +3,864 @@ const chalk = require('chalk'); //for coloring console output
 
 const query = q => client.query(q)
 .then(result => console.log(result.command))
-.catch(e => console.error(chalk.bgRed(e.stack)));
+.catch(e => console.error(q + chalk.bgRed(e.stack)));
 
 //To run this script, type 'node init.js'. This script rebuilds the whole database.
 
 // DROP all existing tables
-query('DROP TABLE IF EXISTS addresses cascade;')
-query('DROP TABLE IF EXISTS customers cascade;')
-query('DROP TABLE IF EXISTS deliveries cascade;')
-query('DROP TABLE IF EXISTS delivery_riders cascade;')
-query('DROP TABLE IF EXISTS fds_manager cascade;')
-query('DROP TABLE IF EXISTS fds_promotion cascade;')
-query('DROP TABLE IF EXISTS food_items cascade;')
-query('DROP TABLE IF EXISTS food_items_in_orders cascade;')
-query('DROP TABLE IF EXISTS full_time_rider cascade;')
-query('DROP TABLE IF EXISTS opening_hours_template cascade;')
-query('DROP TABLE IF EXISTS options cascade;')
-query('DROP TABLE IF EXISTS orders cascade;')
-query('DROP TABLE IF EXISTS part_time_rider cascade;')
-query('DROP TABLE IF EXISTS places cascade;')
-query('DROP TABLE IF EXISTS promotions cascade;')
-query('DROP TABLE IF EXISTS restaurant_promotion cascade;')
-query('DROP TABLE IF EXISTS restaurant_staff cascade;')
-query('DROP TABLE IF EXISTS restaurants cascade;')
-query('DROP TABLE IF EXISTS salary cascade;')
-query('DROP TABLE IF EXISTS set_meals cascade;')
-query('DROP TABLE IF EXISTS time_entries cascade;')
-query('DROP TABLE IF EXISTS users cascade;')
-query('DROP TABLE IF EXISTS uses cascade;')
+query(`DROP TABLE IF EXISTS addresses cascade;`);
+query(`
+DROP TABLE IF EXISTS customers cascade;`);
+query(`
+DROP TABLE IF EXISTS deliveries cascade;`);
+query(`
+DROP TABLE IF EXISTS delivery_riders cascade;`);
+query(`
+DROP TABLE IF EXISTS fds_manager cascade;`);
+query(`
+DROP TABLE IF EXISTS fds_promotion cascade;`);
+query(`
+DROP TABLE IF EXISTS food_items cascade;`);
+query(`
+DROP TABLE IF EXISTS food_items_in_orders cascade;`);
+query(`
+DROP TABLE IF EXISTS full_time_rider cascade;`);
+query(`
+DROP TABLE IF EXISTS opening_hours_template cascade;`);
+query(`
+DROP TABLE IF EXISTS options cascade;`);
+query(`
+DROP TABLE IF EXISTS orders cascade;`);
+query(`
+DROP TABLE IF EXISTS part_time_rider cascade;`);
+query(`
+DROP TABLE IF EXISTS places cascade;`);
+query(`
+DROP TABLE IF EXISTS promotions cascade;`);
+query(`
+DROP TABLE IF EXISTS restaurant_promotion cascade;`);
+query(`
+DROP TABLE IF EXISTS restaurant_staff cascade;`);
+query(`
+DROP TABLE IF EXISTS restaurants cascade;`);
+query(`
+DROP TABLE IF EXISTS salary cascade;`);
+query(`
+DROP TABLE IF EXISTS set_meals cascade;`);
+query(`
+DROP TABLE IF EXISTS time_entries cascade;`);
+query(`
+DROP TABLE IF EXISTS users cascade;`);
+query(`
+DROP TABLE IF EXISTS uses cascade;`);
+query(`
+DROP TABLE IF EXISTS Salary_Paid_Out cascade;`);
 
-//DROP FUNCTIONS
-query('DROP FUNCTION IF EXISTS null_if_overlap_opening_hours_template cascade;')
-
-//CREATE all tables
-query(`create table Users(
+// USERS 
+query(`
+create table Users(
     userid varchar(30),
     user_password varchar(50),
     primary key(userid),
     unique (userid)
-);`)
+);`);
 
-query(`create table Customers(
+
+query(`INSERT INTO users(userid,user_password)
+VALUES('undertaker','undertaker');`
+);
+
+query(`
+INSERT INTO users(userid,user_password)
+VALUES('Bottleopener','Bottleopener');`
+);
+
+query(`
+INSERT INTO users(userid,user_password)
+VALUES('waiter','waiter');`
+);
+
+query(`
+INSERT INTO users(userid,user_password)
+VALUES('Manager','manager');`
+);
+
+query(`
+INSERT INTO users(userid,user_password)
+VALUES('lewis hamilton','password');`
+);
+
+query(`
+INSERT INTO users(userid,user_password)
+VALUES('Thomas Engine','password');`
+);
+
+query(`
+INSERT INTO users(userid,user_password)
+VALUES('Jay Park','jay');`
+);
+
+query(`
+INSERT INTO users(userid,user_password)
+VALUES('Akon','convict');`
+);
+
+
+// CUSTOMERS
+query(`
+create table Customers(
     cid VARCHAR(30),
     customer_name VARCHAR(30) NOT NULL,
     reward_points INTEGER DEFAULT 0,
     join_date DATE,
-    credit_card VARCHAR(255),
+    credit_card VARCHAR(255), -- only one credit_card
     primary key (cid),
-    foreign key(cid) references Users(userid) ON UPDATE CASCADE ON DELETE CASCADE
-);`)
+    foreign key(cid) references Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
-query(`create table Orders(
+query(`
+INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
+VALUES('undertaker','undertaker',0,'2020-04-07', '4258-1234-1010-0000');`
+);
+
+query(`
+INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
+VALUES('Jay Park','jay',0,'2019-12-07', '4228-1144-1040-0000');`
+);
+
+
+// ORDERS
+query(`
+create table Orders(
     order_id CHAR(11) UNIQUE,
-  	restaurant_review VARCHAR(255),
+	  restaurant_review VARCHAR(255),
     restaurant_rating INTEGER,
-    reward_points INTEGER DEFAULT 0,
     primary key (order_id)
-);`)
+);`);
 
-query(`create table Promotions (
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(1,null,null);`
+);
+
+query(`
+
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(2,'Good',4);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(3,'bad',1);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(4,'Great',5);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(5,'average',3);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(6,null,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(7,null,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(8,'poor',2);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(9,null,null);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(10,null,4);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(11,'Good',4);`
+);
+
+query(`
+INSERT INTO orders(order_id,restaurant_review, restaurant_rating)
+VALUES(12,'Good',4);`
+);
+
+// PROMOTIONS
+query(`
+create table Promotions (
     promo_code CHAR(10) UNIQUE,
-	promo_start_date date NOT NULL,
+	  promo_start_date date NOT NULL,
     promo_end_date date NOT NULL,
     promo_detail VARCHAR(255),
     primary key (promo_code)
-);`)
+);`);
 
-query(`create table Places(
+query(`
+INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
+VALUES('10%OFF','2020-04-07','2020-05-08','10%OFFEVERYTHING');`
+);
+
+query(`
+INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
+VALUES('FFS','2020-04-07','2020-04-15','FireSale');`
+);
+
+// PLACES
+query(`
+create table Places(
     order_id CHAR(11),
   	cid varchar(30) NOT NULL,
-    delivery_fee real default 0,
-    totalCost real default 1,
+    delivery_fee real default 0.00,
+    totalCost real default 0.00,
     primary key(order_id, cid),
-    foreign key(order_id) references orders(order_id),
-    foreign key(cid) references Customers(cid) ON UPDATE CASCADE
-);`)
+    foreign key(order_id) references orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    foreign key(cid) references Customers(cid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
-query(`create table Uses(
-    promo_code CHAR(10) NOT NULL,
-    order_id CHAR(11) NOT NULL,
-    usage serial NOT NULL,
-    primary key(promo_code, order_id),
-    foreign key(promo_code) references promotions (promo_code),
-    foreign key(order_id) references orders(order_id),
-    check (usage <= 10)
-);`)
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(1,'Jay Park');`
+);
 
-query(`create table Addresses(
-    address_id char(11),
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(2,'undertaker');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(3,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(4,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(5,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(6,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(7,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(8,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(9,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(10,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(11,'Jay Park');`
+);
+
+query(`
+INSERT INTO places(order_id,cid)
+VALUES(12,'Jay Park');`
+);
+
+//ADDRESSES
+query(`
+create table Addresses(
     street_name char(30),
-    building_num varchar(30),
+    building varchar(30),
     unit_num char(10),
     postal_code integer,
-    primary key (address_id),
-    UNIQUE (address_id)
-);`)
+    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
+    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
+    primary key (street_name,building,unit_num,postal_code)
+);`);
 
-query(`create table Restaurants(
-    rid VARCHAR(30),
+query(`
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('1 Jurong East','haven way','01-10','21221',0,0);`
+);
+
+query(`
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('2 Tampines East','24','10-02','123421',10,20);`
+);
+
+query(`
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('123 Outram park','serene','110-02','121121',-90,90);`
+);
+
+query(`
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('21 Toa payoh','214','01-02','124421',45,135);`
+);
+
+query(`
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('110 Marina South','2','02-02','122121',-60,60);`
+);
+
+query(`
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('50 Marina Bay','peace building','01-12','100321',-90,100);`
+);
+
+query(`
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('20 Shenton Way','102','05-12','102321',70,120);`
+);
+
+query(`
+INSERT INTO addresses(street_name,building,unit_num,postal_code,lon,lat)
+VALUES('50 Beach rd','1','01-12','101221',-90,-180);`
+);
+
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('1 Jurong East','Park Royale','01-10','21221', 30, 60);`)
+
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('01673 Prairie Rose Center','67','06-992','894194', 0, 0);`)
+
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('51059 Donald Circle','65','04-311','518902', 60, 120);`)
+
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('5 Ryan Junction','501','014-138','401187', 50, 10);`)
+
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('65147 Glendale Road','World trade centre','06-547','812826', 70, 130);`)
+
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('704 Butterfield Pass','301','05-273','323293', 10, 100);`)
+
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('85 Stephen Terrace','454','The deck','533718', -52.460869, 57.623873);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('72345 Johnson Place','397','05-839','629738', -88.135875, 86.094160);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('88589 Lawn Park','293','23-621','614155', -21.250454, -55.584994);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('66264 Commercial Crossing','444','010-750','117504', -73.250550, -38.900869);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('0774 Vidon Road','352','43-831','982301', 74.803253, 138.544289);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('6569 Ruskin Avenue','231','05-404','204169', 86.223249, 121.320663);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('7 Dahle Drive','94','07-278','659131', -48.541549, 142.850636);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('09214 Susan Alley','506','04-646','350462', -29.355311, 4.295997);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('2 American Junction','5','10-131','444146', 88.727524, 50.959641);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('323 Boyd Park','343','13-282','665519', -38.384449, 21.538372);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('1 Loftsgordon Lane','206','10-520','631539', -45.031137, 58.699953);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('9 Merry Junction','309','08-129','444350', 30.021383, -159.639914);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('88 Dahle Alley','230','04-226','168649', 48.547073, -42.561450);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('12 North Place','128','09-135','585548', 71.057150, 17.029164);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('55175 Kropf Street','85','12-336','813339', 14.235411, -124.157467);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('39785 Meadow Valley Point','449','08-923','491547', -82.263854, 43.505199);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('12722 Jay Parkway','85','011-403','660008', 29.867159, 65.122983);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('101 Lighthouse Bay Way','370','08-510','449106', 28.520224, -140.748376);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('969 Bunker Hill Alley','304','04-964','517031', 45.481907, -161.354697);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('40 Eagle Crest Place','316','010-535','186516', 58.026825, -103.533379);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('9541 Talisman Drive','297','04-492','561333', -18.641679, -91.098974);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('57512 Independence Crossing','396','06-115','324997', 5.991918, -97.299410);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('5 Mitchell Crossing','382','08-926','486416', -18.641679, -91.098974);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('7 Kings Trail','183','31-138','494340', 5.991918, -97.299410);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('681 Mayer Junction','581','014-143','401708', -13.123385, -97.772387);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('81947 Bartillon Pass','52','06-195','234466', 67.797856, -13.764454);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('475 Thompson Road','212','05-603','490613', -18.888002, -17.664477);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('20 Amoth Hill','378','07-952','921968', 1.911218, -107.209886);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('94211 Acker Way','168','05-420','135998', -52.575330, -175.343942);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('301 Fremont Lane','19','010-329','901441', -47.481769, 78.083661);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('231 Burning Wood Trail','287','07-607','213485', -39.917618, -58.241169);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('74809 Crowley Junction','200','012-394','294347', 47.493814, 4.544010);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('2296 Hansons Drive','87','010-212','851150', -49.300498, -53.534241);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('877 Bluestem Point','597','08-392','283444', 57.811491, 171.441510);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('11138 Arkansas Lane','505','011-347','109213', 59.372669, -1.953414);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('1489 Green Ridge Crossing','62','011-558','792225', 18.675885, -138.578967);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('43 Carey Drive','133','05-702','473870', -22.733447, -116.570578);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('83 Everett Park','305','012-563','461896', 78.899237, 14.921618);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('303 Vernon Point','385','08-678','231258', 90.0, -41.850743);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('1 Bunting Lane','545','014-592','377730', -9.186743, -156.220088);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('57 Washington Court','479','06-534','607372', 76.099138, 7.341149);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('34 Crescent Oaks Trail','344','03-324','656163', 80.538588, -22.667186);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('6 Kenwood Drive','102','04-174','513062', 16.619701, -171.037516);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('72 Oxford Lane','35','012-23','559997', 41.736290, -83.774396);`)
+query(`INSERT INTO addresses(street_name,building,unit_num,postal_code, lon, lat)
+VALUES('16711 Carpenter Park','52','09-171','586172', 48.006667, -145.150314);`)
+
+
+// RESTAURANTS
+query(`
+create table Restaurants(
     min_order_amt real,
-    located_at VARCHAR(255) UNIQUE,
+    street_name char(30),
+    building varchar(30),
+    unit_num char(10),
+    postal_code integer,
     restaurant_name VARCHAR(255),
-    primary key (rid),
-    foreign key(located_at) references Addresses(address_id)
-);`)
+    primary key (restaurant_name),
+    foreign key(street_name,building,unit_num,postal_code) references Addresses(street_name,building,unit_num,postal_code) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
-query(`create table Food_items(
-    food_item_name VARCHAR(30) UNIQUE,
+query(`
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(60,'1 Jurong East','haven way','01-10','21221','Dian Xiao er');`
+);
+
+query(`
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(20,'2 Tampines East','24','10-02','123421','SubWay');`
+);
+
+query(`
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,'123 Outram park','serene','110-02','121121','Macdonald');`
+);
+
+query(`
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(20,'21 Toa payoh','214','01-02','124421','PokeBowl');`
+);
+
+query(`
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(50,'21 Toa payoh','214','01-02','124421','Crystal Jade');`
+);
+
+query(`
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,'20 Shenton Way','102','05-12','102321','Tian tian chicken rice');`
+);
+
+query(`
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(30,'50 Beach rd','1','01-12','101221','Soup spoon');`
+);
+
+query(`
+INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,'50 Beach rd','1','01-12','101221','Char grill bar');`
+);
+
+//FOOD_ITEMS
+query(`
+create table Food_items(
+    food_item_name VARCHAR(30),
     price real,
     category VARCHAR(255),
     daily_limit integer,
     num_orders_made integer,
-    rid VARCHAR(30) not null,
-    primary key (rid,food_item_name),
-    Foreign key(rid) references restaurants(rid) ON UPDATE CASCADE ON DELETE CASCADE
-);`)
+    restaurant_name VARCHAR(255) not null,
+    primary key (restaurant_name,food_item_name),
+    Foreign key(restaurant_name) references restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
-query(`create table Options(
-    options_name varchar(30) UNIQUE,
-    type_of_option varchar(30),
-    addon_price real,
-    rid varchar(30) not null,
-    food_item_name VARCHAR(30) not null,
-    primary key(options_name,type_of_option,rid),
-    foreign key (rid,food_item_name) references food_items(rid,food_item_name) ON UPDATE cascade ON DELETE cascade
-);`)
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Chicken Rice',2.50,'Chinese',50,10,'Dian Xiao er');`
+);
 
-query(`create table Food_items_in_Orders(
-    qty INTEGER,
-    order_id VARCHAR(11),
-    food_item_name VARCHAR(30),
-    rid VARCHAR(30) not null,
-    options_name varchar(30),
-    primary key(order_id,food_item_name),
-    foreign key(order_id) references Orders(order_id),
-    foreign key(rid,food_item_name) references Food_items(rid,food_item_name),
-    foreign key(options_name) references Options(options_name) ON UPDATE CASCADE ON DELETE CASCADE
-);`)
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Ee Fu Mee',2,'Chinese',50,20,'Dian Xiao er');`
+);
 
-query(`create table Set_meals(
-    set_meal_id VARCHAR(30),
-    primary key(set_meal_id)
-);`)
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Fried Rice',4,'Chinese',50,0,'Dian Xiao er');`
+);
 
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Shark fin',30,'Chinese',50,0,'Dian Xiao er');`
+);
 
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Bird nest',25,'Chinese',50,0,'Dian Xiao er');`
+);
 
-query(`create table FDS_promotion(
-    fds_promo char(10) PRIMARY KEY references promotions(promo_code));
-`)
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cold cut trio',15.50,'Lifestyle',10,0,'SubWay');`
+);
 
-query(`create table Restaurant_promotion(
-    restaurant_promo char(10) primary KEY references promotions(promo_code));
-`)
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Tuna',25.50,'Lifestyle',10,0,'SubWay');`
+);
 
-query(`create table FDS_Manager(
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Turkey',12.50,'Lifestyle',10,0,'SubWay');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Subway club',13.50,'Lifestyle',10,0,'SubWay');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Big Mac',5.50,'Western',100,0,'Macdonald');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Mc chicken',5.50,'Western',100,0,'Macdonald');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Mc spicy',5.50,'Western',100,0,'Macdonald');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Samurai burger',5.50,'Western',100,0,'Macdonald');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Mcnuggets',5.50,'Western',100,0,'Macdonald');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Healthy stuff',10.50,'Lifestyle',50,0,'PokeBowl');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Vegan meatball',12.50,'Lifestyle',50,0,'PokeBowl');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Fruit shake',5.50,'Lifestyle',50,0,'PokeBowl');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Salad bowl',6.50,'Lifestyle',50,0,'PokeBowl');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Brown rice',10.50,'Lifestyle',50,0,'PokeBowl');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Chicken Rice',4.50,'Chinese',50,0,'Tian tian chicken rice');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Duck Rice',5.00,'Chinese',50,0,'Tian tian chicken rice');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Roasted Pork',5.50,'Chinese',50,0,'Tian tian chicken rice');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('tao hau',1.50,'Chinese',50,0,'Tian tian chicken rice');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Egg',0.50,'Chinese',50,0,'Tian tian chicken rice');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Fish and Chip',5.50,'Western',100,0,'Char grill bar');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Pork chop',5.50,'Western',100,0,'Char grill bar');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('steak',5.50,'Western',100,0,'Char grill bar');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Chicken chop',5.50,'Western',100,0,'Char grill bar');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('char grill',5.50,'Western',100,0,'Char grill bar');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Tomato',10.50,'Soup',100,0,'Soup spoon');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Mushroom',12.50,'Soup',100,0,'Soup spoon');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Beef strew',15.50,'Soup',100,0,'Soup spoon');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('corn',17.50,'Soup',100,0,'Soup spoon');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('carrot',15.50,'Soup',100,0,'Soup spoon');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('ABC',5.50,'Soup',100,0,'Crystal Jade');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Salted vegetable',15.50,'Soup',100,0,'Crystal Jade');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Pork ribs',15.50,'Soup',100,0,'Crystal Jade');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cure illness',15.50,'Soup',100,0,'Crystal Jade');`
+);
+
+query(`
+INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('smooth plegm',15.50,'Soup',100,0,'Crystal Jade');`
+);
+
+//FOOD_ITEMS_IN_ORDERS
+query(`
+ create table Food_items_in_Orders(
+   qty INTEGER,
+   order_id VARCHAR(11),
+   food_item_name VARCHAR(30),
+   restaurant_name VARCHAR(255) not null,
+   primary key(order_id,food_item_name),
+   foreign key(order_id) references Orders(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
+   foreign key(restaurant_name,food_item_name) references Food_items(restaurant_name,food_item_name) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+
+query(`
+INSERT INTO food_items_in_orders(qty,order_id,food_item_name,restaurant_name)
+VALUES(3,1,'Chicken Rice','Dian Xiao er');`
+);
+
+query(`
+INSERT INTO food_items_in_orders(qty,order_id,food_item_name,restaurant_name)
+VALUES(1,2,'Cold cut trio','SubWay');`
+);
+
+//FDS_PROMOTION
+query(`
+create table FDS_promotion(fds_promo char(10) PRIMARY KEY references promotions(promo_code));`);
+
+query(`
+INSERT INTO FDS_promotion(fds_promo)
+VALUES('FFS');`
+);
+
+//RESTAURANT_PROMOTION
+query(`
+create table Restaurant_promotion(restaurant_promo char(10) primary KEY references promotions(promo_code),
+                                  restaurant_name VARCHAR(255),
+                                  foreign key(restaurant_name) references restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
+                                );`);
+
+query(`
+INSERT INTO restaurant_promotion(restaurant_promo,restaurant_name)
+VALUES('10%OFF','Dian Xiao er');`
+);
+
+//FDS_MANAGER
+query(`
+create table FDS_Manager(
     manager_id varchar(30) primary key,
-    foreign key(manager_id) REFERENCES Users(userid) on delete cascade ON UPDATE CASCADE
-);`)
+    foreign key(manager_id) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
-query(`create table Restaurant_Staff(
+query(`
+INSERT INTO fds_manager(manager_id)
+VALUES('Manager');`
+);
+
+// RESTAURANT STAFF
+query(`
+create table Restaurant_Staff(
     staff_id varchar(30) primary key,
-    foreign key(staff_id) REFERENCES Users(userid) on delete cascade ON UPDATE CASCADE
-);`)
+    foreign key(staff_id) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
+query(`
+INSERT INTO restaurant_staff(staff_id)
+VALUES('waiter');`
+);
+query(`
+INSERT INTO restaurant_staff(staff_id)
+VALUES('Akon');`
+);
 
-query(`create table Delivery_Riders(
+//DELIVERY_RIDERS
+query(`
+create table Delivery_Riders(
     did varchar(30),
-    start_work_date timestamp,
     sum_all_ratings integer,
     num_deliveries integer,
     primary key(did),
-    foreign key(did) REFERENCES Users(userid) on delete cascade ON UPDATE CASCADE
-);`)
+    foreign key(did) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
-query(`create table Salary(
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('lewis hamilton',0,0);`
+);
+
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('Thomas Engine',4.5,100);`
+);
+
+//SALARY
+query(`
+create table Salary(
     did varchar(30),
-    salary_date timestamp,
+    salary_date timestamp, -- date that we pay them
     base_salary real default 0.00,
     commission real default 0.00,
     primary key (did, salary_date),
-    foreign key(did) REFERENCES Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade
-);`)
+    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
-query(`create table Time_Entries(
-    did varchar(30),
-    clock_in TIMESTAMP,
-    clock_out TIMESTAMP,
-    primary key(did, clock_in),
-    foreign key(did) REFERENCES Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade
-);`)
+query(`
+INSERT INTO salary(did,salary_date,base_salary,commission)
+VALUES('lewis hamilton','2000-10-10',100,10);`
+);
 
-query(`create table Full_Time_Rider(
+query(`
+INSERT INTO salary(did,salary_date,base_salary,commission)
+VALUES('Thomas Engine','2010-10-10',100,10);`
+);
+
+//SALARY_PAID_OUT
+query(`
+create table Salary_Paid_Out(
+  day_Paid_Out Date,
+  total_amount_paid real default 0.00,
+  did varchar(30),
+  primary key (day_Paid_Out),
+  foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+
+);`);
+
+//FULL_TIME_RIDER
+query(`
+create table Full_Time_Rider(
     did varchar(30),
-    month_of_work TIMESTAMP,
     wws_start_day char(3),
     day1_shift integer,
     day2_shift integer,
     day3_shift integer,
     day4_shift integer,
     day5_shift integer,
-    primary key(did, month_of_work),
-    foreign key(did) REFERENCES Delivery_Riders ON UPDATE CASCADE ON DELETE cascade
-);`)
+    primary key(did),
+    foreign key(did) REFERENCES Delivery_Riders ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
-query(`create table Part_Time_Rider (
+query(`
+INSERT INTO FULL_TIME_RIDER(did, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('lewis hamilton','mon',1,1,1,1,1);`
+);
+
+
+//PART_TIME_RIDER
+query(`
+create table Part_Time_Rider (
     did varchar(30),
-    week_of_work TIMESTAMP,
+    week_of_work DATE,
     mon bigint,
     tue bigint,
     wed bigint,
@@ -216,14 +869,30 @@ query(`create table Part_Time_Rider (
     sat bigint,
     sun bigint,
     primary key(did, week_of_work),
-    foreign key(did) REFERENCES Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade
-);
-`)
+    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
-query(`create table Deliveries (
+query(`
+INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
+VALUES('Thomas Engine','2017-10-25',0,10,0,0,10,10,0);`
+);
+
+query(`
+INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
+VALUES('Thomas Engine','2020-10-25',0000100,10,0,0,10,10,0);`
+);
+
+query(`
+INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
+VALUES('Thomas Engine','2018-10-25',0000000,10,0,0,10,10,0);`
+);
+
+
+//DELIVERIES
+query(`
+create table Deliveries (
     order_id char(11),
     driver varchar(30) not null,
-
     time_customer_placed_order TIMESTAMP,
     time_rider_departs_for_restaurant TIMESTAMP,
     time_rider_reach_restaurant TIMESTAMP,
@@ -231,99 +900,108 @@ query(`create table Deliveries (
     time_rider_delivers_order TIMESTAMP,
     delivery_rating integer,
     comments_for_rider CHAR(100),
-    delivers_to varchar(255),
+    street_name char(30),
+    building varchar(30),
+    unit_num char(10),
+    postal_code integer,
+    reward_points_used integer,
     primary key(order_id),
-    foreign key(order_id) references Orders(order_id) ON UPDATE CASCADE ON DELETE cascade,
-    foreign key(driver) references Delivery_Riders(did) ON UPDATE CASCADE ON DELETE cascade,
-    foreign key(delivers_to) references Addresses(address_id) ON UPDATE CASCADE ON DELETE cascade
-);`)
+    foreign key(order_id) references Orders(order_id) on update cascade on delete cascade,
+    foreign key(driver) references Delivery_Riders(did) on UPDATE cascade on delete cascade,
+    foreign key(street_name,building,unit_num,postal_code) references Addresses(street_name,building,unit_num,postal_code) on UPDATE cascade on delete cascade
+);`);
 
-query(`CREATE TABLE opening_hours_template (
-    id SERIAL PRIMARY KEY,
-    restaurant_id varchar(30) NOT NULL REFERENCES restaurants(rid) ON UPDATE CASCADE ON DELETE CASCADE,
-    start_day integer NOT NULL,
-    start_time time NOT NULL,
-    end_day integer NOT NULL,
-    end_time time NOT NULL,
-    CHECK (start_day >= 0 AND start_day < 7),
-    CHECK (end_day >= 0 AND end_day < 7)
-  );`)
+query(`
+INSERT INTO deliveries(order_id, driver ,time_customer_placed_order , time_rider_departs_for_restaurant , time_rider_reach_restaurant , time_rider_departs_restaurant , time_rider_delivers_order , delivery_rating ,comments_for_rider , street_name, building, unit_num, postal_code, reward_points_used )
+VALUES (1,'lewis hamilton','2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221', 0);`
+);
 
-query(`CREATE FUNCTION null_if_overlap_opening_hours_template()
-RETURNS trigger AS
-$$
-BEGIN
-IF EXISTS (SELECT * FROM opening_hours_template T WHERE
-  T.restaurant_id = NEW.restaurant_id AND (
-  (
-    -- condition: range of given existing row does not have sat midnight in interior
-    --            and range of new row does not have sat midnight in interior
-    ((T.start_day < T.end_day) OR (T.start_day = T.end_day AND T.start_time <= T.end_time))
-    AND
-    ((NEW.start_day < NEW.end_day) OR (NEW.start_day = NEW.end_day AND NEW.start_time <= NEW.end_time))
-    AND NOT
+
+/**
+ * Trigger 2
+ * Before an insertion of a finalised order into the delivery table, the total cost for that delivery and the number of reward points earned are calculated.
+ * The reward points are then added to the customer in the Customers table, and the total cost is recorded in the Places table.
+ *
+*/
+
+// Helper functions
+
+// Function 1:  Get subtotal for an order
+query(`DROP FUNCTION IF EXISTS getSubtotal;`);
+query(`
+  CREATE OR REPLACE FUNCTION getSubtotal(oid VARCHAR(11))
+  returns real as $$
+    WITH current_orders AS
     (
-      -- either existing row is before new row
-      (T.end_day < NEW.start_day) OR (T.end_day = NEW.start_day AND T.end_time < NEW.start_time)
-      -- or new row is before existing row
-      OR
-      (NEW.end_day < T.start_day) OR (NEW.end_day = T.start_day AND NEW.end_time < T.start_time)
+      SELECT qty, FIO.food_item_name, FIO.restaurant_name, F.price as price
+      FROM food_items_in_orders FIO natural join Food_items F
+      WHERE FIO.order_id = oid
     )
-  )
-  OR
-  (
-    -- condition: range of given existing row has sat midnight in interior
-    --            and range of new row does not have sat midnight in interior
-    ((T.end_day < T.start_day) OR (T.end_day = T.start_day AND T.end_time < T.start_time))
-    AND
-    ((NEW.start_day < NEW.end_day) OR (NEW.start_day = NEW.end_day AND NEW.start_time <= NEW.end_time))
-    AND NOT (
-    -- range of new row must be after the range of existing row ends...
-    ((T.end_day < NEW.start_day) OR (T.end_day = NEW.start_day AND T.end_time < NEW.start_time))
-    AND
-    -- and before the range of existing row starts.
-    ((NEW.end_day < T.start_day) OR (NEW.end_day = T.start_day AND NEW.end_time < T.start_time))
-    )
-  )
-  OR
-  (
-    -- condition: range of given existing row does not have sat midnight in interior
-    --            and range of new row has sat midnight in interior
-    ((T.start_day < T.end_day) OR (T.start_day = T.end_day AND T.start_time <= T.end_time))
-    AND
-    ((NEW.end_day < NEW.start_day) OR (NEW.end_day = NEW.start_day AND NEW.end_time < NEW.start_time))
-    -- same conditions as previous case
-    AND NOT (
-    ((NEW.end_day < T.start_day) OR (NEW.end_day = T.start_day AND NEW.end_time < T.start_time))
-    AND
-    ((T.end_day < NEW.start_day) OR (T.end_day = NEW.start_day AND T.end_time < NEW.start_time))
-    )
-  )
-  -- if range of new row and given existing row both have sat midnight in interior, they certainly overlap
-  OR
-  (
-    -- condition: range of new row has sat midnight in interior
-    --            and range of given existing row has sat midnight in interior
-    ((T.end_day < T.start_day) OR (T.end_day = T.start_day AND T.end_time < T.start_time))
-    AND
-    ((NEW.end_day < NEW.start_day) OR (NEW.end_day = NEW.start_day AND NEW.end_time < NEW.start_time))
-  )
-  )
-)
-THEN
-  RETURN NULL;
-ELSE
-  RETURN NEW;
-END IF;
-END;
-$$
-LANGUAGE plpgsql;`)
 
-query(`CREATE TRIGGER no_overlaps_opening_hours_template BEFORE INSERT
-ON opening_hours_template
-FOR ROW
-EXECUTE PROCEDURE null_if_overlap_opening_hours_template();`)
+    SELECT SUM(price * CAST(qty as real)) FROM current_orders;
+  $$ language sql;
+`)
 
+// Function 2:  generated by Function 1
+// query(`
+// CREATE OR REPLACE FUNCTION food_items(oid VARCHAR(11)) 
+//   RETURNS table (subtotal real, qty integer)
+//   as $$
+    // WITH (SELECT qty, FIO.food_item_name, FIO.restaurant_name, price
+    // FROM food_items_in_orders FIO natural join food_items F
+    // WHERE FIO.order_id = oid) AS orders
+    // SELECT SUM(price * qty) as subtotal, SUM(qty) as count
+    // from orders;
+//   $$ language sql;
+//   CREATE OR REPLACE FUNCTION 
+//   subtotal(
+//     order_list table( qty INTEGER, 
+//                       food_item_name VARCHAR(30), 
+//                       restaurant_name VARCHAR(255), 
+//                       price real
+//                     )
+//           )
+//   (out subtotal real, out qty INTEGER)
+//   returns record 
+//   as $$
+//     SELECT SUM(price * qty), SUM(qty)
+//     from order_list;
+//   $$ language sql;
+// `)
+// // Create the trigger
+// query(`
+//   CREATE OR REPLACE FUNCTION compute_total_cost_and_rewards () RETURNS TRIGGER 
+//   AS $$ 
+//   DECLARE
+//     customer_id varchar(30);
+//   BEGIN
+//     -- get the cid
+//     SELECT P.cid INTO customer_id
+//     FROM Places P
+//     WHERE P.order_id = NEW.order_id;
+//     --
+
+
+//   END 
+//   $$ LANGUAGE plpgsql;
+
+// `)
+
+// //set the trigger
+// query(`
+//   DROP TRIGGER IF EXISTS deliveries_trigger ON Deliveries CASCADE;
+//   CREATE TRIGGER deliveries_trigger
+//     BEFORE INSERT
+//     ON Deliveries
+//     FOR EACH ROW
+//     EXECUTE FUNCTION compute_total_cost_and_rewards();
+// `)
+
+//insert data to test on
+
+//delete data
+
+/*
 query(`create or replace function fn_setPartTimeRider() returns trigger as
   $$
 declare
@@ -484,156 +1162,7 @@ create trigger tr_resetNumOrders
 execute function fn_resetNumOrders();`)
 
 
-//INSERT starting values into tables
-query(`INSERT INTO users(userid,user_password)
-VALUES('undertaker','undertaker');`)
-query(`INSERT INTO users(userid,user_password)
-VALUES('Bottleopener','Bottleopener');`)
-query(`INSERT INTO users(userid,user_password)
-VALUES('waiter','waiter');`)
-query(`INSERT INTO users(userid,user_password)
-VALUES('Manager','manager');`)
-query(`INSERT INTO users(userid,user_password)
-VALUES('lewis hamilton','password');`)
-query(`INSERT INTO users(userid,user_password)
-VALUES('Thomas Engine','password');`)
-query(`INSERT INTO users(userid,user_password)
-VALUES('Jay Park','jay');`)
 
-query(`INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
-VALUES('undertaker','undertaker',0,'2020-04-07', '4258-1234-1010-0000');`)
-query(`INSERT INTO customers(cid,customer_name,reward_points,join_date,credit_card)
-VALUES('Jay Park','jay',0,'2019-12-07', '4228-1144-1040-0000');`)
-
-
-query(`INSERT INTO restaurant_staff(staff_id)
-VALUES('waiter');`)
-
-
-query(`INSERT INTO fds_manager(manager_id)
-VALUES('Manager');`)
-
-
-query(`INSERT INTO Delivery_riders(did,start_work_date,sum_all_ratings,num_deliveries)
-VALUES('lewis hamilton','2020-04-11',0,0);`)
-query(`INSERT INTO Delivery_riders(did,start_work_date,sum_all_ratings,num_deliveries)
-VALUES('Thomas Engine','2019-11-04',4.5,100);`)
-
-query(`INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
-VALUES('Thomas Engine','2017-10-25',0,10,0,0,10,10,0);`)
-
-query(`INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
-VALUES('lewis hamilton','1998-09-01','mon',1,2,1,2,4);`)
-
-query(`INSERT INTO salary(did,salary_date,base_salary,commission)
-VALUES('lewis hamilton','2000-10-10',100,10);`)
-query(`INSERT INTO salary(did,salary_date,base_salary,commission)
-VALUES('Thomas Engine','2010-10-10',100,10);`)
-
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(1,'1 Jurong East','Park Royale','01-10','21221');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(2,'2 Tampines East','24','10-02','123421');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(3,'01673 Prairie Rose Center','67','06-992','894194');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(4,'51059 Donald Circle','65','04-311','518902');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(5,'5 Ryan Junction','501','014-138','401187');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(6,'65147 Glendale Road','World trade centre','06-547','812826');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(7,'704 Butterfield Pass','301','05-273','323293');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(8,'85 Stephen Terrace','454','The deck','533718');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(9,'72345 Johnson Place','397','05-839','629738');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(10,'88589 Lawn Park','293','23-621','614155');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(11,'66264 Commercial Crossing','444','010-750','117504');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(12,'0774 Vidon Road','352','43-831','982301');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(13,'6569 Ruskin Avenue','231','05-404','204169');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(14,'7 Dahle Drive','94','07-278','659131');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(15,'09214 Susan Alley','506','04-646','350462');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(16,'2 American Junction','5','10-131','444146');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(17,'323 Boyd Park','343','13-282','665519');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(18,'1 Loftsgordon Lane','206','10-520','631539');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(19,'9 Merry Junction','309','08-129','444350');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(20,'88 Dahle Alley','230','04-226','168649');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(21,'12 North Place','128','09-135','585548');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(22,'55175 Kropf Street','85','12-336','813339');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(23,'39785 Meadow Valley Point','449','08-923','491547');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(24,'12722 Jay Parkway','85','011-403','660008');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(25,'101 Lighthouse Bay Way','370','08-510','449106');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(26,'969 Bunker Hill Alley','304','04-964','517031');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(27,'40 Eagle Crest Place','316','010-535','186516');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(28,'9541 Talisman Drive','297','04-492','561333');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(29,'57512 Independence Crossing','396','06-115','324997');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(30,'5 Mitchell Crossing','382','08-926','486416');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(31,'7 Kings Trail','183','31-138','494340');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(32,'681 Mayer Junction','581','014-143','401708');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(33,'81947 Bartillon Pass','52','06-195','234466');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(34,'475 Thompson Road','212','05-603','490613');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(35,'20 Amoth Hill','378','07-952','921968');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(36,'94211 Acker Way','168','05-420','135998');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(37,'301 Fremont Lane','19','010-329','901441');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(38,'231 Burning Wood Trail','287','07-607','213485');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(39,'74809 Crowley Junction','200','012-394','294347');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(40,'2296 Hansons Drive','87','010-212','851150');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(41,'877 Bluestem Point','597','08-392','283444');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(42,'11138 Arkansas Lane','505','011-347','109213');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(43,'1489 Green Ridge Crossing','62','011-558','792225');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(44,'43 Carey Drive','133','05-702','473870');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(45,'83 Everett Park','305','012-563','461896');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(46,'303 Vernon Point','385','08-678','231258');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(47,'1 Bunting Lane','545','014-592','377730');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(48,'57 Washington Court','479','06-534','607372');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(49,'34 Crescent Oaks Trail','344','03-324','656163');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(50,'6 Kenwood Drive','102','04-174','513062');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(51,'72 Oxford Lane','35','012-23','559997');`)
-query(`INSERT INTO addresses(address_id,street_name,building_num,unit_num,postal_code)
-VALUES(52,'16711 Carpenter Park','52','09-171','586172');`)
 
 query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
 VALUES(1,60,1,'Dian Xiao er');`)
@@ -741,20 +1270,13 @@ query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
 VALUES(52,24,52,'The Japanese Window');`)
 
 
-query(`INSERT INTO opening_hours_template(id,restaurant_id,start_day,start_time,end_day,end_time)
-VALUES(0,1,0,'10:00:00',0,'00:00:00');`)
-query(`INSERT INTO opening_hours_template(id,restaurant_id,start_day,start_time,end_day,end_time)
-VALUES(1,1,1,'10:00:00',1,'20:00:00');`)
-query(`INSERT INTO opening_hours_template(id,restaurant_id,start_day,start_time,end_day,end_time)
-VALUES(2,1,2,'10:00:00',2,'20:00:00');`)
-query(`INSERT INTO opening_hours_template(id,restaurant_id,start_day,start_time,end_day,end_time)
-VALUES(3,1,3,'10:00:00',3,'20:00:00');`)
-query(`INSERT INTO opening_hours_template(id,restaurant_id,start_day,start_time,end_day,end_time)
-VALUES(4,1,4,'10:00:00',4,'20:00:00');`)
-query(`INSERT INTO opening_hours_template(id,restaurant_id,start_day,start_time,end_day,end_time)
-VALUES(5,1,5,'10:00:00',5,'20:00:00');`)
-query(`INSERT INTO opening_hours_template(id,restaurant_id,start_day,start_time,end_day,end_time)
-VALUES(6,1,6,'10:00:00',6,'00:00:00');`)
+
+
+
+
+
+
+
 
 query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
 VALUES('Chicken Rice',2.50,'Chinese',50,0,1);`)
@@ -924,10 +1446,7 @@ VALUES('medium','Size',2,5,'Pressure-Cooked Pine Boar');`)
 query(`INSERT INTO Options(options_name,type_of_option,addon_price,rid,food_item_name)
 VALUES('large','Size',4,5,'Pressure-Cooked Pine Boar');`)
 
-query(`INSERT INTO Set_meals(set_meal_id)
-VALUES(1);`)
-query(`INSERT INTO Set_meals(set_meal_id)
-VALUES(2);`)
+
 
 query(`INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
 VALUES('10%OFF','2020-04-07','2020-05-08','10%OFFEVERYTHING');`)
@@ -966,36 +1485,6 @@ query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_
 VALUES(12,'Good',4,null);`)
 
 
-
-query(`INSERT INTO places(order_id,cid)
-VALUES(1,'Jay Park');`)
-query(`INSERT INTO places(order_id,cid)
-VALUES(2,'undertaker');`)
-query(`INSERT INTO places(order_id,cid)
-VALUES(3,'Jay Park');`)
-query(`INSERT INTO places(order_id,cid)
-VALUES(4,'Jay Park');`)
-query(`INSERT INTO places(order_id,cid)
-VALUES(5,'Jay Park');`)
-query(`INSERT INTO places(order_id,cid)
-VALUES(6,'Jay Park');`)
-query(`INSERT INTO places(order_id,cid)
-VALUES(7,'Jay Park');`)
-query(`INSERT INTO places(order_id,cid)
-VALUES(8,'Jay Park');`)
-query(`INSERT INTO places(order_id,cid)
-VALUES(9,'Jay Park');`)
-query(`INSERT INTO places(order_id,cid)
-VALUES(10,'Jay Park');`)
-query(`INSERT INTO places(order_id,cid)
-VALUES(11,'Jay Park');`)
-query(`INSERT INTO places(order_id,cid)
-VALUES(12,'Jay Park');`)
-
-
-
-
-
 query(`INSERT INTO uses(promo_code,order_id,usage)
 VALUES('FFS',1,0);`)
 query(`INSERT INTO uses(promo_code,order_id,usage)
@@ -1005,32 +1494,3 @@ query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(3,1,1,'Chicken Rice');`)
 query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
 VALUES(1,2,2,'Cold cut trio');`)
-
-// Queries for FDS Manager
-query('select unique fds_promo as FDS Promotion from FDS_Promotion;') //see fds promotions
-query ('select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see rest promotions
-query('select unique fds_promo as FDS Promotion from FDS_Promotion union select unique restaurant_promo as Restaurant Promotions from Restaurant_promotion;') //see all promotions
-query('select count(cid), count(order_id), sum(costs) from ?? group by Month(join_date)') // undone
-// each month, total number of new customers, total orders, total cost of all orders
-// each month and each customer who placed some order for that month, total number of orders placed by the customer for that month and the total cost of all these orders
-// for each hour and each delivery location area, total number of orders placed at that hour for that location area
-// each rider and each month, total number of orders delivered by the rider for that motnh, total hours worked, total salary earned, average delivery time, number of ratings, average ratings for that month
-
-
-// See available riders
-query(`select did as Name from Time_Entries where (clock_in != null and clock_out = null);`)
-
-// Restaurant related queries
-query('select unique category as FoodCategory from Food_items;')
-query('select food_item_name as Item, category as FoodCategory from Food_items group by category;')
-query('select unique food_item_name as Item from Food_items from Food_items order by category limit(5);')
-
-// Customer's 5 most recent addresses
-query('select cid as CustomerName, address as Address from Customers group by cid limit (5);')
-
-// Queries for customers
-// let customers view their reviews forthe restaurant
-
-// Queries for restaurant staff
-
-// Queries for delivery riders

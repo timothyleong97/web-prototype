@@ -9,6 +9,7 @@ const options = [
 const RiderSummary = (props) => {
   let history = useHistory();
   return (
+
     <Container>
       <Grid>
     <Grid.Row columns="equal">

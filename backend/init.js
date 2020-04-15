@@ -121,7 +121,7 @@ VALUES('Jay Park','jay',0,'2019-12-07', '4228-1144-1040-0000');`
 query(`
 create table Delivery_Riders(
     did varchar(30),
-    sum_all_ratings integer,
+    sum_all_ratings real,
     num_deliveries integer,
     primary key(did),
 
@@ -304,6 +304,7 @@ VALUES('16711 Carpenter Park','52','09-171','586172', 48.006667, -145.150314);`)
 query(`
 create table Restaurants(
     min_order_amt real,
+    sum_all_ratings real,
     street_name char(30),
     building varchar(30),
     unit_num char(10),
@@ -314,43 +315,43 @@ create table Restaurants(
 );`);
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(60,'1 Jurong East','haven way','01-10','21221','Dian Xiao er');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(60,4.4,'1 Jurong East','haven way','01-10','21221','Dian Xiao er');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(20,'2 Tampines East','24','10-02','123421','SubWay');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(20,3.5,'2 Tampines East','24','10-02','123421','SubWay');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(10,'123 Outram park','serene','110-02','121121','Macdonald');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,2.2,'123 Outram park','serene','110-02','121121','Macdonald');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(20,'21 Toa payoh','214','01-02','124421','PokeBowl');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(20,4.3,'21 Toa payoh','214','01-02','124421','PokeBowl');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(50,'21 Toa payoh','214','01-02','124421','Crystal Jade');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(50,3.9,'21 Toa payoh','214','01-02','124421','Crystal Jade');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(10,'20 Shenton Way','102','05-12','102321','Tian tian chicken rice');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,5.0,'20 Shenton Way','102','05-12','102321','Tian tian chicken rice');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(30,'50 Beach rd','1','01-12','101221','Soup spoon');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(30,3.4,'50 Beach rd','1','01-12','101221','Soup spoon');`
 );
 
 query(`
-INSERT INTO restaurants(min_order_amt,street_name,building,unit_num,postal_code,restaurant_name)
-VALUES(10,'50 Beach rd','1','01-12','101221','Char grill bar');`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,4.0,'50 Beach rd','1','01-12','101221','Char grill bar');`
 );
 
 // ORDERS

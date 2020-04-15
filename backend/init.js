@@ -1000,9 +1000,8 @@ query(`
     consecutiveOnes INTEGER := 0;
     lastDigit INTEGER := 0;
     startTime INTEGER := 21;
-    schedule_temp INTEGER := 0;
+    schedule_temp bigint := schedule;
   BEGIN
-    RAISE NOTICE 'inside numzeros';
     WHILE schedule_temp > 0 LOOP
       lastDigit := MOD(schedule_temp, 10);
       IF (lastDigit = 1) THEN
@@ -1017,6 +1016,7 @@ query(`
         consecutiveOnes := 0; --reset count
       END IF;
       startTime := startTime - 1;
+      schedule_temp := schedule_temp / 10;
     END LOOP;
     RETURN counter;
   END;

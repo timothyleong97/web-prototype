@@ -702,10 +702,11 @@ VALUES('FFS');`);
 
 //RESTAURANT_PROMOTION
 query(`
-create table Restaurant_promotion(restaurant_promo char(10) primary KEY references promotions(promo_code),
-                                  restaurant_name VARCHAR(255),
-                                  foreign key(restaurant_name) references restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
-                                );`);
+create table Restaurant_promotion(
+  restaurant_promo char(10) primary KEY references promotions(promo_code),
+  restaurant_name VARCHAR(255),
+  foreign key(restaurant_name) references restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
 query(`
 INSERT INTO restaurant_promotion(restaurant_promo,restaurant_name)
@@ -882,28 +883,6 @@ EXECUTE FUNCTION partTimeRidersConvertWeek();`)
 
 /**
  * Trigger 1
- *  schemas :Part_Time_Rider (
-    did varchar(30),
-    week_of_work DATE,
-    mon bigint,
-    tue bigint,
-    wed bigint,
-    thu bigint,
-    fri bigint,
-    sat bigint,
-    sun bigint,
-    primary key(did, week_of_work),
-    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
-)
-
-create table Salary(
-    did varchar(30),
-    salary_date timestamp, -- date that we pay them
-    base_salary real default 0.00,
-    commission real default 0.00,
-    primary key (did, salary_date),
-    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
-);
  * Part timer schedule looks like this : 001001010... where 1 means working. Leading zeroes are dropped.
  * Before an insertion of a schedule into the part-time_riders table, check if
  * 1. there are more than 4 consecutive zeroes for mon to sun,

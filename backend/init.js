@@ -1463,34 +1463,34 @@ create table Deliveries (
 );
 );
  */
-query(`
-WITH AvailableRiders as (
-      SELECT did from Delivery_riders
-      WHERE did in (select did from Full_time_rider)
-      AND IS_FULL_TIMER_WORKING(did) = 1
+// query(`
+// WITH AvailableRiders as (
+//       SELECT did from Delivery_riders
+//       WHERE did in (select did from Full_time_rider)
+//       AND IS_FULL_TIMER_WORKING(did) = 1
 
-      UNION
-      SELECT did from Delivery_riders
-      WHERE did in (select did from Part_time_rider)
-      AND IS_PART_TIMER_WORKING(did) = 1
-      ),
-      LastLocationOfRiders as (
-        select did, lat, lon
-        from AvailableRiders R, Deliveries D, Addresses A
-        where R.did = D.driver
-        and D.street_name = A.street_name
-        and D.building = A.building
-        and D.unit_num = A.unit_num
-        and D.postal_code = A.postal_code
-        and time_rider_delivers_order >= (SELECT MAX(time_rider_delivers_order) from Deliveries D2 where D2.driver = D.driver)
-      )
-      -- $1 means the customer's latitude, $2 the longitude
-      select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - $1) * pi()/180 / 2), 2) +  COS(lat * pi()/180) *  COS($1 * pi()/180) *  POWER(SIN((lon -$2) * pi()/180 / 2), 2)  )) as d
-      from LastLocationOfRiders
-      order by d asc nulls first
-      limit 1;
+//       UNION
+//       SELECT did from Delivery_riders
+//       WHERE did in (select did from Part_time_rider)
+//       AND IS_PART_TIMER_WORKING(did) = 1
+//       ),
+//       LastLocationOfRiders as (
+//         select did, lat, lon
+//         from AvailableRiders R, Deliveries D, Addresses A
+//         where R.did = D.driver
+//         and D.street_name = A.street_name
+//         and D.building = A.building
+//         and D.unit_num = A.unit_num
+//         and D.postal_code = A.postal_code
+//         and time_rider_delivers_order >= (SELECT MAX(time_rider_delivers_order) from Deliveries D2 where D2.driver = D.driver)
+//       )
+//       -- $1 means the customer's latitude, $2 the longitude
+//       select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - $1) * pi()/180 / 2), 2) +  COS(lat * pi()/180) *  COS($1 * pi()/180) *  POWER(SIN((lon -$2) * pi()/180 / 2), 2)  )) as d
+//       from LastLocationOfRiders
+//       order by d asc nulls first
+//       limit 1;
       
-`);
+// `);
 
 //NOTE THAT THIS ABOVE FUNCTION THROWS AN ERROR BECAUSE $1 and $2 are not defined.
 

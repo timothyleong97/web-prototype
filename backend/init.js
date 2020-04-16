@@ -333,6 +333,16 @@ INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_
 VALUES(10,4.0,'50 Beach rd','1','01-12','101221','Char grill bar');`
 );
 
+query(`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,4.4,'57 Washington Court','479','06-534','607372','That Fantasy Bistro');`
+);
+
+query(`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,4.4,'2296 Hansons Drive','87','010-212','851150','Fairy Court');`
+);
+
 // ORDERS
 query(`
 create table Orders(
@@ -419,11 +429,11 @@ create table Promotions (
 
 /**
  * PROMOS MUST MATCH THESE 4 signatures
- * 
+ *
  * X%OFF
  * -XDOLLARS
  * MINSPENDXDISCOUNTY
- * MINSPENDXPERCENTOFFY 
+ * MINSPENDXPERCENTOFFY
  * where X and Y are positive integers
  */
 
@@ -679,6 +689,83 @@ VALUES('Cure illness',15.50,'Soup',100,0,'Crystal Jade');`);
 query(`
 INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
 VALUES('smooth plegm',15.50,'Soup',100,0,'Crystal Jade');`);
+
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Pressure-Cooked Pine Boar',3.8,'Wild',50,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Slow-Cooked Apples Bear',7.6,'Wild',46,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Smoked Honey & Almond Cod',6.6,'Wild',14,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Seared Tortilla',9.2,'Mexican',21,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cherry and Raspberry Toast',5.3,'Dessert',11,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Chestnut and Honey Cake',9,'Dessert',21,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Date Tarte Tatin',7.5,'Dessert',35,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Vanilla Trifle',2.1,'Dessert',23,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cured Ginger Venison',4.2,'Wild',16,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Roast Sweet Chicken',7.8,'Western',24,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Breaded Pineapple Frog',0.6,'Wild',10,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Seared Mustard Fish',9.4,'Western',50,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Simmered Garlic Sandwich',5.1,'Western',34,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cooked Winter Greens',6.4,'Western',23,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('White Walnut Mooncake',3,'Dessert',24,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cinnamon & Walnut Cake',1.6,'Dessert',32,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Red Wine Sundae',4.7,'Dessert',21,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Walnut Strudel',3.6,'Dessert',43,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Simmered Honey Pigeon',2.2,'Wild',23,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Deep-Fried Pepper Boar',5.7,'Wild',50,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Infused Vinegar Cockles',2.8,'Western',33,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Broasted Juniper Snapper',10,'Western',31,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Pressure-Pot Peanuts & Risotto',7.3,'Western',23,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Steamed Dark Beer Linguine',1.1,'Western',42,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Chocolate and Blueberry Roll',1.9,'Dessert',33,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Choco and Mandarin Jelly',7.5,'Dessert',20,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Kiwi Pie',6.8,'Dessert',26,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Plum Pavlova',0.9,'Dessert',33,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Oven Pheasant',1.7,'Wild',17,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Fried White Wine Mutton',5.2,'Western',24,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Tea-Smoked Sweet & Fresh Tuna',1,'Western',36,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Barbecued Pineapple Lobster',9.4,'Western',45,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Lime Vegetables',2.6,'Western',38,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Tenderized Potatoes',3.3,'Western',21,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cherry and Papaya Cone',0.5,'Dessert',35,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Almond and Plum Pudding',2.9,'Dessert',25,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Passionfruit Molten Cake',0.6,'Dessert',12,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Pecan Genoise',5.6,'Dessert',47,0,'Fairy Court');`)
 
 //FOOD_ITEMS_IN_ORDERS
 query(`
@@ -1031,33 +1118,39 @@ query(`
 
 query(`DROP FUNCTION IF EXISTS getrestaurantrating;`);
 
-query(`CREATE OR REPLACE FUNCTION getrestaurantrating(order_id char(11))
+query(`CREATE OR REPLACE FUNCTION getrestaurantrating(order_id character)
 returns bigint as $$
-
 select sum(o.restaurant_rating)
+
 FROM orders o
 WHERE o.order_id = order_id;
+
+
 
 $$ language sql;`);
 
 query(`DROP FUNCTION IF EXISTS getrestaurantcount;`);
-query(`CREATE OR REPLACE FUNCTION getrestaurantcount(order_id char(11))
+query(`CREATE OR REPLACE FUNCTION getrestaurantcount(order_id character)
 returns bigint as $$
 select  count(o.restaurant_rating)
 FROM orders o
 WHERE o.order_id = order_id;
+
+
 $$ language sql;`);
 
 query(`DROP FUNCTION IF EXISTS getdriverrating;`);
-query(`CREATE OR REPLACE FUNCTION getdriverrating(order_id char(11))
+query(`CREATE OR REPLACE FUNCTION getdriverrating(order_id char)
 returns bigint as $$
-select  sum(d.delivery_rating)
+
+select sum(d.delivery_rating)
 FROM deliveries d
 WHERE d.order_id = order_id;
+
 $$ language sql;`);
 
 query(`DROP FUNCTION IF EXISTS getDriverCount;`);
-query(`CREATE OR REPLACE FUNCTION getDriverCount(order_id char(11))
+query(`CREATE OR REPLACE FUNCTION getDriverCount(order_id char)
 returns bigint as $$
 select  count(d.delivery_rating)
 FROM deliveries d
@@ -1067,43 +1160,50 @@ $$ language sql;`);
 
 query(`DROP FUNCTION IF EXISTS fn_updateEveryThing() CASCADE;`);
 query(`
-create or replace function fn_updateEveryThing() returns trigger as
-$$
-DECLARE
-rest_rating bigint;
-driver_rating bigint;
-no_of_restaurants bigint;
-no_of_drivers bigint;
-BEGIN
-
-
--- update RESTAURANT Rating
-rest_rating = getrestaurantrating(NEW.order_id);
-no_of_restaurants = getrestaurantcount(NEW.order_id);
-
-UPDATE restaurants r
-SET sum_all_ratings = (rest_rating / no_of_restaurants)
-FROM orders o
-WHERE r.restaurant_name = o.restaurant_name;
-
-
--- update rating for driver
-
-driver_rating = getDriverRating(NEW.order_id);
-no_of_drivers = getDriverCount(NEW.order_id);
-
-UPDATE Delivery_riders dr
-SET sum_all_ratings = driver_rating / no_of_drivers
-FROM orders o
-WHERE o.did = dr.did;
+  create or replace function fn_updateEveryThing() returns trigger as
+    $$
+    DECLARE
+    restaurant_ratingss bigint;
+    driver_ratingss bigint;
+    no_of_restaurantss bigint;
+    no_of_driverss bigint;
+    BEGIN
 
 
 
-return null;
+    -- update RESTAURANT Rating
+    restaurant_ratingss =  getrestaurantrating(NEW.order_id);
+    no_of_restaurantss =  getrestaurantcount(NEW.order_id);
+    RAISE NOTICE '%', restaurant_ratingss;
+    RAISE NOTICE '%', no_of_restaurantss;
+    UPDATE restaurants r
+    SET sum_all_ratings = (restaurant_ratingss / no_of_restaurantss)
+    FROM orders o
+    WHERE r.restaurant_name = o.restaurant_name;
 
 
-end;
-$$ language plpgsql;
+    -- update rating for driver
+
+    driver_ratingss =  getDriverRating(NEW.order_id);
+    no_of_driverss =  getDriverCount(NEW.order_id);
+    RAISE NOTICE '%', driver_ratingss;
+    RAISE NOTICE '%', no_of_driverss;
+
+   UPDATE Delivery_riders dr
+   SET sum_all_ratings = driver_ratingss / no_of_driverss
+   FROM orders o
+   WHERE o.did = dr.did;
+
+
+
+
+
+
+  return new;
+
+
+    end;
+  $$ language plpgsql;
 `);
 
 query(`
@@ -1155,7 +1255,7 @@ query(`
     rp_gained integer;
     delivery_cost real;
     BEGIN
-    
+
     -- get the cid
     SELECT P.cid INTO customer_id
     FROM Places P
@@ -1165,10 +1265,10 @@ query(`
     SELECT P.total_cost into total
     from Places P
     WHERE P.order_id = NEW.order_id;
-  
+
     -- calculate reward points gained (round down the subtotal)
     rp_gained = FLOOR(total) - NEW.reward_points_used;
-    
+
     -- update customer's reward points
     UPDATE Customers
       SET reward_points = reward_points + rp_gained
@@ -1205,6 +1305,34 @@ query(`
   EXECUTE FUNCTION compute_total_cost_and_rewards();
 `);
 
+
+// QUERY 1: MOST POPULAR FOOD ITEMS
+
+// with food_items_ordered as
+// (select O.food_item_name, sum(qty) as totalQty
+// from food_items_in_orders O join deliveries D
+//   on (O.order_id = D.order_id)
+// where D.time_customer_placed_order > '2020-04-01 00:00:00'
+//   and D.time_customer_placed_order < '2020-05-01 00:00:00'
+//   and O.restaurant_name = $1
+// group by food_item_name)
+// select F.food_item_name,
+// CAST(totalQty AS float) /
+//  DATE_PART('day', $3::timestamp - $2::timestamp)
+//  as avg_Qty_Per_Day,
+//  daily_limit,
+//  CAST(totalQty AS float) /
+//  DATE_PART('day', $3::timestamp - $2::timestamp) / daily_limit
+//  as qty_to_limit_ratio
+// from food_items F join food_items_ordered O
+//   on (F.food_item_name = O.food_item_name)
+// where F.restaurant_name = $1
+// order by qty_to_limit_ratio desc
+
+// $1: Restaurant Name
+// $2: Start Date
+// $3: End Date
+
 /**
  * Query 2
  * Present a table of available riders sorted by most available to least available.
@@ -1228,34 +1356,34 @@ query(`
 // Helper functions
 // mod function x mod y returns a value between 0 inclusive and y exclusive. y must be positive.
 query(`
-      CREATE OR REPLACE FUNCTION MY_MOD(X integer, Y integer)
-      returns integer as
-      $$
-      DECLARE
-        final_val integer = MOD(X,Y);
-      BEGIN
-        IF final_val < 0 THEN
-          final_val = final_val + Y;
-        END IF;
-      RETURN final_val;
-      END;
-      $$ language plpgsql;
+CREATE OR REPLACE FUNCTION MY_MOD(X integer, Y integer)
+returns integer as
+$$
+DECLARE
+  final_val integer = MOD(X,Y);
+BEGIN
+  IF final_val < 0 THEN
+    final_val = final_val + Y;
+  END IF;
+RETURN final_val;
+END;
+$$ language plpgsql;
   `);
 //convert 3 letter weekday into a number
 query(`
-      CREATE OR REPLACE FUNCTION MY_DAY(wd char(3))
-      returns integer as
-      $$
-        select case
-          when wd = 'sun' then 0
-          when wd = 'mon' then 1
-          when wd = 'tue' then 2
-          when wd = 'wed' then 3
-          when wd = 'thu' then 4
-          when wd = 'fri' then 5
-          when wd = 'sat' then 6
-        end;
-      $$ language sql;
+CREATE OR REPLACE FUNCTION MY_DAY(wd char(3))
+returns integer as
+$$
+  select case
+    when wd = 'sun' then 0
+    when wd = 'mon' then 1
+    when wd = 'tue' then 2
+    when wd = 'wed' then 3
+    when wd = 'thu' then 4
+    when wd = 'fri' then 5
+    when wd = 'sat' then 6
+  end;
+$$ language sql;
 `);
 
 //function to find out if a full-time rider is working on the CURRENT_DATE
@@ -1342,58 +1470,58 @@ query(`
 
 //function to check if part_time rider is currently working
 query(`
-  CREATE OR REPLACE FUNCTION IS_PART_TIMER_WORKING(driver varchar(30))
-  returns integer as
-  $$
-    DECLARE
-    sched bigint := 0;
-    sched_temp bigint := 0;
-    lastDigit integer;
-    start_time INTEGER := 21;
-    currHour integer := EXTRACT(HOUR FROM CURRENT_TIMESTAMP);
-    dayofweek integer := EXTRACT(DOW FROM CURRENT_TIMESTAMP);
-    BEGIN
-      IF dayofweek = 0 THEN
-        SELECT sun INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 1 THEN
-        SELECT mon INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 2 THEN
-        SELECT tue INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 3 THEN
-        SELECT wed INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 4 THEN
-        SELECT thu INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 5 THEN
-        SELECT fri INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 6 THEN
-        SELECT sat INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
+CREATE OR REPLACE FUNCTION IS_PART_TIMER_WORKING(driver varchar(30))
+returns integer as
+$$
+  DECLARE
+  sched bigint := 0;
+  sched_temp bigint := 0;
+  lastDigit integer;
+  start_time INTEGER := 21;
+  currHour integer := EXTRACT(HOUR FROM CURRENT_TIMESTAMP);
+  dayofweek integer := EXTRACT(DOW FROM CURRENT_TIMESTAMP);
+  BEGIN
+    IF dayofweek = 0 THEN
+      SELECT sun INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 1 THEN
+      SELECT mon INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 2 THEN
+      SELECT tue INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 3 THEN
+      SELECT wed INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 4 THEN
+      SELECT thu INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 5 THEN
+      SELECT fri INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 6 THEN
+      SELECT sat INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    END IF;
+    sched_temp := sched;
+    WHILE sched_temp > 0 LOOP
+      lastDigit := MOD(sched_temp, 10);
+      IF (lastDigit = 1) AND start_time = currHour THEN
+        return 1;
       END IF;
-      sched_temp := sched;
-      WHILE sched_temp > 0 LOOP
-        lastDigit := MOD(sched_temp, 10);
-        IF (lastDigit = 1) AND start_time = currHour THEN
-          return 1;
-        END IF;
-        start_time := start_time - 1;
-        sched_temp := sched_temp / 10;
-      END LOOP;
-      return 0;
-    END;
-  $$ language plpgsql;
+      start_time := start_time - 1;
+      sched_temp := sched_temp / 10;
+    END LOOP;
+    return 0;
+  END;
+$$ language plpgsql;
 `);
 
 //the query to pull all available riders
@@ -1406,7 +1534,7 @@ query(`
 //   AND IS_FULL_TIMER_WORKING(did) = 1
 //   UNION
 //   SELECT did from Delivery_riders
-//   WHERE did in (select did from Part_time_rider P 
+//   WHERE did in (select did from Part_time_rider P
 //          where EXTRACT(WEEK from CURRENT_TIMESTAMP) = EXTRACT(WEEK FROM P.week_of_work))
 //   AND IS_PART_TIMER_WORKING(did) = 1
 // )
@@ -1421,8 +1549,8 @@ query(`
 // and D.unit_num = A.unit_num
 // and D.postal_code = A.postal_code
 // and time_rider_delivers_order = (
-// SELECT MAX(time_rider_delivers_order) 
-// from Deliveries D2 
+// SELECT MAX(time_rider_delivers_order)
+// from Deliveries D2
 // where D2.driver = D.driver)
 
 // )
@@ -1431,7 +1559,7 @@ query(`
 // from LastLocationOfRiders
 // order by d asc nulls first
 // limit 1;
-      
+
 // `);
 
 //NOTE THAT THIS ABOVE FUNCTION THROWS AN ERROR BECAUSE $1 and $2 are not defined.
@@ -1443,7 +1571,7 @@ insert into delivery_riders values ('full-time', 20, 10); `)
 query(`
 insert into full_time_rider values ('full-time', '2020-04-01', 'thu',2,2,2,2,2);`)
 query(`insert into users values('part-time', 'p');`)
-query(`insert into delivery_riders values ('part-time', 20, 10); 
+query(`insert into delivery_riders values ('part-time', 20, 10);
 `)
 query(`insert into part_time_rider values ('part-time', '2020-04-16', 0,0,0,011101110111,011101110111,011101110111,011101110111);
 `)

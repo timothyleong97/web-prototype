@@ -424,7 +424,7 @@ VALUES('10%OFF','2020-04-07','2020-05-08','10%OFFEVERYTHING');`
 
 query(`
 INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
-VALUES('FFS','2020-04-07','2020-04-15','FireSale');`
+VALUES('FFS','2020-04-07','2020-04-15','-2DOLLARS');`
 );
 
 // PLACES
@@ -498,8 +498,6 @@ query(`
 INSERT INTO places(order_id,cid)
 VALUES(12,'Jay Park');`
 );
-
-
 
 
 

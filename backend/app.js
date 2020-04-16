@@ -562,6 +562,14 @@ app.post("/cuisineitems", (req, res) => { //FRONTEND NEEDS TO CHANGE
 
 
 // --CHECKOUT--
+/**
+ * What: get existing reward points for customer
+ * Receives: the cid as a url param
+ * Returns: {
+ *  "reward_points": Integer
+ * }
+ * 
+ */
 app.get('/rewards/:cid', (req, res) => {
   const cid = req.params.cid;
   client.query(`SELECT reward_points 
@@ -571,7 +579,14 @@ app.get('/rewards/:cid', (req, res) => {
   ).then(result => res.send(result.rows[0]))
     .catch(err => res.send({ status: 500 }))
 })
-
+/**
+ * What: get existing reward points for customer
+ * Receives: the cid as a url param
+ * Returns: {
+ *  "credit_card": String
+ * }
+ * 
+ */
 app.get('/payment/:cid', (req, res) => {
   const cid = req.params.cid;
   client.query(`SELECT credit_card
@@ -581,6 +596,44 @@ app.get('/payment/:cid', (req, res) => {
   ).then(result => res.send(result.rows[0]))
     .catch(err => res.send({ status: 500 }))
 })
+
+
+/**
+ * What: get existing reward points for customer
+ * Receives: the cid as a url param
+ * Returns: {
+ *  "promo_detail": "" | "10%OFFEVERYTHING"
+ * }
+ * 
+ */
+app.post('/promo', (req, res) => {
+  const {code} = req.body;
+  client.query(`SELECT promo_detail
+                FROM promotions P
+                WHERE promo_code in (
+                  SELECT fds_promo from 
+                  FDS_promotion F join Promotions P2
+                  on P2.promo_code = F.fds_promo
+                  where F.fds_promo = '${code}'
+                  and P2.promo_start_date < CURRENT_DATE
+                  and P2.promo_end_date > CURRENT_DATE
+                  union
+                  SELECT restaurant_promo from 
+                  Restaurant_promotion R join Promotions P3
+                  on P3.promo_code = R.restaurant_promo
+                  where restaurant_promo = '${code}'
+                  and P3.promo_start_date < CURRENT_DATE
+                  and P3.promo_end_date > CURRENT_DATE)
+              `
+  ).then(result => res.send(result.rowCount == 1 ?
+    result.rows[0] : {code : ''}))
+    .catch(err => console.log(err));
+})
+
+
+
+
+
 //Don't modify below this comment
 app.listen(port, () => {
   console.log("Backend server is up on port " + port);

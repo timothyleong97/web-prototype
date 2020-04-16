@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Header, Grid, Form } from "semantic-ui-react";
+import { Header, Grid, Form, Button } from "semantic-ui-react";
 
 const RewardsAndPromoCode = ({ rewards }) => {
   const [pointsUsed, setPointsUsed] = useState(0);
@@ -37,6 +37,13 @@ const RewardsAndPromoCode = ({ rewards }) => {
           <Form>
             <Form.Input fluid />
           </Form>
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+        <Grid.Column width={3} verticalAlign="middle"></Grid.Column>
+        <Grid.Column width={11} />
+        <Grid.Column width={2} style={{ textAlign: "right" }}>
+          <Button>Apply Promo Code</Button>
         </Grid.Column>
       </Grid.Row>
     </Grid>

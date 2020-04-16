@@ -6,7 +6,7 @@ import history from '../importables/history';
 const square = { 
     width: 300, 
     height: 150, 
-    backgroundColor: '#bfbfbf', 
+    backgroundColor: '#f2f2f2', 
     borderRadius:10, 
     verticalAlign:'middle',
     paddingTop: 55,

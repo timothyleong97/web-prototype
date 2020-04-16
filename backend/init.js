@@ -427,6 +427,16 @@ create table Promotions (
     primary key (promo_code)
 );`);
 
+/**
+ * PROMOS MUST MATCH THESE 4 signatures
+ * 
+ * X%OFF
+ * -XDOLLARS
+ * MINSPENDXDISCOUNTY
+ * MINSPENDXPERCENTOFFY 
+ * where X and Y are positive integers
+ */
+
 query(`
 INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
 VALUES('10%OFF','2020-04-07','2020-05-08','10%OFFEVERYTHING');`
@@ -434,7 +444,7 @@ VALUES('10%OFF','2020-04-07','2020-05-08','10%OFFEVERYTHING');`
 
 query(`
 INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
-VALUES('FFS','2020-04-07','2020-04-15','FireSale');`
+VALUES('FFS','2020-04-07','2020-04-15','-2DOLLARS');`
 );
 
 // PLACES
@@ -508,8 +518,6 @@ query(`
 INSERT INTO places(order_id,cid)
 VALUES(12,'Jay Park');`
 );
-
-
 
 
 
@@ -849,7 +857,8 @@ VALUES('Thomas Engine','2010-10-10',100,10);`);
 query(`
 create table Full_Time_Rider(
     did varchar(30),
-    month_of_work DATE CHECK (month_of_work = '1970-01-01' OR month_of_work > CURRENT_DATE AND extract (day from month_of_work) = 1),
+    --month_of_work DATE CHECK (month_of_work = '1970-01-01' OR month_of_work > CURRENT_DATE AND extract (day from month_of_work) = 1),
+    month_of_work DATE,
     wws_start_day char(3),
     day1_shift integer,
     day2_shift integer,
@@ -870,7 +879,8 @@ VALUES('lewis hamilton','1970-01-01','mon',1,1,1,1,1);`
 query(`
 create table Part_Time_Rider (
     did varchar(30),
-    week_of_work DATE CHECK (week_of_work = '1970-01-01' OR week_of_work > CURRENT_DATE),
+    --week_of_work DATE CHECK (week_of_work = '1970-01-01' OR week_of_work > CURRENT_DATE),
+    week_of_work DATE,
     mon bigint,
     tue bigint,
     wed bigint,
@@ -1016,7 +1026,7 @@ query(`
     WHILE schedule_temp > 0 LOOP
       lastDigit := MOD(schedule_temp, 10);
       IF (lastDigit = 1) THEN
-        RAISE NOTICE 'consecutive ones seen: %', consecutiveOnes;
+        --RAISE NOTICE 'consecutive ones seen: %', consecutiveOnes;
         consecutiveOnes := consecutiveOnes + 1;
         IF (consecutiveOnes > 4) THEN
            RAISE EXCEPTION '>4hr shift starting from % %.', startTime, ampm(startTime)
@@ -1032,7 +1042,6 @@ query(`
     RETURN counter;
   END;
   $$ language plpgsql;
-
 `);
 
 //Create the trigger
@@ -1049,36 +1058,36 @@ query(`
     SELECT NEW.mon into schedule;
     day := 'mon';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.tue into schedule;
     day := 'tue';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.wed into schedule;
     day := 'wed';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.thu into schedule;
     day := 'thu';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.fri into schedule;
     day := 'fri';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.sat into schedule;
     day := 'sat';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.sun into schedule;
     day := 'sun';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     IF counter < 10 THEN
-      RAISE NOTICE 'Less than 10 hours worked';
+      RAISE EXCEPTION 'Less than 10 hours worked';
     END IF;
     IF counter > 48 THEN
-      RAISE NOTICE 'More than 48 hours worked';
+      RAISE EXCEPTION 'More than 48 hours worked';
     END IF;
     baseSalary := counter * 8;
 
@@ -1143,25 +1152,24 @@ WHERE d.order_id = order_id;
 $$ language sql;`);
 
 
-query(`DROP FUNCTION IF EXISTS fn_updateEveryThing() ON DELETE CASCADE;`);
+query(`DROP FUNCTION IF EXISTS fn_updateEveryThing() CASCADE;`);
 query(`
 create or replace function fn_updateEveryThing() returns trigger as
 $$
 DECLARE
-restaurant_rating bigint;
+rest_rating bigint;
 driver_rating bigint;
 no_of_restaurants bigint;
 no_of_drivers bigint;
 BEGIN
 
-select
 
 -- update RESTAURANT Rating
-restaurant_rating = getrestaurantrating(NEW.order_id);
+rest_rating = getrestaurantrating(NEW.order_id);
 no_of_restaurants = getrestaurantcount(NEW.order_id);
 
 UPDATE restaurants r
-SET sum_all_ratings = (restaurant_rating / no_of_restaurants)
+SET sum_all_ratings = (rest_rating / no_of_restaurants)
 FROM orders o
 WHERE r.restaurant_name = o.restaurant_name;
 
@@ -1175,9 +1183,6 @@ UPDATE Delivery_riders dr
 SET sum_all_ratings = driver_rating / no_of_drivers
 FROM orders o
 WHERE o.did = dr.did;
-
-
-
 
 
 
@@ -1222,40 +1227,10 @@ execute function fn_updateEveryThing();`);
 --insert into deliveries values (5000, 'test_rider', '2020-04-08 19:00:00',null,null,null,null,5,'GOOD','1 Jurong East','haven way','01-10','21221', 20)
 
 */
-
 // Helper functions
 
 // Function 1:  Get subtotal in an order
 query(`DROP FUNCTION IF EXISTS getSubtotal;`);
-query(`
-  CREATE OR REPLACE FUNCTION getSubtotal(oid VARCHAR(11))
-  returns real as $$
-    WITH current_orders AS
-    (
-      SELECT FIO.qty, FIO.food_item_name, FIO.restaurant_name, F.price
-      FROM food_items_in_orders FIO natural join Food_items F
-      WHERE FIO.order_id = oid
-    )
-
-    SELECT SUM(price * CAST(qty as real)) FROM current_orders;
-  $$ language sql;
-`);
-
-// Function 2: Get qty of an order
-query(`DROP FUNCTION IF EXISTS getQty;`);
-query(`
-  CREATE OR REPLACE FUNCTION getQty(oid VARCHAR(11))
-  returns integer as $$
-    WITH current_orders AS
-    (
-      SELECT FIO.qty, FIO.food_item_name, FIO.restaurant_name, F.price
-      FROM food_items_in_orders FIO natural join Food_items F
-      WHERE FIO.order_id = oid
-    )
-
-    SELECT cast(SUM(qty) as integer) FROM current_orders;
-  $$ language sql;
-`);
 
 // Create the trigger
 query(`
@@ -1263,29 +1238,29 @@ query(`
   AS $$
   DECLARE
     customer_id varchar(30);
-    subtotal real;
-    qty integer;
+    total real;
     rp_gained integer;
     delivery_cost real;
     BEGIN
+    
     -- get the cid
     SELECT P.cid INTO customer_id
     FROM Places P
     WHERE P.order_id = NEW.order_id;
-    -- get subtotal
-    subtotal = getSubtotal(NEW.order_id);
-    -- get qty
-    qty = getQty(NEW.order_id);
+
+    -- get Total
+    SELECT P.total_cost into total
+    from Places P
+    WHERE P.order_id = NEW.order_id;
+  
     -- calculate reward points gained (round down the subtotal)
-    rp_gained = FLOOR(subtotal) - NEW.reward_points_used;
-    -- update Places.totalCost to be Places.delivery_fee + subtotal
-    UPDATE Places
-      SET totalCost = delivery_fee + subtotal
-      WHERE Places.order_id = NEW.order_id;
+    rp_gained = FLOOR(total) - NEW.reward_points_used;
+    
     -- update customer's reward points
     UPDATE Customers
       SET reward_points = reward_points + rp_gained
       WHERE Customers.cid = customer_id;
+
     -- update salary
     SELECT P.delivery_fee into delivery_cost
     From Places P
@@ -1294,10 +1269,12 @@ query(`
     UPDATE Salary
       SET commission = commission + delivery_cost
       WHERE NEW.driver = did;
+
     -- update Delivery_riders
     UPDATE Delivery_riders
       SET num_deliveries = num_deliveries + 1
       WHERE NEW.driver = did;
+
     --return
     return NULL;
   END
@@ -1461,7 +1438,7 @@ query(`
     lastDigit integer;
     start_time INTEGER := 21;
     currHour integer := EXTRACT(HOUR FROM CURRENT_TIMESTAMP);
-    dayofweek integer:= EXTRACT(DOW FROM CURRENT_TIMESTAMP);
+    dayofweek integer := EXTRACT(DOW FROM CURRENT_TIMESTAMP);
     BEGIN
       IF dayofweek = 0 THEN
         SELECT sun INTO sched
@@ -1494,7 +1471,7 @@ query(`
       END IF;
       sched_temp := sched;
       WHILE sched_temp > 0 LOOP
-        lastDigit := MOD(schedule_temp, 10);
+        lastDigit := MOD(sched_temp, 10);
         IF (lastDigit = 1) AND start_time = currHour THEN
           return 1;
         END IF;
@@ -1535,35 +1512,57 @@ query(`
 
 //the query to pull all available riders
 // query(`
-// WITH AvailableRiders as (
-//       SELECT did from Delivery_riders
-//       WHERE did in (select did from Full_time_rider)
-//       AND IS_FULL_TIMER_WORKING(did) = 1
+// WITH AvailableRiders AS (SELECT did from Delivery_riders
+//   WHERE did in (
+//     select did from Full_time_rider F
+//       where EXTRACT(MONTH from CURRENT_TIMESTAMP) = EXTRACT(MONTH FROM F.month_of_work)
+//   )
+//   AND IS_FULL_TIMER_WORKING(did) = 1
+//   UNION
+//   SELECT did from Delivery_riders
+//   WHERE did in (select did from Part_time_rider P 
+//          where EXTRACT(WEEK from CURRENT_TIMESTAMP) = EXTRACT(WEEK FROM P.week_of_work))
+//   AND IS_PART_TIMER_WORKING(did) = 1
+// )
+// ,
+// LastLocationOfRiders AS (
+// select *
+// from AvailableRiders R left join Deliveries D
+// on R.did = D.driver
+// left join Addresses A
+// on D.street_name = A.street_name
+// and D.building = A.building
+// and D.unit_num = A.unit_num
+// and D.postal_code = A.postal_code
+// and time_rider_delivers_order = (
+// SELECT MAX(time_rider_delivers_order) 
+// from Deliveries D2 
+// where D2.driver = D.driver)
 
-//       UNION
-//       SELECT did from Delivery_riders
-//       WHERE did in (select did from Part_time_rider)
-//       AND IS_PART_TIMER_WORKING(did) = 1
-//       ),
-//       LastLocationOfRiders as (
-//         select did, lat, lon
-//         from AvailableRiders R, Deliveries D, Addresses A
-//         where R.did = D.driver
-//         and D.street_name = A.street_name
-//         and D.building = A.building
-//         and D.unit_num = A.unit_num
-//         and D.postal_code = A.postal_code
-//         and time_rider_delivers_order >= (SELECT MAX(time_rider_delivers_order) from Deliveries D2 where D2.driver = D.driver)
-//       )
-//       -- $1 means the customer's latitude, $2 the longitude
-//       select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - $1) * pi()/180 / 2), 2) +  COS(lat * pi()/180) *  COS($1 * pi()/180) *  POWER(SIN((lon -$2) * pi()/180 / 2), 2)  )) as d
-//       from LastLocationOfRiders
-//       order by d asc nulls first
-//       limit 1;
+// )
 
+// select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - $1) * pi()/180 / 2), 2) +  COS(lat * pi()/180) *  COS($1 * pi()/180) *  POWER(SIN((lon -$2) * pi()/180 / 2), 2)  )) as d
+// from LastLocationOfRiders
+// order by d asc nulls first
+// limit 1;
+      
 // `);
 
 //NOTE THAT THIS ABOVE FUNCTION THROWS AN ERROR BECAUSE $1 and $2 are not defined.
+
+
+query(`insert into users values('full-time', 'p');`)
+query(`
+insert into delivery_riders values ('full-time', 20, 10); `)
+query(`
+insert into full_time_rider values ('full-time', '2020-04-01', 'thu',2,2,2,2,2);`)
+query(`insert into users values('part-time', 'p');`)
+query(`insert into delivery_riders values ('part-time', 20, 10); 
+`)
+query(`insert into part_time_rider values ('part-time', '2020-04-16', 0,0,0,011101110111,011101110111,011101110111,011101110111);
+`)
+
+
 
 
 // query 3, get the most popular hour and name in the past month
@@ -1573,6 +1572,115 @@ where fio.order_id = d.order_id AND d.time_customer_placed_order >= date_trunc('
   and d.time_customer_placed_order < date_trunc('month', current_date)
 group by fio.food_item_name,d.time_customer_placed_order
 order by count desc;`);
+
+
+//FDS manager
+//total no. of new customers
+query(`select count(c.cid), Extract( Month from c.join_date)
+FROM Customers c
+group by c.cid, c.join_date
+order by c.join_date;`);
+
+
+//total no. of orders
+
+query(`select count(o.order_id),  Extract(Month from d.time_customer_placed_order)
+From Orders o,Deliveries d
+WHERE o.order_id = d.order_id
+group by o.order_id,d.time_customer_placed_order
+order by d.time_customer_placed_order ASC;`);
+
+
+//total cost of all orders
+query(`select sum(p.total_cost), Extract(Month from d.time_customer_placed_order)
+FROM places p, deliveries d, Customers c
+WHERE p.order_id = d.order_id AND p.cid = c.cid
+group by p.total_cost, d.time_customer_placed_order
+order by d.time_customer_placed_order ASC;`);
+
+
+
+//2) for each customer in each month
+//total number of orders placed
+query(`select count(p.cid), Extract (Month from d.time_rider_delivers_order), c.customer_name
+from places p, deliveries d, customers c
+where p.order_id = d.order_id AND p.cid = c.cid
+group by p.cid, d.time_rider_delivers_order, c.customer_name
+order by d.time_rider_delivers_order ASC;`);
+
+//total cost of their orders
+
+//3) for each rider in each month
+//a) total no. of orders delivered
+query(`select count(d.order_id), Extract (Month from d.time_rider_delivers_order), d.driver
+from Deliveries d
+group by d.order_id, d.time_rider_delivers_order,d.driver
+order by d.time_rider_delivers_order ASC;`);
+
+//b) total hours worked
+
+
+//c) total salary earned
+
+//d) avg delivery time
+query(`select avg(d.time_rider_delivers_order - d.time_customer_placed_order::timestamptz), d.time_rider_delivers_order
+FROM Deliveries d
+group by d.time_rider_delivers_order - d.time_customer_placed_order::timestamptz,d.time_rider_delivers_order
+order by d.time_rider_delivers_order ASC;`);
+
+//e) no of ratings received
+query(`select sum(d.delivery_rating), Extract(Month from d.time_rider_delivers_order), d.driver
+from deliveries d
+group by d.delivery_rating, d.time_rider_delivers_order,d.driver
+order by d.time_rider_delivers_order ASC;`);
+
+//f) avg. ratings received
+query(`select avg(d.delivery_rating), Extract(Month from d.time_rider_delivers_order), d.driver
+from deliveries d
+
+group by d.delivery_rating, d.time_rider_delivers_order,d.driver
+order by d.time_rider_delivers_order ASC;`);
+
+
+//Restaurant staff
+
+//1) in each month:
+//a) total no. of completed orders
+query(`select count(d.time_rider_delivers_order),Extract(Month from d.time_rider_delivers_order), fio.restaurant_name
+from Food_items_in_orders fio,deliveries d
+where fio.order_id = d.order_id
+group by d.time_rider_delivers_order, fio.restaurant_name
+order by d.time_rider_delivers_order ASC;`);
+
+
+//b) total cost of all completed order
+query(`select sum(p.total_cost), Extract(Month from d.time_rider_delivers_order)
+FROM Places p, Deliveries d
+WHERE p.order_id = d.order_id AND d.time_rider_delivers_order <> NULL
+group by p.total_cost,d.time_rider_delivers_order
+order by d.time_rider_delivers_order ASC;`);
+
+//c) top 5 favourite food items
+query(`select max(fio.food_item_name), Extract(Month from d.time_rider_delivers_order)
+FROM Food_items_in_orders fio, Deliveries d
+WHERE fio.order_id = d.order_id
+group by fio.food_item_name, d.time_rider_delivers_order
+order by fio.food_item_name
+limit 5;`);
+
+
+//2) rider
+//total orders delivered
+query(`select count(d.order_id), Extract(Month from d.time_rider_delivers_order),d.driver
+FROM Deliveries d
+GROUP BY d.order_id,d.time_rider_delivers_order,d.driver
+ORDER BY d.driver;`);
+
+
+//Riders
+
+  // total no of hours worked
+  // total salary earned
 
 
 /*
@@ -1627,42 +1735,6 @@ create constraint trigger tr_setPartTimeSchedule
   for each row
 execute function fn_setPartTimeRider();`)
 
-query(`create or replace function fn_setFullTimeSchedule() returns trigger as
-  $$
-begin
-  if(exists(select 1
-            from Salary
-            where Salary.did = new.did
-          ))
-  then
-     update Salary
-       set base_salary = 4 * 5 * 10,
-           commission = 0
-       where salary.did = new.did;
-
-        return null;
-     end if;
-
-     insert into Salary
-      values (new.did, CURRENT_DATE, 160 * 10,0);
-      return null;
-end;
-$$ language plpgsql;`)
-
-query(`drop trigger if exists tr_setFullTimeSchedule on Full_Time_Rider cascade;
-create trigger tr_setFullTimeSchedule
-  after update or insert
-  on Full_Time_Rider
-  for each row
-execute function fn_setFullTimeSchedule();`)
-
-
-query(`drop trigger if exists tr_calculateFee on Places cascade;
-create trigger tr_calculateFee
-  before insert
-  on Places
-  for each row
-execute function fn_calculateFee();`)
 
 query(`create or replace function fn_updateTotalPrice() returns trigger as
   $$
@@ -1701,338 +1773,4 @@ create trigger tr_resetNumOrders
   on food_items
   for each ROW
 execute function fn_resetNumOrders();`)
-
-
-
-
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(1,60,1,'Dian Xiao er');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(2,20,2,'Subway');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(3,32,3,'The Deconstructed Grocery Store');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(4,43,4,'The Cool Panda');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(5,43,5,'The Clear Well');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(6,47,6,'Robot');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(7,21,7,'Purity');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(8,42,8,'The Cellar');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(9,42,9,'The Tulip');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(10,39,10,'Forester');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(11,30,11,'The Private Monkey');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(12,25,12,'The Chocolate Lane');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(13,38,13,'The Square Mission');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(14,33,14,'The Copper Parlour');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(15,46,15,'The Holy Elephant');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(16,45,16,'The Tower');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(17,43,17,'The Hog');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(18,36,18,'Happening');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(19,40,19,'Retro');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(20,50,20,'Jewel');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(21,35,21,'The Big Brewery');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(22,27,22,'The Cool Cat Vine');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(23,28,23,'The Greek Vine');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(24,38,24,'The Beach Dome');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(25,21,25,'The Fable Elephant');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(26,44,26,'The Crown');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(27,26,27,'Unwind');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(28,32,28,'Blossoms');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(29,32,29,'Paramount');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(30,21,30,'Burger Place');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(31,20,31,'The Savory Well');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(32,41,32,'The Big Harvest');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(33,23,33,'The Savory Fence');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(34,22,34,'The Jazz Empress');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(35,44,35,'The Royal Parlour');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(36,31,36,'Gem');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(37,39,37,'Intermezzo');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(38,40,38,'Little Persia');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(39,23,39,'The Vineyard');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(40,31,40,'Friends');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(41,41,41,'The Friendly Ship');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(42,48,42,'The Salty Road');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(43,22,43,'The Bright Road');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(44,24,44,'The Pink Barbecue');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(45,23,45,'The Chocolate Shack');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(46,48,46,'Laguna');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(47,22,47,'Aqua');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(48,29,48,'The Mockingbird');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(49,40,49,'Embers');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(50,39,50,'Big Burger Bar');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(51,31,51,'The Mellow Well');`)
-query(`INSERT INTO restaurants(rid,min_order_amt,located_at,restaurant_name)
-VALUES(52,24,52,'The Japanese Window');`)
-
-
-
-
-
-
-
-
-
-
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Chicken Rice',2.50,'Chinese',50,0,1);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cold cut trio',5.50,'Sandwich',10,0,2);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Sesame Seed Black',4.8,'Grocery',39,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cookies - Assorted',5.5,'Grocery',25,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cookie Double Choco',6.3,'Grocery',10,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Bread Ww Cluster',5.4,'Grocery',47,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Potato - Sweet',9,'Grocery',17,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Bag - Regular Kraft 20 Lb',8.4,'Grocery',15,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Soup - Cream Of Broccoli',5.8,'Grocery',43,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Tea - Apple Green Tea',3.4,'Grocery',39,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Tia Maria',4.4,'Grocery',26,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Wine - Rubyport',2.8,'Grocery',34,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Mayonnaise',8.6,'Grocery',37,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Soup - Campbells Beef Stew',8.8,'Grocery',18,0,3);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Wine - George Duboeuf Rose',1.1,'Grocery',46,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Irish Cream - Butterscotch',5.9,'Grocery',41,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cheese - Mozzarella',2.4,'Grocery',14,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Beer - Corona',7.5,'Grocery',15,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Fruit Mix - Light',6.1,'Grocery',21,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Piping Jelly - All Colours',5.4,'Grocery',17,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Spice - Pepper Portions',1.5,'Grocery',27,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Potatoes - Peeled',4.8,'Grocery',22,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Pepper - Yellow Bell',5.1,'Grocery',12,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Beef - Bresaola',5.9,'Grocery',27,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Beer - Heinekin',10,'Grocery',14,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Banana',8.8,'Grocery',20,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cheese - Brie,danish',0.5,'Grocery',29,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cranberries - Frozen',5.2,'Grocery',48,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Bread - 10 Grain Parisian',5.8,'Grocery',49,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Ecolab Crystal Fusion',2.9,'Grocery',41,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Chicken Giblets',6.9,'Grocery',25,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Yucca',8.8,'Grocery',47,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Olives - Kalamata',4.4,'Grocery',49,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Zucchini - Green',6.4,'Grocery',42,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cookies Almond Hazelnut',5.7,'Grocery',26,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cookies - Englishbay Oatmeal',4,'Grocery',16,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Flour - Whole Wheat',4.5,'Grocery',40,0,4);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Pressure-Cooked Pine Boar',3.8,'Wild',50,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Slow-Cooked Apples Bear',7.6,'Wild',46,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Smoked Honey & Almond Cod',6.6,'Wild',14,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Seared Tortilla',9.2,'Mexican',21,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cherry and Raspberry Toast',5.3,'Dessert',11,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Chestnut and Honey Cake',9,'Dessert',21,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Date Tarte Tatin',7.5,'Dessert',35,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Vanilla Trifle',2.1,'Dessert',23,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cured Ginger Venison',4.2,'Wild',16,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Roast Sweet Chicken',7.8,'Western',24,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Breaded Pineapple Frog',0.6,'Wild',10,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Seared Mustard Fish',9.4,'Western',50,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Simmered Garlic Sandwich',5.1,'Western',34,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cooked Winter Greens',6.4,'Western',23,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('White Walnut Mooncake',3,'Dessert',24,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cinnamon & Walnut Cake',1.6,'Dessert',32,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Red Wine Sundae',4.7,'Dessert',21,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Walnut Strudel',3.6,'Dessert',43,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Simmered Honey Pigeon',2.2,'Wild',23,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Deep-Fried Pepper Boar',5.7,'Wild',50,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Infused Vinegar Cockles',2.8,'Western',33,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Broasted Juniper Snapper',10,'Western',31,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Pressure-Pot Peanuts & Risotto',7.3,'Western',23,0,5);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Steamed Dark Beer Linguine',1.1,'Western',42,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Chocolate and Blueberry Roll',1.9,'Dessert',33,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Choco and Mandarin Jelly',7.5,'Dessert',20,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Kiwi Pie',6.8,'Dessert',26,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Plum Pavlova',0.9,'Dessert',33,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Oven Pheasant',1.7,'Wild',17,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Fried White Wine Mutton',5.2,'Western',24,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Tea-Smoked Sweet & Fresh Tuna',1,'Western',36,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Barbecued Pineapple Lobster',9.4,'Western',45,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Lime Vegetables',2.6,'Western',38,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Tenderized Potatoes',3.3,'Western',21,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Cherry and Papaya Cone',0.5,'Dessert',35,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Almond and Plum Pudding',2.9,'Dessert',25,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Passionfruit Molten Cake',0.6,'Dessert',12,0,6);`)
-query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,rid)
-VALUES('Pecan Genoise',5.6,'Dessert',47,0,6);`)
-
-query(`INSERT INTO Options(options_name,type_of_option,addon_price,rid,food_item_name)
-VALUES('Style-Fried','Fried',0,1,'Chicken Rice');`)
-query(`INSERT INTO Options(options_name,type_of_option,addon_price,rid,food_item_name)
-VALUES('Size-small','small',0,1,'Chicken Rice');`)
-query(`INSERT INTO Options(options_name,type_of_option,addon_price,rid,food_item_name)
-VALUES('Size-medium','medium',0.5,1,'Chicken Rice');`)
-query(`INSERT INTO Options(options_name,type_of_option,addon_price,rid,food_item_name)
-VALUES('topping-cheese','cheese',1,2,'Cold cut trio');`)
-query(`INSERT INTO Options(options_name,type_of_option,addon_price,rid,food_item_name)
-VALUES('topping-ham','ham',1,2,'Cold cut trio');`)
-query(`INSERT INTO Options(options_name,type_of_option,addon_price,rid,food_item_name)
-VALUES('small','Size',0,5,'Pressure-Cooked Pine Boar');`)
-query(`INSERT INTO Options(options_name,type_of_option,addon_price,rid,food_item_name)
-VALUES('medium','Size',2,5,'Pressure-Cooked Pine Boar');`)
-query(`INSERT INTO Options(options_name,type_of_option,addon_price,rid,food_item_name)
-VALUES('large','Size',4,5,'Pressure-Cooked Pine Boar');`)
-
-
-
-query(`INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
-VALUES('10%OFF','2020-04-07','2020-05-08','10%OFFEVERYTHING');`)
-query(`INSERT INTO promotions(promo_code,promo_start_date,promo_end_date, promo_detail)
-VALUES('FFS','2020-04-07','2020-04-15','FireSale');`)
-
-query(`INSERT INTO restaurant_promotion(restaurant_promo)
-VALUES('10%OFF');`)
-
-query(`INSERT INTO FDS_promotion(fds_promo)
-VALUES('FFS');`)
-
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(1,null,null,null);`)
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(2,'Good',4,10);`)
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(3,'bad',1,5);`)
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(4,'Great',5,15);`)
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(5,'average',3,5);`)
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(6,null,null,null);`)
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(7,null,null,null);`)
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(8,'poor',2,10);`)
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(9,null,null,null);`)
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(10,null,4,10);`)
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(11,'Good',4,null);`)
-query(`INSERT INTO orders(order_id,restaurant_review, restaurant_rating, reward_points)
-VALUES(12,'Good',4,null);`)
-
-
-query(`INSERT INTO uses(promo_code,order_id,usage)
-VALUES('FFS',1,0);`)
-query(`INSERT INTO uses(promo_code,order_id,usage)
-VALUES('10%OFF',2,0);`)
-
-query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
-VALUES(3,1,1,'Chicken Rice');`)
-query(`INSERT INTO food_items_in_orders(qty,order_id,rid,food_item_name)
-VALUES(1,2,2,'Cold cut trio');`)
 */

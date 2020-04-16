@@ -1,7 +1,6 @@
 import React, { Fragment } from "react";
 import {
   Container,
-  Form,
   Grid,
   Loader,
   Dimmer,
@@ -40,16 +39,7 @@ class Catalogue extends React.Component {
 
   render() {
     return (
-      <Container>
-        <Form>
-          <Form.Field>
-            <input
-              style={{ marginTop: 20 }}
-              placeholder="Search categories / restaurants"
-            />
-          </Form.Field>
-        </Form>
-
+      <Container style={{marginTop: 50}}>
         {this.state.cat.length === 0 || this.state.rest.length === 0 ? (
           <Dimmer active>
             <Loader content="Loading" />

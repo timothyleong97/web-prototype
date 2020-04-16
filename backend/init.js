@@ -1056,7 +1056,7 @@ WHERE d.order_id = order_id;
 $$ language sql;`);
 
 
-query(`DROP FUNCTION IF EXISTS fn_updateEveryThing() ON DELETE CASCADE;`);
+query(`DROP FUNCTION IF EXISTS fn_updateEveryThing() CASCADE;`);
 query(`
 create or replace function fn_updateEveryThing() returns trigger as
 $$
@@ -1459,6 +1459,111 @@ where fio.order_id = d.order_id AND d.time_customer_placed_order >= date_trunc('
   and d.time_customer_placed_order < date_trunc('month', current_date)
 group by fio.food_item_name,d.time_customer_placed_order
 order by count desc;`);
+
+
+//FDS manager
+//total no. of new customers
+query(`select count(c.cid), Extract( Month from c.join_date)
+FROM Customers c
+group by c.cid, c.join_date
+order by c.join_date;`);
+
+
+//total no. of orders
+
+query(`select count(o.order_id),  Extract(Month from d.time_customer_placed_order)
+From Orders o,Deliveries d
+WHERE o.order_id = d.order_id
+group by o.order_id,d.time_customer_placed_order
+order by d.time_customer_placed_order ASC;`);
+
+
+//total cost of all orders
+query(`select sum(p.total_cost), Extract(Month from d.time_customer_placed_order)
+FROM places p, deliveries d, Customers c
+WHERE p.order_id = d.order_id AND p.cid = c.cid
+group by p.total_cost, d.time_customer_placed_order
+order by d.time_customer_placed_order ASC;`);
+
+
+
+//2) for each customer in each month
+//total number of orders placed
+query(`select count(p.cid), Extract (Month from d.time_rider_delivers_order), c.customer_name
+from places p, deliveries d, customers c
+where p.order_id = d.order_id AND p.cid = c.cid
+group by p.cid, d.time_rider_delivers_order, c.customer_name
+order by d.time_rider_delivers_order ASC;`);
+
+//total cost of their orders
+
+//3) for each rider in each month
+//a) total no. of orders delivered
+query(`select count(d.order_id), Extract (Month from d.time_rider_delivers_order), d.driver
+from Deliveries d
+group by d.order_id, d.time_rider_delivers_order,d.driver
+order by d.time_rider_delivers_order ASC;`);
+
+//b) total hours worked
+
+
+//c) total salary earned
+
+//d) avg delivery time
+query(`select avg(d.time_rider_delivers_order - d.time_customer_placed_order::timestamptz), d.time_rider_delivers_order
+FROM Deliveries d
+group by d.time_rider_delivers_order - d.time_customer_placed_order::timestamptz,d.time_rider_delivers_order
+order by d.time_rider_delivers_order ASC;`);
+
+//e) no of ratings received
+query(`select sum(d.delivery_rating), Extract(Month from d.time_rider_delivers_order), d.driver
+from deliveries d
+group by d.delivery_rating, d.time_rider_delivers_order,d.driver
+order by d.time_rider_delivers_order ASC;`);
+
+//f) avg. ratings received
+query(`select avg(d.delivery_rating), Extract(Month from d.time_rider_delivers_order), d.driver
+from deliveries d
+
+group by d.delivery_rating, d.time_rider_delivers_order,d.driver
+order by d.time_rider_delivers_order ASC;`);
+
+
+//Restaurant staff
+
+//1) in each month:
+//a) total no. of completed orders
+query(`select count(d.time_rider_delivers_order),Extract(Month from d.time_rider_delivers_order), fio.restaurant_name
+from Food_items_in_orders fio,deliveries d
+where fio.order_id = d.order_id
+group by d.time_rider_delivers_order, fio.restaurant_name
+order by d.time_rider_delivers_order ASC;`);
+
+
+//b) total cost of all completed order
+
+
+//c) top 5 favourite food items
+query(`select max(fio.food_item_name), Extract(Month from d.time_rider_delivers_order)
+FROM Food_items_in_orders fio, Deliveries d
+WHERE fio.order_id = d.order_id
+group by fio.food_item_name, d.time_rider_delivers_order
+order by fio.food_item_name
+limit 5;`);
+
+
+//2) rider
+//total orders delivered
+query(`select count(d.order_id), Extract(Month from d.time_rider_delivers_order),d.driver
+FROM Deliveries d
+GROUP BY d.order_id,d.time_rider_delivers_order,d.driver
+ORDER BY d.driver;`);
+
+
+//Riders
+
+  // total no of hours worked
+  // total salary earned
 
 
 /*

@@ -1303,20 +1303,6 @@ query(`
 `);
 
 //function to find out if a full-time rider is working on the CURRENT_DATE
-/**
- * Full_Time_Rider(
-    did varchar(30),
-    month_of_work DATE,
-    wws_start_day char(3),
-    day1_shift integer,
-    day2_shift integer,
-    day3_shift integer,
-    day4_shift integer,
-    day5_shift integer,
-    primary key(did, month_of_work),
-    foreign key(did) REFERENCES Delivery_Riders ON DELETE CASCADE ON UPDATE CASCADE
-)
- */
 query(`
       CREATE OR REPLACE FUNCTION IS_FULL_TIMER_WORKING(driver varchar(30))
       returns integer as

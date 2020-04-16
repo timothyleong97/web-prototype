@@ -949,7 +949,7 @@ query(`
     WHILE schedule_temp > 0 LOOP
       lastDigit := MOD(schedule_temp, 10);
       IF (lastDigit = 1) THEN
-        RAISE NOTICE 'consecutive ones seen: %', consecutiveOnes;
+        --RAISE NOTICE 'consecutive ones seen: %', consecutiveOnes;
         consecutiveOnes := consecutiveOnes + 1;
         IF (consecutiveOnes > 4) THEN
            RAISE EXCEPTION '>4hr shift starting from % %.', startTime, ampm(startTime)
@@ -982,36 +982,36 @@ query(`
     SELECT NEW.mon into schedule;
     day := 'mon';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.tue into schedule;
     day := 'tue';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.wed into schedule;
     day := 'wed';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.thu into schedule;
     day := 'thu';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.fri into schedule;
     day := 'fri';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.sat into schedule;
     day := 'sat';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     SELECT NEW.sun into schedule;
     day := 'sun';
     counter := counter + numZeroes(schedule);
-    RAISE NOTICE '% hours worked cumulatively', counter;
+    --RAISE NOTICE '% hours worked cumulatively', counter;
     IF counter < 10 THEN
-      RAISE NOTICE 'Less than 10 hours worked';
+      RAISE EXCEPTION 'Less than 10 hours worked';
     END IF;
     IF counter > 48 THEN
-      RAISE NOTICE 'More than 48 hours worked';
+      RAISE EXCEPTION 'More than 48 hours worked';
     END IF;
     baseSalary := counter * 8;
 

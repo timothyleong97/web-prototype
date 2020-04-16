@@ -694,8 +694,7 @@ app.post("/lastfive", (req, res) => {
 app.post("/order", (req, res) => {
   const {
     restaurant_name,
-    food_items,
-    qty,
+    orders,
     cid,
     lon,
     lat,
@@ -717,7 +716,7 @@ app.post("/order", (req, res) => {
   set timezone = 'Asia/Singapore';
   WITH AvailableRiders as (
 
-	  SELECT did from Delivery_riders
+	  SELECT did FROM Delivery_riders
 	  WHERE did in (
 		  select did from Full_time_rider F
 	  	  where EXTRACT(MONTH from CURRENT_TIMESTAMP) = EXTRACT(MONTH FROM F.month_of_work)
@@ -758,6 +757,7 @@ select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180
       } else {
         //result[1].rows looks like [ { did: 'full-time', lat: null, lon: null, d: null } ]
         did = result[1].rows[0].did;
+        console.log("did", did);
         return client.query(
           `SELECT COUNT(time_customer_placed_order) + 1 as num
              FROM Deliveries
@@ -774,12 +774,12 @@ select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180
         now.getMonth().toString().padStart(2, 0) +
         now.getDay().toString().padStart(2, 0);
       order_id = front + result.rows[0].num.padStart(3, 0);
-
-      for (let i = 0; i < food_items.length; i++) {
-        const name = food_items[i].food_item_name;
+      console.log("order_id", order_id);
+      for (let i = 0; i < orders.length; i++) {
+        const name = orders[i][0].food_item_name;
         str =
           str +
-          `INSERT INTO FOOD_ITEMS_IN_ORDERS values (${qty[i]},${order_id},'${name}','${restaurant_name}');\n`;
+          `INSERT INTO FOOD_ITEMS_IN_ORDERS values (${orders[i][1]},${order_id},'${name}','${restaurant_name}');\n`;
       }
 
       const query = `
@@ -814,7 +814,9 @@ select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180
         `)
       }
 
-    ).then(result => console.log(result))
+    ).then(result => res.send({
+        did, order_id
+    }))
     .catch (err=> console.log(err))
     ;
 });

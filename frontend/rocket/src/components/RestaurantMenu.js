@@ -126,6 +126,7 @@ const RestaurantMenu = (props) => {
         setUnit={setUnit}
         rewards={rewards}
         cid={props.username}
+        restaurant_name = {name}
       />
     </Container>
   ) : (

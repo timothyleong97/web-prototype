@@ -3,8 +3,8 @@ import { Header, Grid, Form, Button } from "semantic-ui-react";
 import axiosClient from "../importables/axiosClient";
 import PromoFunctions from "./Promofunctions";
 
-const RewardsAndPromoCode = ({ rewards, setSubtotal, subtotal, setPromoApplied }) => {
-  const [pointsUsed, setPointsUsed] = useState(0);
+const RewardsAndPromoCode = ({ rewards, setSubtotal, subtotal, setPromoApplied, pointsUsed, setPointsUsed }) => {
+
   const [promo, setPromo] = useState("");
   const [promoState, setPromoState] = useState(0); //0 means haven't tried, 1 means applied, 2 means rejected
   return (

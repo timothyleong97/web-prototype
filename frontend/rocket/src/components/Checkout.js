@@ -39,6 +39,7 @@ const Checkout = ({
   setUnit,
   rewards,
   cid,
+  restaurant_name,
 }) => {
   const orders = filterOrders(menu, qty);
   const [subtotal, setSubtotal] = useState(0);
@@ -46,8 +47,10 @@ const Checkout = ({
   const [delivery, setDelivery] = useState(0);
   const [promoApplied, setPromoApplied] = useState(false);
   const [pastAddresses, setPastAddresses] = useState([]);
-  
-
+  const [pointsUsed, setPointsUsed] = useState(0);
+  const getRand = (from, to, dp) => {
+    return (Math.random() * (to - from) + from).toFixed(dp) * 1;
+  };
   useEffect(() => {
     if (payment.length === 0) {
       let temp = [];
@@ -79,20 +82,9 @@ const Checkout = ({
         setStreet={setStreet}
       />
 
-      <Form style={{ marginTop: 20 }} onSubmit={
-        ()=> {
-          /**
-           * 1. Make an order
-           * 2. Put order in places with customer id
-           * 3. Put food_items_in_order
-           * 4. Give payment method to OrderDispatched
-           * 5. Put delivery_fee in Places
-           * 6. Get the most available driver
-           * 7. Put the driver into the Deliveries field
-           * 8. Send the order id in the url, and redirect to OrderDispatched
-           */
-        }
-      }>
+      <Form
+        style={{ marginTop: 20 }}
+      >
         <Form.Field>
           <Header>Deliver to</Header>
           <Form.Input
@@ -139,6 +131,8 @@ const Checkout = ({
           setSubtotal={setSubtotal}
           subtotal={subtotal}
           setPromoApplied={setPromoApplied}
+          pointsUsed={pointsUsed}
+          setPointsUsed={setPointsUsed}
         />
 
         <Divider />
@@ -169,7 +163,44 @@ const Checkout = ({
         </Grid>
 
         <Divider />
-        <Button type="submit">Place order</Button>
+        <Button onClick={() => {
+          /**
+           * 1. Make an order
+           * 2. Put order in places with customer id
+           * 3. Put food_items_in_order
+           * 4. Give payment method to OrderDispatched
+           * 5. Put delivery_fee in Places
+           * 6. Get the most available driver
+           * 7. Put the driver into the Deliveries field
+           *
+           */
+          axiosClient
+            .post("/order", {
+              restaurant_name,
+              orders,
+              cid,
+              lon: getRand(-90, 90, 2),
+              lat: getRand(-180, 180, 2),
+              delivery_fee: delivery,
+              subtotal,
+              street_name: street,
+              building,
+              unit_num: unit,
+              postal_code: postal,
+              reward_points_used: pointsUsed,
+            })
+            .then(({ data }) => {
+              if (data.err) {
+                // no rider
+                console.log("No rider");
+              } else {
+                //data looks like  {did: String, order_id: String}
+                //redirect to orderdispatched
+                console.log(data);
+              }
+            })
+            .catch((err) => console.log(err));
+        }}>Place order</Button>
         <Divider hidden />
       </Form>
     </Fragment>

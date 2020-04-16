@@ -1,12 +1,10 @@
 import React, { Fragment } from "react";
 import {
   Container,
-  Form,
   Grid,
   Loader,
   Dimmer,
   Header,
-  Dropdown,
 } from "semantic-ui-react";
 import CatalogueItem from "./Tiles/CatalogueItem";
 import axiosClient from "./importables/axiosClient";

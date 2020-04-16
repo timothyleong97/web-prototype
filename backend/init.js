@@ -333,6 +333,16 @@ INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_
 VALUES(10,4.0,'50 Beach rd','1','01-12','101221','Char grill bar');`
 );
 
+query(`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,4.4,'57 Washington Court','479','06-534','607372','That Fantasy Bistro');`
+);
+
+query(`
+INSERT INTO restaurants(min_order_amt,sum_all_ratings,street_name,building,unit_num,postal_code,restaurant_name)
+VALUES(10,4.4,'2296 Hansons Drive','87','010-212','851150','Fairy Court');`
+);
+
 // ORDERS
 query(`
 create table Orders(
@@ -671,6 +681,83 @@ VALUES('Cure illness',15.50,'Soup',100,0,'Crystal Jade');`);
 query(`
 INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
 VALUES('smooth plegm',15.50,'Soup',100,0,'Crystal Jade');`);
+
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Pressure-Cooked Pine Boar',3.8,'Wild',50,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Slow-Cooked Apples Bear',7.6,'Wild',46,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Smoked Honey & Almond Cod',6.6,'Wild',14,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Seared Tortilla',9.2,'Mexican',21,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cherry and Raspberry Toast',5.3,'Dessert',11,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Chestnut and Honey Cake',9,'Dessert',21,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Date Tarte Tatin',7.5,'Dessert',35,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Vanilla Trifle',2.1,'Dessert',23,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cured Ginger Venison',4.2,'Wild',16,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Roast Sweet Chicken',7.8,'Western',24,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Breaded Pineapple Frog',0.6,'Wild',10,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Seared Mustard Fish',9.4,'Western',50,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Simmered Garlic Sandwich',5.1,'Western',34,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cooked Winter Greens',6.4,'Western',23,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('White Walnut Mooncake',3,'Dessert',24,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cinnamon & Walnut Cake',1.6,'Dessert',32,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Red Wine Sundae',4.7,'Dessert',21,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Walnut Strudel',3.6,'Dessert',43,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Simmered Honey Pigeon',2.2,'Wild',23,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Deep-Fried Pepper Boar',5.7,'Wild',50,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Infused Vinegar Cockles',2.8,'Western',33,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Broasted Juniper Snapper',10,'Western',31,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Pressure-Pot Peanuts & Risotto',7.3,'Western',23,0,'That Fantasy Bistro');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Steamed Dark Beer Linguine',1.1,'Western',42,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Chocolate and Blueberry Roll',1.9,'Dessert',33,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Choco and Mandarin Jelly',7.5,'Dessert',20,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Kiwi Pie',6.8,'Dessert',26,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Plum Pavlova',0.9,'Dessert',33,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Oven Pheasant',1.7,'Wild',17,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Fried White Wine Mutton',5.2,'Western',24,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Tea-Smoked Sweet & Fresh Tuna',1,'Western',36,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Barbecued Pineapple Lobster',9.4,'Western',45,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Lime Vegetables',2.6,'Western',38,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Tenderized Potatoes',3.3,'Western',21,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Cherry and Papaya Cone',0.5,'Dessert',35,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Almond and Plum Pudding',2.9,'Dessert',25,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Passionfruit Molten Cake',0.6,'Dessert',12,0,'Fairy Court');`)
+query(`INSERT INTO food_items(food_item_name,price,category,daily_limit,num_orders_made,restaurant_name)
+VALUES('Pecan Genoise',5.6,'Dessert',47,0,'Fairy Court');`)
 
 //FOOD_ITEMS_IN_ORDERS
 query(`
@@ -1418,6 +1505,33 @@ query(`
     END;
   $$ language plpgsql;
 `);
+
+// QUERY 1: MOST POPULAR FOOD ITEMS
+
+// with food_items_ordered as
+// (select O.food_item_name, sum(qty) as totalQty
+// from food_items_in_orders O join deliveries D
+//   on (O.order_id = D.order_id)
+// where D.time_customer_placed_order > '2020-04-01 00:00:00'
+//   and D.time_customer_placed_order < '2020-05-01 00:00:00'
+//   and O.restaurant_name = $1
+// group by food_item_name)
+// select F.food_item_name,
+// CAST(totalQty AS float) /
+//  DATE_PART('day', $3::timestamp - $2::timestamp)
+//  as avg_Qty_Per_Day,
+//  daily_limit,
+//  CAST(totalQty AS float) /
+//  DATE_PART('day', $3::timestamp - $2::timestamp) / daily_limit
+//  as qty_to_limit_ratio
+// from food_items F join food_items_ordered O
+//   on (F.food_item_name = O.food_item_name)
+// where F.restaurant_name = $1
+// order by qty_to_limit_ratio desc
+
+// $1: Restaurant Name
+// $2: Start Date
+// $3: End Date
 
 //the query to pull all available riders
 // query(`

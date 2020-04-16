@@ -732,10 +732,10 @@ create table Restaurant_Staff(
     foreign key(restaurant_name) REFERENCES Restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
 );`);
 query(`
-INSERT INTO restaurant_staff(staff_id)
+INSERT INTO restaurant_staff(staff_id, restaurant_name)
 VALUES('waiter', 'Macdonald');`);
 query(`
-INSERT INTO restaurant_staff(staff_id)
+INSERT INTO restaurant_staff(staff_id, restaurant_name)
 VALUES('Akon', 'SubWay');`);
 
 //SALARY

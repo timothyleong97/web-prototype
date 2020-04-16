@@ -341,7 +341,7 @@ app.post("/addNewRider", (req, res) => {
  *          else send {status: 400}
  */
 app.post("/addNewStaff", (req, res) => {
-  let { firstName, lastName, username, password } = req.body;
+  let { firstName, lastName, username, password, restaurant_name } = req.body;
   let staffName = firstName + " " + lastName;
   //First insert this person into Users
   client
@@ -355,9 +355,9 @@ app.post("/addNewStaff", (req, res) => {
       (_) =>
         client
           .query(
-            `INSERT INTO restaurant_staff(staff_id)
-            VALUES($1);`,
-            [username]
+            `INSERT INTO restaurant_staff(staff_id, restaurant_name)
+            VALUES($1, $2);`,
+            [username, restaurant_name]
           )
           .then((_) => {
             res.send({ status: 200 }); //OK

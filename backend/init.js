@@ -702,10 +702,11 @@ VALUES('FFS');`);
 
 //RESTAURANT_PROMOTION
 query(`
-create table Restaurant_promotion(restaurant_promo char(10) primary KEY references promotions(promo_code),
-                                  restaurant_name VARCHAR(255),
-                                  foreign key(restaurant_name) references restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
-                                );`);
+create table Restaurant_promotion(
+  restaurant_promo char(10) primary KEY references promotions(promo_code),
+  restaurant_name VARCHAR(255),
+  foreign key(restaurant_name) references restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
+);`);
 
 query(`
 INSERT INTO restaurant_promotion(restaurant_promo,restaurant_name)
@@ -726,7 +727,7 @@ VALUES('Manager');`);
 query(`
 create table Restaurant_Staff(
     staff_id varchar(30),
-    restaurant_name VARCHAR(255), 
+    restaurant_name VARCHAR(255),
     primary key(staff_id),
     foreign key(staff_id) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE,
     foreign key(restaurant_name) REFERENCES Restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
@@ -847,7 +848,7 @@ query(`INSERT INTO shifts(shift_start_time,shift_end_time,shift2_start_time,shif
 VALUES('2016-06-22 13:00:00','2016-06-22 17:00:00','2016-06-22 18:00:00','2016-06-22 20:00:00');`);
 
 // Trigger for full-time riders to ensure month is right
-query(`CREATE OR REPLACE FUNCTION fullTimeRidersConvertMonth() 
+query(`CREATE OR REPLACE FUNCTION fullTimeRidersConvertMonth()
     RETURNS TRIGGER AS $$
     DECLARE
     BEGIN
@@ -861,10 +862,10 @@ query(`CREATE TRIGGER full_time_month_trigger
   BEFORE UPDATE OF month_of_work OR INSERT
 ON Full_Time_Rider
 FOR EACH ROW
-EXECUTE FUNCTION fullTimeRidersConvertMonth();`)  
+EXECUTE FUNCTION fullTimeRidersConvertMonth();`)
 
 // Trigger for part-time riders to ensure month is right
-query(`CREATE OR REPLACE FUNCTION partTimeRidersConvertWeek() 
+query(`CREATE OR REPLACE FUNCTION partTimeRidersConvertWeek()
     RETURNS TRIGGER AS $$
     DECLARE
     BEGIN
@@ -878,32 +879,10 @@ query(`CREATE TRIGGER part_time_week_trigger
   BEFORE UPDATE OF week_of_work OR INSERT
 ON part_Time_Rider
 FOR EACH ROW
-EXECUTE FUNCTION partTimeRidersConvertWeek();`)  
+EXECUTE FUNCTION partTimeRidersConvertWeek();`)
 
 /**
  * Trigger 1
- *  schemas :Part_Time_Rider (
-    did varchar(30),
-    week_of_work DATE,
-    mon bigint,
-    tue bigint,
-    wed bigint,
-    thu bigint,
-    fri bigint,
-    sat bigint,
-    sun bigint,
-    primary key(did, week_of_work),
-    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
-)
-
-create table Salary(
-    did varchar(30),
-    salary_date timestamp, -- date that we pay them
-    base_salary real default 0.00,
-    commission real default 0.00,
-    primary key (did, salary_date),
-    foreign key(did) REFERENCES Delivery_Riders(did) ON DELETE CASCADE ON UPDATE CASCADE
-);
  * Part timer schedule looks like this : 001001010... where 1 means working. Leading zeroes are dropped.
  * Before an insertion of a schedule into the part-time_riders table, check if
  * 1. there are more than 4 consecutive zeroes for mon to sun,
@@ -1018,7 +997,7 @@ query(`
 
     INSERT INTO Salary VALUES (NEW.did, CURRENT_TIMESTAMP, baseSalary, 0.0);   -- in front end we stop them from updating
     RETURN NULL;
-  
+
   EXCEPTION
     WHEN SQLSTATE '23514' THEN
       GET STACKED DIAGNOSTICS errorMsg = MESSAGE_TEXT;
@@ -1040,67 +1019,99 @@ query(`
   EXECUTE FUNCTION calculateTotalWorkingHours();
 `);
 
+
+query(`DROP FUNCTION IF EXISTS getrestaurantrating;`);
+
+query(`CREATE OR REPLACE FUNCTION getrestaurantrating(order_id char(11))
+returns bigint as $$
+
+select sum(o.restaurant_rating)
+FROM orders o
+WHERE o.order_id = order_id;
+
+$$ language sql;`);
+
+query(`DROP FUNCTION IF EXISTS getrestaurantcount;`);
+query(`CREATE OR REPLACE FUNCTION getrestaurantcount(order_id char(11))
+returns bigint as $$
+select  count(o.restaurant_rating)
+FROM orders o
+WHERE o.order_id = order_id;
+$$ language sql;`);
+
+query(`DROP FUNCTION IF EXISTS getdriverrating;`);
+query(`CREATE OR REPLACE FUNCTION getdriverrating(order_id char(11))
+returns bigint as $$
+select  sum(d.delivery_rating)
+FROM deliveries d
+WHERE d.order_id = order_id;
+$$ language sql;`);
+
+query(`DROP FUNCTION IF EXISTS getDriverCount;`);
+query(`CREATE OR REPLACE FUNCTION getDriverCount(order_id char(11))
+returns bigint as $$
+select  count(d.delivery_rating)
+FROM deliveries d
+WHERE d.order_id = order_id;
+$$ language sql;`);
+
+
+query(`DROP FUNCTION IF EXISTS fn_updateEveryThing() ON DELETE CASCADE;`);
 query(`
 create or replace function fn_updateEveryThing() returns trigger as
-  $$
-  DECLARE
-  restaurant_rating real;
-  driver_rating real;
-  no_of_restaurants real;
-  no_of_drivers real;
-  BEGIN
+$$
+DECLARE
+restaurant_rating bigint;
+driver_rating bigint;
+no_of_restaurants bigint;
+no_of_drivers bigint;
+BEGIN
 
-  select
+select
 
-  -- update RESTAURANT Rating
-  restaurant_rating = ( select  sum(o.restaurant_rating)
-  FROM orders o
-  WHERE o.restaurant_name = new.restaurant_name);
+-- update RESTAURANT Rating
+restaurant_rating = getrestaurantrating(NEW.order_id);
+no_of_restaurants = getrestaurantcount(NEW.order_id);
 
-  no_of_restaurants = ( select  count(o.restaurant_rating)
-  FROM orders o
-  WHERE o.restaurant_name = new.restaurant_name);
+UPDATE restaurants r
+SET sum_all_ratings = (restaurant_rating / no_of_restaurants)
+FROM orders o
+WHERE r.restaurant_name = o.restaurant_name;
 
-  UPDATE restaurants
-  SET sum_all_ratings = average_restaurant_rating / no_of_restaurants
-  WHERE restaurant_name = new.restaurant_name;
 
-  -- update rating for driver
- driver_rating = (select  sum(d.delivery_rating)
- FROM deliveries d
- WHERE d.driver = new.driver);
+-- update rating for driver
 
- no_of_drivers = (select  count(d.delivery_rating)
- FROM deliveries d
- WHERE d.driver = new.driver);
+driver_rating = getDriverRating(NEW.order_id);
+no_of_drivers = getDriverCount(NEW.order_id);
 
- UPDATE Delivery_riders
- SET sum_all_ratings = average_driver_rating / no_of_drivers
- WHERE did = new.did;
+UPDATE Delivery_riders dr
+SET sum_all_ratings = driver_rating / no_of_drivers
+FROM orders o
+WHERE o.did = dr.did;
 
 
 
 
 
 
-  return null;
+return null;
 
 
-  end;
+end;
 $$ language plpgsql;
 `);
 
 query(`
 drop trigger if exists tr_updateEveryThing on orders;`);
 query(`create trigger tr_updateEveryThing
-  before INSERT
+  after INSERT
   on deliveries
   for each ROW
 execute function fn_updateEveryThing();`);
 
 /**
  * Trigger 2
- * Before an insertion of a finalised order into the delivery table, the total cost for that delivery (taken from the Places table) and the number of reward points (subtotal floored) earned are calculated.
+ * Before an insert;ion of a finalised order into the delivery table, the total cost for that delivery (taken from the Places table) and the number of reward points (subtotal floored) earned are calculated.
  * The reward points are then added to the customer in the Customers table, and the total cost is recorded in the Places table.
  * The delivery fee is inserted into the commission field of the Salary table
  * The num_deliveries is inserted into the Delivery_riders table
@@ -1218,14 +1229,14 @@ query(`
 `);
 
 /**
- * Query 2 
+ * Query 2
  * Present a table of available riders sorted by most available to least available.
  * Select available full-timers based on whether they are currently on shift - how?
  * Select available part-timers based on whether they are currently on shift - how?
  * Calculate distance from each of these riders' last delivery locations to the current delivery's location
  * order by distance
  * limit 1
- * 
+ *
  * shifts(
    shift_id SERIAL, -- 1,2,3,4
    shift_start_time timestamp,
@@ -1241,7 +1252,7 @@ query(`
 // mod function x mod y returns a value between 0 inclusive and y exclusive. y must be positive.
 query(`
       CREATE OR REPLACE FUNCTION MY_MOD(X integer, Y integer)
-      returns integer as 
+      returns integer as
       $$
       DECLARE
         final_val integer = MOD(X,Y);
@@ -1255,10 +1266,10 @@ query(`
   `);
 //convert 3 letter weekday into a number
 query(`
-      CREATE OR REPLACE FUNCTION MY_DAY(wd char(3)) 
-      returns integer as 
+      CREATE OR REPLACE FUNCTION MY_DAY(wd char(3))
+      returns integer as
       $$
-        select case 
+        select case
           when wd = 'sun' then 0
           when wd = 'mon' then 1
           when wd = 'tue' then 2
@@ -1271,23 +1282,9 @@ query(`
 `);
 
 //function to find out if a full-time rider is working on the CURRENT_DATE
-/**
- * Full_Time_Rider(
-    did varchar(30),
-    month_of_work DATE,
-    wws_start_day char(3),
-    day1_shift integer,
-    day2_shift integer,
-    day3_shift integer,
-    day4_shift integer,
-    day5_shift integer,
-    primary key(did, month_of_work),
-    foreign key(did) REFERENCES Delivery_Riders ON DELETE CASCADE ON UPDATE CASCADE
-)
- */
 query(`
       CREATE OR REPLACE FUNCTION IS_FULL_TIMER_WORKING(driver varchar(30))
-      returns integer as 
+      returns integer as
       $$
         DECLARE
           start_day_of_week INTEGER;
@@ -1312,7 +1309,7 @@ query(`
           difference := MY_MOD(current_day_of_week - start_day_of_week, 7);
           IF difference > 5 THEN
             return 0;
-          ELSE 
+          ELSE
             FOR i in 0..4 LOOP
               CONTINUE WHEN start_day_of_week + i <> current_day_of_week;
               RAISE NOTICE 'i is %' , i;
@@ -1338,27 +1335,27 @@ query(`
                 WHERE did = driver;
               END IF;
             END LOOP;
-            SELECT EXTRACT(hour FROM shift_start_time) INTO one_start 
-            from shifts 
+            SELECT EXTRACT(hour FROM shift_start_time) INTO one_start
+            from shifts
             where shift_id = shift_num;
             RAISE NOTICE 'one_start = %', one_start;
             SELECT EXTRACT(hour FROM shift_end_time) INTO one_end
-            from shifts 
+            from shifts
             where shift_id = shift_num;
             RAISE NOTICE 'one_end = %', one_end;
-            SELECT EXTRACT(hour FROM shift2_start_time) INTO two_start 
-            from shifts 
+            SELECT EXTRACT(hour FROM shift2_start_time) INTO two_start
+            from shifts
             where shift_id = shift_num;
             RAISE NOTICE 'two_start = %', two_start;
-            SELECT EXTRACT(hour FROM shift2_end_time) INTO two_end 
-            from shifts 
+            SELECT EXTRACT(hour FROM shift2_end_time) INTO two_end
+            from shifts
             where shift_id = shift_num;
             RAISE NOTICE 'two_end = %', two_end;
             RAISE NOTICE 'current hour = %', EXTRACT(hour from CURRENT_TIMESTAMP);
             IF (EXTRACT(hour from CURRENT_TIMESTAMP) BETWEEN one_start and one_end ) OR
             (EXTRACT(hour from CURRENT_TIMESTAMP) BETWEEN two_start and two_end) THEN
               return 1;
-            ELSE 
+            ELSE
               return 0;
             END IF;
           END IF;
@@ -1379,32 +1376,32 @@ query(`
     currHour integer := EXTRACT(HOUR FROM CURRENT_TIMESTAMP);
     dayofweek integer:= EXTRACT(DOW FROM CURRENT_TIMESTAMP);
     BEGIN
-      IF dayofweek = 0 THEN 
-        SELECT sun INTO sched 
+      IF dayofweek = 0 THEN
+        SELECT sun INTO sched
         FROM part_time_rider
         WHERE did = driver;
-      ELSIF dayofweek = 1 THEN 
-        SELECT mon INTO sched 
+      ELSIF dayofweek = 1 THEN
+        SELECT mon INTO sched
         FROM part_time_rider
         WHERE did = driver;
-      ELSIF dayofweek = 2 THEN 
-        SELECT tue INTO sched 
+      ELSIF dayofweek = 2 THEN
+        SELECT tue INTO sched
         FROM part_time_rider
         WHERE did = driver;
-      ELSIF dayofweek = 3 THEN 
-        SELECT wed INTO sched 
+      ELSIF dayofweek = 3 THEN
+        SELECT wed INTO sched
         FROM part_time_rider
         WHERE did = driver;
-      ELSIF dayofweek = 4 THEN 
-        SELECT thu INTO sched 
+      ELSIF dayofweek = 4 THEN
+        SELECT thu INTO sched
         FROM part_time_rider
         WHERE did = driver;
-      ELSIF dayofweek = 5 THEN 
-        SELECT fri INTO sched 
+      ELSIF dayofweek = 5 THEN
+        SELECT fri INTO sched
         FROM part_time_rider
         WHERE did = driver;
-      ELSIF dayofweek = 6 THEN 
-        SELECT sat INTO sched 
+      ELSIF dayofweek = 6 THEN
+        SELECT sat INTO sched
         FROM part_time_rider
         WHERE did = driver;
       END IF;
@@ -1417,53 +1414,12 @@ query(`
         start_time := start_time - 1;
         sched_temp := sched_temp / 10;
       END LOOP;
-      return 0;  
+      return 0;
     END;
   $$ language plpgsql;
 `);
 
 //the query to pull all available riders
-/**
- * create table Addresses(
-    street_name char(30),
-    building varchar(30),
-    unit_num char(10),
-    postal_code integer,
-    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
-    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
-    primary key (street_name,building,unit_num,postal_code)
-);
-create table Deliveries (
-    order_id char(11),
-    driver varchar(30) not null,
-    time_customer_placed_order TIMESTAMP,
-    time_rider_departs_for_restaurant TIMESTAMP,
-    time_rider_reach_restaurant TIMESTAMP,
-    time_rider_departs_restaurant TIMESTAMP,
-    time_rider_delivers_order TIMESTAMP,
-    delivery_rating integer,
-    comments_for_rider CHAR(100),
-    street_name char(30),
-    building varchar(30),
-    unit_num char(10),
-    postal_code integer,
-    reward_points_used integer,
-    primary key(order_id),
-    foreign key(order_id) references Orders(order_id) on update cascade on delete cascade,
-    foreign key(driver) references Delivery_Riders(did) on UPDATE cascade on delete cascade,
-    foreign key(street_name,building,unit_num,postal_code) references Addresses(street_name,building,unit_num,postal_code) on UPDATE cascade on delete cascade
-
-    create table Addresses(
-    street_name char(30),
-    building varchar(30),
-    unit_num char(10),
-    postal_code integer,
-    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
-    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
-    primary key (street_name,building,unit_num,postal_code)
-);
-);
- */
 // query(`
 // WITH AvailableRiders as (
 //       SELECT did from Delivery_riders
@@ -1490,7 +1446,7 @@ create table Deliveries (
 //       from LastLocationOfRiders
 //       order by d asc nulls first
 //       limit 1;
-      
+
 // `);
 
 //NOTE THAT THIS ABOVE FUNCTION THROWS AN ERROR BECAUSE $1 and $2 are not defined.

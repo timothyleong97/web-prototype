@@ -1292,6 +1292,34 @@ query(`
   EXECUTE FUNCTION compute_total_cost_and_rewards();
 `);
 
+
+// QUERY 1: MOST POPULAR FOOD ITEMS
+
+// with food_items_ordered as
+// (select O.food_item_name, sum(qty) as totalQty
+// from food_items_in_orders O join deliveries D
+//   on (O.order_id = D.order_id)
+// where D.time_customer_placed_order > '2020-04-01 00:00:00'
+//   and D.time_customer_placed_order < '2020-05-01 00:00:00'
+//   and O.restaurant_name = $1
+// group by food_item_name)
+// select F.food_item_name,
+// CAST(totalQty AS float) /
+//  DATE_PART('day', $3::timestamp - $2::timestamp)
+//  as avg_Qty_Per_Day,
+//  daily_limit,
+//  CAST(totalQty AS float) /
+//  DATE_PART('day', $3::timestamp - $2::timestamp) / daily_limit
+//  as qty_to_limit_ratio
+// from food_items F join food_items_ordered O
+//   on (F.food_item_name = O.food_item_name)
+// where F.restaurant_name = $1
+// order by qty_to_limit_ratio desc
+
+// $1: Restaurant Name
+// $2: Start Date
+// $3: End Date
+
 /**
  * Query 2
  * Present a table of available riders sorted by most available to least available.
@@ -1315,34 +1343,34 @@ query(`
 // Helper functions
 // mod function x mod y returns a value between 0 inclusive and y exclusive. y must be positive.
 query(`
-      CREATE OR REPLACE FUNCTION MY_MOD(X integer, Y integer)
-      returns integer as
-      $$
-      DECLARE
-        final_val integer = MOD(X,Y);
-      BEGIN
-        IF final_val < 0 THEN
-          final_val = final_val + Y;
-        END IF;
-      RETURN final_val;
-      END;
-      $$ language plpgsql;
+CREATE OR REPLACE FUNCTION MY_MOD(X integer, Y integer)
+returns integer as
+$$
+DECLARE
+  final_val integer = MOD(X,Y);
+BEGIN
+  IF final_val < 0 THEN
+    final_val = final_val + Y;
+  END IF;
+RETURN final_val;
+END;
+$$ language plpgsql;
   `);
 //convert 3 letter weekday into a number
 query(`
-      CREATE OR REPLACE FUNCTION MY_DAY(wd char(3))
-      returns integer as
-      $$
-        select case
-          when wd = 'sun' then 0
-          when wd = 'mon' then 1
-          when wd = 'tue' then 2
-          when wd = 'wed' then 3
-          when wd = 'thu' then 4
-          when wd = 'fri' then 5
-          when wd = 'sat' then 6
-        end;
-      $$ language sql;
+CREATE OR REPLACE FUNCTION MY_DAY(wd char(3))
+returns integer as
+$$
+  select case
+    when wd = 'sun' then 0
+    when wd = 'mon' then 1
+    when wd = 'tue' then 2
+    when wd = 'wed' then 3
+    when wd = 'thu' then 4
+    when wd = 'fri' then 5
+    when wd = 'sat' then 6
+  end;
+$$ language sql;
 `);
 
 //function to find out if a full-time rider is working on the CURRENT_DATE
@@ -1429,86 +1457,59 @@ query(`
 
 //function to check if part_time rider is currently working
 query(`
-  CREATE OR REPLACE FUNCTION IS_PART_TIMER_WORKING(driver varchar(30))
-  returns integer as
-  $$
-    DECLARE
-    sched bigint := 0;
-    sched_temp bigint := 0;
-    lastDigit integer;
-    start_time INTEGER := 21;
-    currHour integer := EXTRACT(HOUR FROM CURRENT_TIMESTAMP);
-    dayofweek integer := EXTRACT(DOW FROM CURRENT_TIMESTAMP);
-    BEGIN
-      IF dayofweek = 0 THEN
-        SELECT sun INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 1 THEN
-        SELECT mon INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 2 THEN
-        SELECT tue INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 3 THEN
-        SELECT wed INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 4 THEN
-        SELECT thu INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 5 THEN
-        SELECT fri INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
-      ELSIF dayofweek = 6 THEN
-        SELECT sat INTO sched
-        FROM part_time_rider
-        WHERE did = driver;
+CREATE OR REPLACE FUNCTION IS_PART_TIMER_WORKING(driver varchar(30))
+returns integer as
+$$
+  DECLARE
+  sched bigint := 0;
+  sched_temp bigint := 0;
+  lastDigit integer;
+  start_time INTEGER := 21;
+  currHour integer := EXTRACT(HOUR FROM CURRENT_TIMESTAMP);
+  dayofweek integer := EXTRACT(DOW FROM CURRENT_TIMESTAMP);
+  BEGIN
+    IF dayofweek = 0 THEN
+      SELECT sun INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 1 THEN
+      SELECT mon INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 2 THEN
+      SELECT tue INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 3 THEN
+      SELECT wed INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 4 THEN
+      SELECT thu INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 5 THEN
+      SELECT fri INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    ELSIF dayofweek = 6 THEN
+      SELECT sat INTO sched
+      FROM part_time_rider
+      WHERE did = driver;
+    END IF;
+    sched_temp := sched;
+    WHILE sched_temp > 0 LOOP
+      lastDigit := MOD(sched_temp, 10);
+      IF (lastDigit = 1) AND start_time = currHour THEN
+        return 1;
       END IF;
-      sched_temp := sched;
-      WHILE sched_temp > 0 LOOP
-        lastDigit := MOD(sched_temp, 10);
-        IF (lastDigit = 1) AND start_time = currHour THEN
-          return 1;
-        END IF;
-        start_time := start_time - 1;
-        sched_temp := sched_temp / 10;
-      END LOOP;
-      return 0;
-    END;
-  $$ language plpgsql;
+      start_time := start_time - 1;
+      sched_temp := sched_temp / 10;
+    END LOOP;
+    return 0;
+  END;
+$$ language plpgsql;
 `);
-
-// QUERY 1: MOST POPULAR FOOD ITEMS
-
-// with food_items_ordered as
-// (select O.food_item_name, sum(qty) as totalQty
-// from food_items_in_orders O join deliveries D
-//   on (O.order_id = D.order_id)
-// where D.time_customer_placed_order > '2020-04-01 00:00:00'
-//   and D.time_customer_placed_order < '2020-05-01 00:00:00'
-//   and O.restaurant_name = $1
-// group by food_item_name)
-// select F.food_item_name,
-// CAST(totalQty AS float) /
-//  DATE_PART('day', $3::timestamp - $2::timestamp)
-//  as avg_Qty_Per_Day,
-//  daily_limit,
-//  CAST(totalQty AS float) /
-//  DATE_PART('day', $3::timestamp - $2::timestamp) / daily_limit
-//  as qty_to_limit_ratio
-// from food_items F join food_items_ordered O
-//   on (F.food_item_name = O.food_item_name)
-// where F.restaurant_name = $1
-// order by qty_to_limit_ratio desc
-
-// $1: Restaurant Name
-// $2: Start Date
-// $3: End Date
 
 //the query to pull all available riders
 // query(`

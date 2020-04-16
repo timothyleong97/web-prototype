@@ -690,6 +690,7 @@ app.post("/lastfive", (req, res) => {
     find a driver, then create the Deliveries Entry, then return the Order id to the front end
 
  */
+
 app.post("/order", (req, res) => {
   const {
     restaurant_name,
@@ -750,7 +751,7 @@ select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180
   limit 1;
   `
     )
-    .then((result) => {
+    .catch (err=> console.log(err)).then((result) => {
       if (result[1].rowCount == 0) {
         //no driver
         res.send({ err: "No rider" });
@@ -765,7 +766,7 @@ select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180
         );
       }
     })
-    .then((result) => {
+    .catch (err=> console.log(err)).then((result) => {
       console.log(result)
       const now = new Date();
       const front =
@@ -787,14 +788,34 @@ select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180
         subtotal + delivery_fee
       });
         ${str}
-        INSERT INTO DELIVERIES values ('${order_id}','${did}',CURRENT_TIMESTAMP, null, null, null, null, 0, '', '${street_name}', '${building}', '${unit_num}', '${postal_code}', ${reward_points_used});
+        
       `;
 
       return client.query(query);
-    }).then(result => {
-      console.log(result);
-      //insert the user's address
-    }).catch (err=> console.log(err))
+    }).catch (err=> console.log(err)).then(_ => {
+      //if the user's address does not exist, create it
+      return client.query(`
+        SELECT * FROM ADDRESSES A
+        WHERE A.street_name = '${street_name}'
+        AND A.building = '${building}'
+        AND A.unit_num = '${unit_num}'
+        AND A.postal_code = '${postal_code}'        
+      `)
+    }).catch (err=> console.log(err)).then(
+      result => {
+        console.log(result);
+        const addAddr = `INSERT INTO ADDRESSES VALUES ( '${street_name}', '${building}', '${unit_num}', '${postal_code}', ${lon}, ${lat});\n`;
+        const insert = `
+        INSERT INTO Deliveries
+        VALUES ('${order_id}','${did}',CURRENT_TIMESTAMP, null, null, null, null, 0, '', '${street_name}', '${building}', '${unit_num}', '${postal_code}', ${reward_points_used}); `
+        return client.query(`
+          ${result.rowCount === 0 ? addAddr : ""}
+          ${insert}
+        `)
+      }
+
+    ).then(result => console.log(result))
+    .catch (err=> console.log(err))
     ;
 });
 

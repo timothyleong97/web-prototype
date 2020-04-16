@@ -1070,20 +1070,19 @@ query(`
 create or replace function fn_updateEveryThing() returns trigger as
 $$
 DECLARE
-restaurant_rating bigint;
+rest_rating bigint;
 driver_rating bigint;
 no_of_restaurants bigint;
 no_of_drivers bigint;
 BEGIN
 
-select
 
 -- update RESTAURANT Rating
-restaurant_rating = getrestaurantrating(NEW.order_id);
+rest_rating = getrestaurantrating(NEW.order_id);
 no_of_restaurants = getrestaurantcount(NEW.order_id);
 
 UPDATE restaurants r
-SET sum_all_ratings = (restaurant_rating / no_of_restaurants)
+SET sum_all_ratings = (rest_rating / no_of_restaurants)
 FROM orders o
 WHERE r.restaurant_name = o.restaurant_name;
 
@@ -1097,9 +1096,6 @@ UPDATE Delivery_riders dr
 SET sum_all_ratings = driver_rating / no_of_drivers
 FROM orders o
 WHERE o.did = dr.did;
-
-
-
 
 
 
@@ -1355,7 +1351,7 @@ query(`
     lastDigit integer;
     start_time INTEGER := 21;
     currHour integer := EXTRACT(HOUR FROM CURRENT_TIMESTAMP);
-    dayofweek integer:= EXTRACT(DOW FROM CURRENT_TIMESTAMP);
+    dayofweek integer := EXTRACT(DOW FROM CURRENT_TIMESTAMP);
     BEGIN
       IF dayofweek = 0 THEN
         SELECT sun INTO sched
@@ -1438,6 +1434,8 @@ query(`
       
 // `);
 
+//NOTE THAT THIS ABOVE FUNCTION THROWS AN ERROR BECAUSE $1 and $2 are not defined.
+
 
 query(`insert into users values('full-time', 'p');`)
 query(`
@@ -1450,7 +1448,7 @@ query(`insert into delivery_riders values ('part-time', 20, 10);
 query(`insert into part_time_rider values ('part-time', '2020-04-16', 0,0,0,011101110111,011101110111,011101110111,011101110111);
 `)
 
-//NOTE THAT THIS ABOVE FUNCTION THROWS AN ERROR BECAUSE $1 and $2 are not defined.
+
 
 
 // query 3, get the most popular hour and name in the past month

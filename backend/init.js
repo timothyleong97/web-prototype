@@ -733,10 +733,10 @@ create table Restaurant_Staff(
 );`);
 query(`
 INSERT INTO restaurant_staff(staff_id)
-VALUES('waiter');`);
+VALUES('waiter', 'Macdonald');`);
 query(`
 INSERT INTO restaurant_staff(staff_id)
-VALUES('Akon');`);
+VALUES('Akon', 'SubWay');`);
 
 //SALARY
 query(`

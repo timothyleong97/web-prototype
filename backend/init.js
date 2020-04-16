@@ -1541,7 +1541,11 @@ order by d.time_rider_delivers_order ASC;`);
 
 
 //b) total cost of all completed order
-
+query(`select sum(p.total_cost), Extract(Month from d.time_rider_delivers_order)
+FROM Places p, Deliveries d
+WHERE p.order_id = d.order_id AND d.time_rider_delivers_order <> NULL
+group by p.total_cost,d.time_rider_delivers_order
+order by d.time_rider_delivers_order ASC;`);
 
 //c) top 5 favourite food items
 query(`select max(fio.food_item_name), Extract(Month from d.time_rider_delivers_order)

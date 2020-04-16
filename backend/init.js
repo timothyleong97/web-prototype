@@ -429,11 +429,11 @@ create table Promotions (
 
 /**
  * PROMOS MUST MATCH THESE 4 signatures
- * 
+ *
  * X%OFF
  * -XDOLLARS
  * MINSPENDXDISCOUNTY
- * MINSPENDXPERCENTOFFY 
+ * MINSPENDXPERCENTOFFY
  * where X and Y are positive integers
  */
 
@@ -1118,33 +1118,39 @@ query(`
 
 query(`DROP FUNCTION IF EXISTS getrestaurantrating;`);
 
-query(`CREATE OR REPLACE FUNCTION getrestaurantrating(order_id char(11))
+query(`CREATE OR REPLACE FUNCTION getrestaurantrating(order_id character)
 returns bigint as $$
-
 select sum(o.restaurant_rating)
+
 FROM orders o
 WHERE o.order_id = order_id;
+
+
 
 $$ language sql;`);
 
 query(`DROP FUNCTION IF EXISTS getrestaurantcount;`);
-query(`CREATE OR REPLACE FUNCTION getrestaurantcount(order_id char(11))
+query(`CREATE OR REPLACE FUNCTION getrestaurantcount(order_id character)
 returns bigint as $$
 select  count(o.restaurant_rating)
 FROM orders o
 WHERE o.order_id = order_id;
+
+
 $$ language sql;`);
 
 query(`DROP FUNCTION IF EXISTS getdriverrating;`);
-query(`CREATE OR REPLACE FUNCTION getdriverrating(order_id char(11))
+query(`CREATE OR REPLACE FUNCTION getdriverrating(order_id char)
 returns bigint as $$
-select  sum(d.delivery_rating)
+
+select sum(d.delivery_rating)
 FROM deliveries d
 WHERE d.order_id = order_id;
+
 $$ language sql;`);
 
 query(`DROP FUNCTION IF EXISTS getDriverCount;`);
-query(`CREATE OR REPLACE FUNCTION getDriverCount(order_id char(11))
+query(`CREATE OR REPLACE FUNCTION getDriverCount(order_id char)
 returns bigint as $$
 select  count(d.delivery_rating)
 FROM deliveries d
@@ -1154,43 +1160,50 @@ $$ language sql;`);
 
 query(`DROP FUNCTION IF EXISTS fn_updateEveryThing() CASCADE;`);
 query(`
-create or replace function fn_updateEveryThing() returns trigger as
-$$
-DECLARE
-rest_rating bigint;
-driver_rating bigint;
-no_of_restaurants bigint;
-no_of_drivers bigint;
-BEGIN
-
-
--- update RESTAURANT Rating
-rest_rating = getrestaurantrating(NEW.order_id);
-no_of_restaurants = getrestaurantcount(NEW.order_id);
-
-UPDATE restaurants r
-SET sum_all_ratings = (rest_rating / no_of_restaurants)
-FROM orders o
-WHERE r.restaurant_name = o.restaurant_name;
-
-
--- update rating for driver
-
-driver_rating = getDriverRating(NEW.order_id);
-no_of_drivers = getDriverCount(NEW.order_id);
-
-UPDATE Delivery_riders dr
-SET sum_all_ratings = driver_rating / no_of_drivers
-FROM orders o
-WHERE o.did = dr.did;
+  create or replace function fn_updateEveryThing() returns trigger as
+    $$
+    DECLARE
+    restaurant_ratingss bigint;
+    driver_ratingss bigint;
+    no_of_restaurantss bigint;
+    no_of_driverss bigint;
+    BEGIN
 
 
 
-return null;
+    -- update RESTAURANT Rating
+    restaurant_ratingss =  getrestaurantrating(NEW.order_id);
+    no_of_restaurantss =  getrestaurantcount(NEW.order_id);
+    RAISE NOTICE '%', restaurant_ratingss;
+    RAISE NOTICE '%', no_of_restaurantss;
+    UPDATE restaurants r
+    SET sum_all_ratings = (restaurant_ratingss / no_of_restaurantss)
+    FROM orders o
+    WHERE r.restaurant_name = o.restaurant_name;
 
 
-end;
-$$ language plpgsql;
+    -- update rating for driver
+
+    driver_ratingss =  getDriverRating(NEW.order_id);
+    no_of_driverss =  getDriverCount(NEW.order_id);
+    RAISE NOTICE '%', driver_ratingss;
+    RAISE NOTICE '%', no_of_driverss;
+
+   UPDATE Delivery_riders dr
+   SET sum_all_ratings = driver_ratingss / no_of_driverss
+   FROM orders o
+   WHERE o.did = dr.did;
+
+
+
+
+
+
+  return new;
+
+
+    end;
+  $$ language plpgsql;
 `);
 
 query(`
@@ -1242,7 +1255,7 @@ query(`
     rp_gained integer;
     delivery_cost real;
     BEGIN
-    
+
     -- get the cid
     SELECT P.cid INTO customer_id
     FROM Places P
@@ -1252,10 +1265,10 @@ query(`
     SELECT P.total_cost into total
     from Places P
     WHERE P.order_id = NEW.order_id;
-  
+
     -- calculate reward points gained (round down the subtotal)
     rp_gained = FLOOR(total) - NEW.reward_points_used;
-    
+
     -- update customer's reward points
     UPDATE Customers
       SET reward_points = reward_points + rp_gained
@@ -1521,7 +1534,7 @@ $$ language plpgsql;
 //   AND IS_FULL_TIMER_WORKING(did) = 1
 //   UNION
 //   SELECT did from Delivery_riders
-//   WHERE did in (select did from Part_time_rider P 
+//   WHERE did in (select did from Part_time_rider P
 //          where EXTRACT(WEEK from CURRENT_TIMESTAMP) = EXTRACT(WEEK FROM P.week_of_work))
 //   AND IS_PART_TIMER_WORKING(did) = 1
 // )
@@ -1536,8 +1549,8 @@ $$ language plpgsql;
 // and D.unit_num = A.unit_num
 // and D.postal_code = A.postal_code
 // and time_rider_delivers_order = (
-// SELECT MAX(time_rider_delivers_order) 
-// from Deliveries D2 
+// SELECT MAX(time_rider_delivers_order)
+// from Deliveries D2
 // where D2.driver = D.driver)
 
 // )
@@ -1546,7 +1559,7 @@ $$ language plpgsql;
 // from LastLocationOfRiders
 // order by d asc nulls first
 // limit 1;
-      
+
 // `);
 
 //NOTE THAT THIS ABOVE FUNCTION THROWS AN ERROR BECAUSE $1 and $2 are not defined.
@@ -1558,7 +1571,7 @@ insert into delivery_riders values ('full-time', 20, 10); `)
 query(`
 insert into full_time_rider values ('full-time', '2020-04-01', 'thu',2,2,2,2,2);`)
 query(`insert into users values('part-time', 'p');`)
-query(`insert into delivery_riders values ('part-time', 20, 10); 
+query(`insert into delivery_riders values ('part-time', 20, 10);
 `)
 query(`insert into part_time_rider values ('part-time', '2020-04-16', 0,0,0,011101110111,011101110111,011101110111,011101110111);
 `)

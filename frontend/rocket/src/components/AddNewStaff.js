@@ -6,8 +6,7 @@ import {
   Container,
   Header,
   Message,
-  Image,
-  Dropdown,
+  Image
 } from "semantic-ui-react";
 import axiosClient from "./importables/axiosClient";
 import history from './importables/history';

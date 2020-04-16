@@ -15,6 +15,8 @@ import CategoryDisplay from "./components/CategoryDisplay";
 import AddNewRider from "./components/AddNewRider";
 import AddNewStaff from "./components/AddNewStaff";
 import ModifyRiderSchedule from "./components/ModifyRiderSchedule";
+import OrderDispatched from './components/OrderDispatched';
+import OrderReceived from './components/OrderReceived';
 
 const homePages = {
   customers: "/catalogue",
@@ -44,6 +46,16 @@ const renderUserRoutes = (username, usertype, ridertype) => {
           path="/categories/:name"
           exact
           render={(props) => <CategoryDisplay {...props} username={username} />}
+        /> 
+        <Route
+          path="/dispatched/:order_id"
+          exact
+          render={(props) => <OrderDispatched {...props} username={username} />}
+        />
+        <Route
+          path="/received/:order_id"
+          exact
+          render={(props) => <OrderReceived {...props} username={username} />}
         />
       </Fragment>
     );
@@ -127,7 +139,7 @@ const App = () => {
           as="h1"
           style={{
             backgroundColor: "#eac012",
-            height: "14vh",
+            height: "16vh",
             paddingLeft: 10,
             width: '100vw'
           }}
@@ -139,9 +151,9 @@ const App = () => {
                   <Image
                     src="../name.png"
                     style={{
-                      width: 240,
+                      width: 230,
                       marginLeft: 25,
-                      paddingTop: 13,
+                      paddingTop: 15,
                     }}
                   />
                 </Link>
@@ -153,7 +165,7 @@ const App = () => {
                     width={3}
                     floated="left"
                     verticalAlign="middle"
-                    style={{ marginLeft: 520, marginTop: 10 }}
+                    style={{ marginLeft: 600, marginTop: 10 }}
                   >
                     <Header as="h2">Welcome, {username}.</Header>
                   </Grid.Column>
@@ -161,10 +173,10 @@ const App = () => {
                     floated="right"
                     verticalAlign="middle"
                     style={{ marginTop: 10 }}
-                    width={4}
+                    width={2}
                   >
                     {" "}
-                    <EditProfile setAppUsername={setUsername} />
+                    
                     <Button
                       color="purple"
                       circular

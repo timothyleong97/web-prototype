@@ -1116,7 +1116,7 @@ execute function fn_updateEveryThing();`);
 
 /**
  * Trigger 2
- * Before an insert;ion of a finalised order into the delivery table, the total cost for that delivery (taken from the Places table) and the number of reward points (subtotal floored) earned are calculated.
+ * Before an insertion of a finalised order into the delivery table, the total cost for that delivery (taken from the Places table) and the number of reward points (subtotal floored) earned are calculated.
  * The reward points are then added to the customer in the Customers table, and the total cost is recorded in the Places table.
  * The delivery fee is inserted into the commission field of the Salary table
  * The num_deliveries is inserted into the Delivery_riders table

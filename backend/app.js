@@ -716,7 +716,7 @@ app.post("/order", (req, res) => {
   set timezone = 'Asia/Singapore';
   WITH AvailableRiders as (
 
-	  SELECT did FROM Delivery_riders
+	  SELECT did from Delivery_riders
 	  WHERE did in (
 		  select did from Full_time_rider F
 	  	  where EXTRACT(MONTH from CURRENT_TIMESTAMP) = EXTRACT(MONTH FROM F.month_of_work)
@@ -731,7 +731,7 @@ app.post("/order", (req, res) => {
 	
 LastLocationOfRiders as (
 	select *
-	from AvailableRiders R left join Deliveries D
+	FROM AvailableRiders R left join Deliveries D
 	on R.did = D.driver
 	left join Addresses A
 	on D.street_name = A.street_name
@@ -744,13 +744,14 @@ LastLocationOfRiders as (
 	where D2.driver = D.driver) 
 )
 
-select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180 / 2), 2) +  COS(lat * pi()/180) *  COS(${lat} * pi()/180) *  POWER(SIN((lon -${lon}) * pi()/180 / 2), 2)  )) as d
-  from LastLocationOfRiders
+select did, lat, lon, 
+3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180 / 2), 2) +  COS(lat * pi()/180) *  COS(${lat} * pi()/180) *  POWER(SIN((lon -${lon}) * pi()/180 / 2), 2)  )) as d from LastLocationOfRiders
   order by d asc nulls first
   limit 1;
   `
     )
     .catch (err=> console.log(err)).then((result) => {
+      console.log("after getting available rider", result)
       if (result[1].rowCount == 0) {
         //no driver
         res.send({ err: "No rider" });
@@ -767,7 +768,7 @@ select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180
       }
     })
     .catch (err=> console.log(err)).then((result) => {
-      console.log(result)
+      console.log("After finding num orders", result)
       const now = new Date();
       const front =
         now.getFullYear().toString() +
@@ -792,7 +793,7 @@ select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180
       `;
 
       return client.query(query);
-    }).catch (err=> console.log(err)).then(_ => {
+    }).catch (err=> console.log(err)).then(result => {
       //if the user's address does not exist, create it
       return client.query(`
         SELECT * FROM ADDRESSES A
@@ -820,6 +821,36 @@ select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180
     .catch (err=> console.log(err))
     ;
 });
+
+app.post('/ridername', (req, res) => {
+  const {order_id} = req.body;
+  client.query(`
+    SELECT driver from deliveries
+    where order_id = '${order_id}';
+  `).then(result => {
+
+    res.send(result.rows[0])
+  }).catch(err=> console.log(err));
+})
+
+//Returns {
+//   "restaurant_name": "Dian Xiao er",
+//   "driver": "lewis hamilton"
+// }
+app.post('/receivedOrder', (req,res) => {
+  const {order_id} = req.body;
+  client.query(`
+    SELECT restaurant_name, driver
+    FROM Food_Items_in_Orders F, Deliveries D
+    where F.order_id = D.order_id
+    and F.order_id = '${order_id}'
+  `).then(result=> {
+    res.send(result.rows[0])
+  }).catch(err=> console.log(err));
+
+})
+
+
 
 //Don't modify below this comment
 app.listen(port, () => {

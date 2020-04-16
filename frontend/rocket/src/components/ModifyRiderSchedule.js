@@ -5,11 +5,6 @@ import history from './importables/history';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const options = [
-    { key: 'f20', text: 'February 2020', value: 'feb20' },
-    { key: 'm20', text: 'March 2020', value: 'mar20' },
-    { key: 'a20', text: 'April 2020', value: 'apr20' },
-]
 
 const startDayOptions = [
     { key: 'sun', text: 'Sunday', value: 'sun' },
@@ -231,7 +226,7 @@ class ModifyRiderSchedule extends Component {
     render() {
         console.log(this.props.ridertype);
         return (
-            this.props.ridertype == "part_time" ?
+            this.props.ridertype === "part_time" ?
                 <Container>
                     <Grid>
                         <Grid.Row columns="equal">

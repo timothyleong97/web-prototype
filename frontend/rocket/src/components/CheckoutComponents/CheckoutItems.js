@@ -12,9 +12,9 @@ import { List, Grid } from "semantic-ui-react";
         min_order_amt,
         rid: '2'}, qty: Integer], editable: Boolean} props
  */
-const CheckoutItems = ({ editable, orders }) => (
+const CheckoutItems = ({ editable, order }) => (
   <List divided inverted relaxed>
-    {orders.map(arr => (
+    {order.map(arr => (
       <List.Item>
         <List.Content>
           <List.Header> {arr[0].food_item_name} </List.Header>

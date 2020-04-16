@@ -8,7 +8,6 @@ import {
   Message,
   Image,
 } from "semantic-ui-react";
-import validator from "validator";
 import axiosClient from "./importables/axiosClient";
 import history from './importables/history';
 

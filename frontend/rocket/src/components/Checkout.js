@@ -13,6 +13,7 @@ import RewardsAndPromoCode from "./CheckoutComponents/RewardsAndPromoCode";
 import PaymentDropdown from "./CheckoutComponents/PaymentDropdown";
 import filterOrders from "./CheckoutComponents/filterOrders";
 import axiosClient from "./importables/axiosClient";
+import history from "./importables/history";
 import AddressesTable from "./CheckoutComponents/AddressesTable";
 
 //menu is an array of jsons that look like
@@ -123,7 +124,7 @@ const Checkout = ({
         <Header>Order Summary</Header>
 
         <Segment inverted>
-          <CheckoutItems orders={orders} />
+          <CheckoutItems order={orders} />
         </Segment>
 
         <RewardsAndPromoCode
@@ -194,9 +195,10 @@ const Checkout = ({
                 // no rider
                 console.log("No rider");
               } else {
+                const {order_id} = data;
                 //data looks like  {did: String, order_id: String}
                 //redirect to orderdispatched
-                console.log(data);
+                history.push(`/dispatched/${order_id}`);
               }
             })
             .catch((err) => console.log(err));

@@ -198,17 +198,18 @@ app.post("/login/:usertype", (req, res) => {
 });
 
 app.post('/riderinfo', (req, res) => {
-  const {userid} = req.body;
-  client.query(`SELECT 1 FROM part_time_rider where did = '${userid}'`)
-  .then(result => {
-    if (result.rowCount === 1) {
-      res.send({rider: 'part_time'});
-    } else {
-      res.send({rider: 'full_time'})
-    }
+  const { userid } = req.body;
+  client.query(`SELECT 1 FROM part_time_rider
+    WHERE did = '${userid}'`)
+    .then(result => {
+      if (result.rowCount > 0) {
+        res.send({ rider: 'part_time' });
+      } else {
+        res.send({ rider: 'full_time' })
+      }
 
-  })
-  .catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
 })
 
 // -- EDIT PROFILE --
@@ -291,23 +292,23 @@ app.post("/addNewRider", (req, res) => {
               if (type == "pt") {
                 client
                   .query(`INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
-                    VALUES($1,CURRENT_DATE,0,10,0,0,10,10,0);`,
+                    VALUES($1,null,null,null,null,null,null,null,null);`,
                     [username]
                   ).then((_) => {
-                      res.send({ status: 100 }); //OK, Part Time
-                    }
+                    res.send({ status: 100 }); //OK, Part Time
+                  }
                   )
               } else {
                 client
                   .query(`INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
-                    VALUES($1,CURRENT_DATE,'sun',1,1,1,1,1);`,
+                    VALUES($1,'1970-01-01',null,null,null,null,null,null);`,
                     [username]
                   ).then((_) => {
-                      res.send({ status: 200 }); //OK, Full Time
-                    }
+                    res.send({ status: 200 }); //OK, Full Time
+                  }
                   )
               }
-          })
+            })
           .catch((error) => {
             console.log("app.js signup api error", error);
             res.send({
@@ -375,6 +376,87 @@ app.post("/addNewStaff", (req, res) => {
         message: error.detail, // "Key (userid)=(timothyleong) already exists."
       });
     });
+});
+
+
+// --MODIFY FULL TIME RIDER--
+
+/**
+ * What: A query to modify work schedule of Full Time Rider.
+ * req.body should be { 
+        userid: String,
+        startDay: String, ("mon", "tue", etc.)
+        day1: String, ("1", "2", "3", "4")
+        day2: String, ("1", "2", "3", "4")
+        day3: String, ("1", "2", "3", "4")
+        day4: String, ("1", "2", "3", "4")
+        day5: String, ("1", "2", "3", "4")
+     } 
+ * possible responses from database is ok or unknown error
+ * Returns: if success, send back {status: 200},
+ *          else send {status: 500}
+ */
+app.post("/modifyFullTimeRiderSchedule", (req, res) => {
+  let { userid, startDay, day1, day2, day3, day4, day5, month } = req.body;
+  //First insert this person into Users
+  client
+    .query(
+      `INSERT INTO full_time_rider(did, month_of_work, wws_start_day, day1_shift,
+        day2_shift, day3_shift, day4_shift, day5_shift)
+      VALUES($1, $8, $2, $3, $4, $5, $6, $7)`,
+      [userid, startDay, day1, day2, day3, day4, day5, month]
+    )
+    .then((_) => {
+      res.send({ status: 200 }); //OK
+    })
+    .catch((error) => {
+      console.log("app.js signup api error", error);
+      res.send({
+        status: 500,
+        message: error.detail,
+      }); //BAD REQUEST
+    })
+});
+
+// --MODIFY PART TIME RIDER--
+
+/**
+ * What: A query to modify work schedule of Part Time Rider.
+ * req.body should be { 
+        userid: String,
+        userid: this.props.username,
+        week_of_work: 
+        mon: 
+        tue: 
+        wed: 
+        thu: 
+        fri: 
+        sat: 
+        sun:
+     } 
+ * possible responses from database is ok or unknown error
+ * Returns: if success, send back {status: 200},
+ *          else send {status: 500}
+ */
+app.post("/modifyPartTimeRiderSchedule", (req, res) => {
+  let { userid, week_of_work, mon, tue, wed, thu, fri, sat, sun} = req.body;
+  //First insert this person into Users
+  client
+    .query(
+      `INSERT INTO part_time_rider(did, week_of_work, mon, tue, wed, thu, fri, sat, sun)
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      [userid, week_of_work, mon, tue, wed, thu, fri, sat, sun]
+    )
+    .then((_) => {
+      res.send({ status: 200 }); //OK
+    })
+    .catch((error) => {
+      console.log("app.js signup api error", error);
+      res.send({
+        status: 500,
+        message: error.detail,
+      }); //BAD REQUEST
+    })
 });
 
 // --CATALOGUE--
@@ -480,24 +562,24 @@ app.post("/cuisineitems", (req, res) => { //FRONTEND NEEDS TO CHANGE
 
 
 // --CHECKOUT--
-app.get('/rewards/:cid', (req, res)=> {
+app.get('/rewards/:cid', (req, res) => {
   const cid = req.params.cid;
   client.query(`SELECT reward_points 
                 FROM customers 
                 WHERE cid = '${cid}';
                 `
   ).then(result => res.send(result.rows[0]))
-  .catch(err => res.send({status: 500}))
+    .catch(err => res.send({ status: 500 }))
 })
 
-app.get('/payment/:cid', (req, res)=> {
+app.get('/payment/:cid', (req, res) => {
   const cid = req.params.cid;
   client.query(`SELECT credit_card
                 FROM customers 
                 WHERE cid = '${cid}';
                 `
   ).then(result => res.send(result.rows[0]))
-  .catch(err => res.send({status: 500}))
+    .catch(err => res.send({ status: 500 }))
 })
 //Don't modify below this comment
 app.listen(port, () => {

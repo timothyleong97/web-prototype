@@ -1441,47 +1441,6 @@ query(`
 `);
 
 //the query to pull all available riders
-/**
- * create table Addresses(
-    street_name char(30),
-    building varchar(30),
-    unit_num char(10),
-    postal_code integer,
-    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
-    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
-    primary key (street_name,building,unit_num,postal_code)
-);
-create table Deliveries (
-    order_id char(11),
-    driver varchar(30) not null,
-    time_customer_placed_order TIMESTAMP,
-    time_rider_departs_for_restaurant TIMESTAMP,
-    time_rider_reach_restaurant TIMESTAMP,
-    time_rider_departs_restaurant TIMESTAMP,
-    time_rider_delivers_order TIMESTAMP,
-    delivery_rating integer,
-    comments_for_rider CHAR(100),
-    street_name char(30),
-    building varchar(30),
-    unit_num char(10),
-    postal_code integer,
-    reward_points_used integer,
-    primary key(order_id),
-    foreign key(order_id) references Orders(order_id) on update cascade on delete cascade,
-    foreign key(driver) references Delivery_Riders(did) on UPDATE cascade on delete cascade,
-    foreign key(street_name,building,unit_num,postal_code) references Addresses(street_name,building,unit_num,postal_code) on UPDATE cascade on delete cascade
-
-    create table Addresses(
-    street_name char(30),
-    building varchar(30),
-    unit_num char(10),
-    postal_code integer,
-    lon float NOT NULL check(-90.0 <= lon AND lon <= 90.0 ),
-    lat float NOT NULL check(-180.0 <= lat AND lat <= 180.0),
-    primary key (street_name,building,unit_num,postal_code)
-);
-);
- */
 // query(`
 // WITH AvailableRiders as (
 //       SELECT did from Delivery_riders

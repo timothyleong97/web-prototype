@@ -725,8 +725,9 @@ VALUES('Manager');`);
 // RESTAURANT STAFF
 query(`
 create table Restaurant_Staff(
-    staff_id varchar(30) primary key,
+    staff_id varchar(30),
     restaurant_name VARCHAR(255), 
+    primary key(staff_id),
     foreign key(staff_id) REFERENCES Users(userid) ON DELETE CASCADE ON UPDATE CASCADE,
     foreign key(restaurant_name) REFERENCES Restaurants(restaurant_name) ON DELETE CASCADE ON UPDATE CASCADE
 );`);

@@ -197,20 +197,22 @@ app.post("/login/:usertype", (req, res) => {
     });
 });
 
-app.post('/riderinfo', (req, res) => {
+app.post("/riderinfo", (req, res) => {
   const { userid } = req.body;
-  client.query(`SELECT 1 FROM part_time_rider
-    WHERE did = '${userid}'`)
-    .then(result => {
+  client
+    .query(
+      `SELECT 1 FROM part_time_rider
+    WHERE did = '${userid}'`
+    )
+    .then((result) => {
       if (result.rowCount > 0) {
-        res.send({ rider: 'part_time' });
+        res.send({ rider: "part_time" });
       } else {
-        res.send({ rider: 'full_time' })
+        res.send({ rider: "full_time" });
       }
-
     })
-    .catch(err => console.log(err));
-})
+    .catch((err) => console.log(err));
+});
 
 // -- EDIT PROFILE --
 
@@ -291,24 +293,27 @@ app.post("/addNewRider", (req, res) => {
             (_) => {
               if (type == "pt") {
                 client
-                  .query(`INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
+                  .query(
+                    `INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
                     VALUES($1,null,null,null,null,null,null,null,null);`,
                     [username]
-                  ).then((_) => {
-                    res.send({ status: 100 }); //OK, Part Time
-                  }
                   )
+                  .then((_) => {
+                    res.send({ status: 100 }); //OK, Part Time
+                  });
               } else {
                 client
-                  .query(`INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+                  .query(
+                    `INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
                     VALUES($1,'1970-01-01',null,null,null,null,null,null);`,
                     [username]
-                  ).then((_) => {
-                    res.send({ status: 200 }); //OK, Full Time
-                  }
                   )
+                  .then((_) => {
+                    res.send({ status: 200 }); //OK, Full Time
+                  });
               }
-            })
+            }
+          )
           .catch((error) => {
             console.log("app.js signup api error", error);
             res.send({
@@ -324,7 +329,6 @@ app.post("/addNewRider", (req, res) => {
       });
     });
 });
-
 
 // --ADD NEW STAFF--
 
@@ -378,7 +382,6 @@ app.post("/addNewStaff", (req, res) => {
     });
 });
 
-
 // --MODIFY FULL TIME RIDER--
 
 /**
@@ -415,7 +418,7 @@ app.post("/modifyFullTimeRiderSchedule", (req, res) => {
         status: 500,
         message: error.detail,
       }); //BAD REQUEST
-    })
+    });
 });
 
 // --MODIFY PART TIME RIDER--
@@ -439,7 +442,7 @@ app.post("/modifyFullTimeRiderSchedule", (req, res) => {
  *          else send {status: 500}
  */
 app.post("/modifyPartTimeRiderSchedule", (req, res) => {
-  let { userid, week_of_work, mon, tue, wed, thu, fri, sat, sun} = req.body;
+  let { userid, week_of_work, mon, tue, wed, thu, fri, sat, sun } = req.body;
   //First insert this person into Users
   client
     .query(
@@ -456,7 +459,7 @@ app.post("/modifyPartTimeRiderSchedule", (req, res) => {
         status: 500,
         message: error.detail,
       }); //BAD REQUEST
-    })
+    });
 });
 
 // --CATALOGUE--
@@ -514,7 +517,8 @@ app.get("/restaurants", (req, res) => {
     }
   ]
  */
-app.post("/fooditems", (req, res) => { //FRONTEND NEEDS TO CHANGE
+app.post("/fooditems", (req, res) => {
+  //FRONTEND NEEDS TO CHANGE
   let { name } = req.body;
   client
     .query(
@@ -547,7 +551,8 @@ app.post("/fooditems", (req, res) => { //FRONTEND NEEDS TO CHANGE
     }
   ]
  */
-app.post("/cuisineitems", (req, res) => { //FRONTEND NEEDS TO CHANGE
+app.post("/cuisineitems", (req, res) => {
+  //FRONTEND NEEDS TO CHANGE
   let { name } = req.body;
   client
     .query(
@@ -560,7 +565,6 @@ app.post("/cuisineitems", (req, res) => { //FRONTEND NEEDS TO CHANGE
     .catch((err) => console.log(err));
 });
 
-
 // --CHECKOUT--
 /**
  * What: get existing reward points for customer
@@ -568,47 +572,54 @@ app.post("/cuisineitems", (req, res) => { //FRONTEND NEEDS TO CHANGE
  * Returns: {
  *  "reward_points": Integer
  * }
- * 
+ *
  */
-app.get('/rewards/:cid', (req, res) => {
+app.get("/rewards/:cid", (req, res) => {
   const cid = req.params.cid;
-  client.query(`SELECT reward_points 
+  client
+    .query(
+      `SELECT reward_points 
                 FROM customers 
                 WHERE cid = '${cid}';
                 `
-  ).then(result => res.send(result.rows[0]))
-    .catch(err => res.send({ status: 500 }))
-})
+    )
+    .then((result) => res.send(result.rows[0]))
+    .catch((err) => res.send({ status: 500 }));
+});
 /**
  * What: get existing reward points for customer
  * Receives: the cid as a url param
  * Returns: {
  *  "credit_card": String
  * }
- * 
+ *
  */
-app.get('/payment/:cid', (req, res) => {
+app.get("/payment/:cid", (req, res) => {
   const cid = req.params.cid;
-  client.query(`SELECT credit_card
+  client
+    .query(
+      `SELECT credit_card
                 FROM customers 
                 WHERE cid = '${cid}';
                 `
-  ).then(result => res.send(result.rows[0]))
-    .catch(err => res.send({ status: 500 }))
-})
-
+    )
+    .then((result) => res.send(result.rows[0]))
+    .catch((err) => res.send({ status: 500 }));
+});
 
 /**
  * What: get existing reward points for customer
- * Receives: the cid as a url param
+ * Receives: the {code : String} in req.body
  * Returns: {
  *  "promo_detail": "" | "10%OFFEVERYTHING"
  * }
- * 
+ *
  */
-app.post('/promo', (req, res) => {
-  const {code} = req.body;
-  client.query(`SELECT promo_detail
+app.post("/promo", (req, res) => {
+  const { code } = req.body;
+  client
+    .query(
+      `SELECT promo_detail
                 FROM promotions P
                 WHERE promo_code in (
                   SELECT fds_promo from 
@@ -625,14 +636,167 @@ app.post('/promo', (req, res) => {
                   and P3.promo_start_date < CURRENT_DATE
                   and P3.promo_end_date > CURRENT_DATE)
               `
-  ).then(result => res.send(result.rowCount == 1 ?
-    result.rows[0] : {code : ''}))
-    .catch(err => console.log(err));
-})
+    )
+    .then((result) =>
+      res.send(result.rowCount == 1 ? result.rows[0] : { promo_detail: "" })
+    )
+    .catch((err) => console.log(err));
+});
 
+/**
+ * Returns something like [
+    {
+        "street_name": "1 Jurong East                 ",
+        "building": "haven way",
+        "unit_num": "01-10     ",
+        "postal_code": 21221,
+        "time_customer_placed_order": "2020-04-08T11:00:00.000Z"
+    } or []
+]
+ */
+app.post("/lastfive", (req, res) => {
+  let { cid } = req.body;
 
+  client
+    .query(
+      `SELECT distinct D.street_name, D.building, D.unit_num, D.postal_code , D.time_customer_placed_order
+                FROM Deliveries D join Places
+                ON D.order_id = Places.order_id
+                where Places.cid = '${cid}'
+                order by D.time_customer_placed_order desc
+                limit 5;
+  `
+    )
+    .then((result) => res.send(result.rows))
+    .catch((err) => console.log(err));
+});
 
+/**
+ * What: creates an order, dispatches a driver, returns the order id to   
+ * the front
+ * Receives: {
+ *  restaurant_name: String,
+ *  food_items: array of jsons that look like {
+      food_item_name: 'Cold cut trio',
+      price: 5.5,
+      daily_limit: 10,
+      num_orders_made: 0,
+      restaurant_name: 'Subway'
+    },
+    qty: array of integers denoting how many of the respective food items were bought
+    cid : String
+ * }
+    This handler will create an Orders entry, a Places Entry,
+    find a driver, then create the Deliveries Entry, then return the Order id to the front end
 
+ */
+app.post("/order", (req, res) => {
+  const {
+    restaurant_name,
+    food_items,
+    qty,
+    cid,
+    lon,
+    lat,
+    delivery_fee,
+    subtotal,
+    street_name,
+    building,
+    unit_num,
+    postal_code,
+    reward_points_used,
+  } = req.body;
+  console.log(lon, lat);
+  let order_id = 0;
+  let did = "";
+  let str = "";
+  client
+    .query(
+      `
+  set timezone = 'Asia/Singapore';
+  WITH AvailableRiders as (
+
+	  SELECT did from Delivery_riders
+	  WHERE did in (
+		  select did from Full_time_rider F
+	  	  where EXTRACT(MONTH from CURRENT_TIMESTAMP) = EXTRACT(MONTH FROM F.month_of_work)
+	  )
+	  AND IS_FULL_TIMER_WORKING(did) = 1
+	  UNION
+	  SELECT did from Delivery_riders
+	  WHERE did in (select did from Part_time_rider P 
+				   where EXTRACT(WEEK from CURRENT_TIMESTAMP) = EXTRACT(WEEK FROM P.week_of_work))
+	  AND IS_PART_TIMER_WORKING(did) = 1
+),
+	
+LastLocationOfRiders as (
+	select *
+	from AvailableRiders R left join Deliveries D
+	on R.did = D.driver
+	left join Addresses A
+	on D.street_name = A.street_name
+	and D.building = A.building
+	and D.unit_num = A.unit_num
+	and D.postal_code = A.postal_code
+	and time_rider_delivers_order = (
+	SELECT MAX(time_rider_delivers_order) 
+	from Deliveries D2 
+	where D2.driver = D.driver) 
+)
+
+select did, lat, lon, 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180 / 2), 2) +  COS(lat * pi()/180) *  COS(${lat} * pi()/180) *  POWER(SIN((lon -${lon}) * pi()/180 / 2), 2)  )) as d
+  from LastLocationOfRiders
+  order by d asc nulls first
+  limit 1;
+  `
+    )
+    .then((result) => {
+      if (result[1].rowCount == 0) {
+        //no driver
+        res.send({ err: "No rider" });
+      } else {
+        //result[1].rows looks like [ { did: 'full-time', lat: null, lon: null, d: null } ]
+        did = result[1].rows[0].did;
+        return client.query(
+          `SELECT COUNT(time_customer_placed_order) + 1 as num
+             FROM Deliveries
+             WHERE EXTRACT(DAY from time_customer_placed_order)
+             = EXTRACT(DAY from CURRENT_TIMESTAMP)`
+        );
+      }
+    })
+    .then((result) => {
+      console.log(result)
+      const now = new Date();
+      const front =
+        now.getFullYear().toString() +
+        now.getMonth().toString().padStart(2, 0) +
+        now.getDay().toString().padStart(2, 0);
+      order_id = front + result.rows[0].num.padStart(3, 0);
+
+      for (let i = 0; i < food_items.length; i++) {
+        const name = food_items[i].food_item_name;
+        str =
+          str +
+          `INSERT INTO FOOD_ITEMS_IN_ORDERS values (${qty[i]},${order_id},'${name}','${restaurant_name}');\n`;
+      }
+
+      const query = `
+        INSERT INTO ORDERS(order_id) VALUES ('${order_id}');
+        INSERT INTO PLACES(order_id, cid, delivery_fee, total_cost) VALUES ('${order_id}','${cid}', ${delivery_fee}, ${
+        subtotal + delivery_fee
+      });
+        ${str}
+        INSERT INTO DELIVERIES values ('${order_id}','${did}',CURRENT_TIMESTAMP, null, null, null, null, 0, '', '${street_name}', '${building}', '${unit_num}', '${postal_code}', ${reward_points_used});
+      `;
+
+      return client.query(query);
+    }).then(result => {
+      console.log(result);
+      //insert the user's address
+    }).catch (err=> console.log(err))
+    ;
+});
 
 //Don't modify below this comment
 app.listen(port, () => {

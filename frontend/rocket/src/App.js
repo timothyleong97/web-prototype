@@ -129,6 +129,7 @@ const App = () => {
             backgroundColor: "#eac012",
             height: "14vh",
             paddingLeft: 10,
+            width: '100vw'
           }}
         >
           <Grid>

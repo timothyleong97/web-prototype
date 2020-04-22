@@ -1201,20 +1201,29 @@ query(`
     driver_ratingss bigint;
     no_of_restaurantss bigint;
     no_of_driverss bigint;
+    sum_all_ratings bigint;
     BEGIN
-
-
+    IF (NEW.delivery_rating < 0) THEN
+    RAISE EXCEPTION '%invalid delivery_rating', new.delivery_rating;
+    ELSIF(NEW.delivery_rating > 5) THEN
+    RAISE EXCEPTION '%invalid delivery_rating', new.delivery_rating;
+    ELSE
 
     -- update RESTAURANT Rating
     restaurant_ratingss =  getrestaurantrating(NEW.order_id);
     no_of_restaurantss =  getrestaurantcount(NEW.order_id);
     RAISE NOTICE '%', restaurant_ratingss;
     RAISE NOTICE '%', no_of_restaurantss;
+
+    sum_all_ratings = restaurant_ratingss/no_of_restaurantss;
+    IF (sum_all_ratings < 0) THEN
+    RAISE NOTICE '% It is not a valid rating', sum_all_ratings;
+    ELSE
     UPDATE restaurants r
     SET sum_all_ratings = (restaurant_ratingss / no_of_restaurantss)
     FROM orders o
     WHERE r.restaurant_name = o.restaurant_name;
-
+    END IF;
 
     -- update rating for driver
 
@@ -1223,11 +1232,16 @@ query(`
     RAISE NOTICE '%', driver_ratingss;
     RAISE NOTICE '%', no_of_driverss;
 
+    sum_all_ratings = driver_ratingss/no_of_driverss;
+    IF(sum_all_ratings < 0) THEN
+    RAISE NOTICE '% It is not a valid rating', sum_all_ratings;
+    ELSE
    UPDATE Delivery_riders dr
    SET sum_all_ratings = driver_ratingss / no_of_driverss
    FROM orders o
    WHERE o.did = dr.did;
-
+   END IF;
+   END IF;
 
 
 
@@ -1243,10 +1257,44 @@ query(`
 query(`
 drop trigger if exists tr_updateEveryThing on orders;`);
 query(`create trigger tr_updateEveryThing
-  after INSERT
+  before INSERT
   on deliveries
   for each ROW
 execute function fn_updateEveryThing();`);
+
+query(`DROP FUNCTION IF EXISTS fn_updateOrders() CASCADE;`);
+query(`
+  create or replace function fn_updateOrders() returns trigger as
+    $$
+
+    BEGIN
+    IF (NEW.restaurant_rating < 0) THEN
+    RAISE EXCEPTION '%invalid restaurant_rating', new.restaurant_rating;
+    ELSIF(NEW.restaurant_rating > 5) THEN
+    RAISE EXCEPTION '%invalid restaurant_rating', new.restaurant_rating;
+    ELSIF(NEW.restaurant_review = null) THEN
+    RAISE EXCEPTION '%invalid restaurant_review', new.restaurant_review;
+
+   END IF;
+
+
+
+  return new;
+
+
+    end;
+  $$ language plpgsql;
+`);
+
+
+
+query(`
+drop trigger if exists tr_updateOrders on orders;`);
+query(`create trigger tr_updateOrders
+  before INSERT
+  on orders
+  for each ROW
+execute function fn_updateOrders();`);
 
 /**
  * Trigger 2

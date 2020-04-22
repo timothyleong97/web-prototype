@@ -1257,7 +1257,7 @@ query(`
 query(`
 drop trigger if exists tr_updateEveryThing on orders;`);
 query(`create trigger tr_updateEveryThing
-  before INSERT
+  before UPDATE OR INSERT
   on deliveries
   for each ROW
 execute function fn_updateEveryThing();`);
@@ -1272,7 +1272,7 @@ query(`
     RAISE EXCEPTION '%invalid restaurant_rating', new.restaurant_rating;
     ELSIF(NEW.restaurant_rating > 5) THEN
     RAISE EXCEPTION '%invalid restaurant_rating', new.restaurant_rating;
-    ELSIF(NEW.restaurant_review = null) THEN
+    ELSIF(NEW.restaurant_review = 'null') THEN
     RAISE EXCEPTION '%invalid restaurant_review', new.restaurant_review;
 
    END IF;

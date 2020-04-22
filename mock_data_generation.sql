@@ -19,12 +19,29 @@ INSERT INTO users(userid,user_password)
 VALUES('Thomas Engine','password');
 INSERT INTO users(userid,user_password)
 VALUES('Jay Park','jay');
+INSERT INTO users(userid,user_password)
+VALUES('Rider1','Rider1');
+INSERT INTO users(userid,user_password)
+VALUES('Rider2','Rider2');
+INSERT INTO users(userid,user_password)
+VALUES('Rider3','Rider3');
+INSERT INTO users(userid,user_password)
+VALUES('Rider4','Rider4');
+
 
 --INSERT Delivery_riders
 INSERT INTO Delivery_riders(did,base_salary,commission)
 VALUES('lewis hamilton',100,0);
 INSERT INTO Delivery_riders(did,base_salary,commission)
 VALUES('Thomas Engine',50,0);
+INSERT INTO Delivery_riders(did,base_salary,commission)
+VALUES('Rider1',50,0);
+INSERT INTO Delivery_riders(did,base_salary,commission)
+VALUES('Rider2',50,0);
+INSERT INTO Delivery_riders(did,base_salary,commission)
+VALUES('Rider3',50,0);
+INSERT INTO Delivery_riders(did,base_salary,commission)
+VALUES('Rider4',50,0);
 
 --INSERT PART TIME Delivery_riders
 INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
@@ -35,6 +52,16 @@ INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_sh
 VALUES('lewis hamilton','2998-09-01','mon',1,1,1,1,1);
 INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
 VALUES('lewis hamilton','1998-09-01','mon',1,2,1,2,4);
+INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('Rider1','1998-09-01','thu',1,2,1,4,4);
+INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('Rider3','1998-09-01','thu',4,2,2,3,4);
+INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('Rider2','1998-09-01','thu',2,3,2,4,4);
+INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('Rider4','1998-09-01','thu',3,1,1,2,4);
+
+
 
 --INSERT SALARY
 INSERT INTO salary(did,salary_date,base_salary,commission)

@@ -88,6 +88,15 @@ query(`
 INSERT INTO users(userid,user_password)
 VALUES('Akon','convict');`);
 
+query(`INSERT INTO users(userid,user_password)
+VALUES('Rider1','Rider1');`);
+query(`INSERT INTO users(userid,user_password)
+VALUES('Rider2','Rider2');`);
+query(`INSERT INTO users(userid,user_password)
+VALUES('Rider3','Rider3');`);
+query(`INSERT INTO users(userid,user_password)
+VALUES('Rider4','Rider4');`);
+
 // CUSTOMERS
 query(`
 create table Customers(
@@ -125,6 +134,20 @@ VALUES('lewis hamilton',0,0);`);
 query(`
 INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
 VALUES('Thomas Engine',4.5,100);`);
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('Rider3',4.5,100);`);
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('Rider4',4.5,100);`);
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('Rider2',4.5,100);`);
+query(`
+INSERT INTO Delivery_riders(did,sum_all_ratings,num_deliveries)
+VALUES('Rider1',4.5,100);`);
+
+
 
 //ADDRESSES
 query(`
@@ -873,6 +896,15 @@ query(`
 INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
 VALUES('lewis hamilton','1970-01-01','mon',1,1,1,1,1);`
 );
+query(`INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('Rider1','1998-09-01','thu',1,2,1,4,4);`);
+query(`INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('Rider3','1998-09-01','thu',4,2,2,3,4);`);
+query(`INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('Rider2','1998-09-01','thu',2,3,2,4,4);`);
+query(`INSERT INTO FULL_TIME_RIDER(did, month_of_work, wws_start_day,day1_shift,day2_shift,day3_shift,day4_shift,day5_shift)
+VALUES('Rider4','1998-09-01','thu',3,1,1,2,4);`);
+
 
 
 //PART_TIME_RIDER

@@ -1055,7 +1055,9 @@ query(`
     errorMsg text;
     baseSalary integer := 0;
   BEGIN
+    IF NEW.mon = NULL AND NEW.tue= NULL AND NEW.wed = NULL AND NEW.thu = NULL AND NEW.fri = NULL AND NEW.sat = NULL AND NEW.sun = NULL THEN RETURN NULL;
     SELECT NEW.mon into schedule;
+    End if;
     day := 'mon';
     counter := counter + numZeroes(schedule);
     --RAISE NOTICE '% hours worked cumulatively', counter;

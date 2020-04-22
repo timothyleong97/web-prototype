@@ -58,17 +58,17 @@ app.use(express.json());
         lastName: String,
         username: String,
         credit_card: String,
-        password: String     
-     } 
+        password: String
+     }
 
      Frontend should make sure all fields are present before sending to backend.
 
      Concatenate firstName and lastName with a whitespace in between for the attribute customer_name in Customers
      Initialise reward points as 0, start date as CURRENT_DATE (a reserved keyword in PGSQL referring to current date)
-     
+
      Send an insert statement to the database with the above variables
 
-     What will be returned from the database is a Result object that looks like this (in the then function call of the Promise):  
+     What will be returned from the database is a Result object that looks like this (in the then function call of the Promise):
             Result {
               command: 'INSERT',
               rowCount: 1,
@@ -142,8 +142,8 @@ app.post("/signup", (req, res) => {
 
 /** req.body should be {
         username: String,
-        password: String     
-     } 
+        password: String
+     }
 
      Frontend should make sure all fields are present before sending to backend.
 
@@ -173,7 +173,7 @@ app.post("/login/:usertype", (req, res) => {
   // console.log(username, password, usertype)
   client
     .query(
-      `SELECT * 
+      `SELECT *
                 FROM users join ${usertype}
                 ON users.userid = ${usertype}.${ids[usertype]}
                 WHERE userid = '${username}'
@@ -231,7 +231,7 @@ app.patch("/updateuserpwd", (req, res) => {
   let { oldusername, newusername, password } = req.body;
   client
     .query(
-      `UPDATE users 
+      `UPDATE users
                  SET userid = '${newusername}',
                  user_password = '${password}'
                  where userid = '${oldusername}';
@@ -259,8 +259,8 @@ app.patch("/updateuserpwd", (req, res) => {
         lastName: String,
         username: String,
         type: String (either "ft" or "pt"),
-        password: String     
-     } 
+        password: String
+     }
  * possible responses from database is ok (part time, full time) or the username is already taken.
  * Returns: if part time, send back {status: 100},
  *          if full time, send back {status: 200},
@@ -283,8 +283,8 @@ app.post("/addNewRider", (req, res) => {
       (_) =>
         client
           .query(
-            `INSERT INTO delivery_riders(did,start_work_date,sum_all_ratings,num_deliveries)
-           VALUES($1, CURRENT_DATE, 0, 0);`,
+            `INSERT INTO delivery_riders(did,sum_all_ratings,num_deliveries)
+           VALUES($1, 0, 0);`,
             [username]
           )
           .then(
@@ -295,7 +295,7 @@ app.post("/addNewRider", (req, res) => {
                 client
                   .query(
                     `INSERT INTO part_time_rider(did,week_of_work,mon,tue,wed,thu,fri,sat,sun)
-                    VALUES($1,null,null,null,null,null,null,null,null);`,
+                    VALUES($1,'1970-01-01',null,null,null,null,null,null,null);`,
                     [username]
                   )
                   .then((_) => {
@@ -338,8 +338,8 @@ app.post("/addNewRider", (req, res) => {
         firstName: String,
         lastName: String,
         username: String,
-        password: String     
-     } 
+        password: String
+     }
  * possible responses from database is ok or the username is already taken.
  * Returns: if success, send back {status: 200},
  *          else send {status: 400}
@@ -386,7 +386,7 @@ app.post("/addNewStaff", (req, res) => {
 
 /**
  * What: A query to modify work schedule of Full Time Rider.
- * req.body should be { 
+ * req.body should be {
         userid: String,
         startDay: String, ("mon", "tue", etc.)
         day1: String, ("1", "2", "3", "4")
@@ -394,7 +394,7 @@ app.post("/addNewStaff", (req, res) => {
         day3: String, ("1", "2", "3", "4")
         day4: String, ("1", "2", "3", "4")
         day5: String, ("1", "2", "3", "4")
-     } 
+     }
  * possible responses from database is ok or unknown error
  * Returns: if success, send back {status: 200},
  *          else send {status: 500}
@@ -425,18 +425,18 @@ app.post("/modifyFullTimeRiderSchedule", (req, res) => {
 
 /**
  * What: A query to modify work schedule of Part Time Rider.
- * req.body should be { 
+ * req.body should be {
         userid: String,
         userid: this.props.username,
-        week_of_work: 
-        mon: 
-        tue: 
-        wed: 
-        thu: 
-        fri: 
-        sat: 
+        week_of_work:
+        mon:
+        tue:
+        wed:
+        thu:
+        fri:
+        sat:
         sun:
-     } 
+     }
  * possible responses from database is ok or unknown error
  * Returns: if success, send back {status: 200},
  *          else send {status: 500}
@@ -522,13 +522,13 @@ app.post("/fooditems", (req, res) => {
   let { name } = req.body;
   client
     .query(
-      `SELECT 
-      food_item_name, 
-      price, 
-      category, 
-      daily_limit, 
-      num_orders_made, 
-      min_order_amt, 
+      `SELECT
+      food_item_name,
+      price,
+      category,
+      daily_limit,
+      num_orders_made,
+      min_order_amt,
       F.restaurant_name
       FROM food_items F, restaurants R
       where F.restaurant_name = R.restaurant_name
@@ -578,8 +578,8 @@ app.get("/rewards/:cid", (req, res) => {
   const cid = req.params.cid;
   client
     .query(
-      `SELECT reward_points 
-                FROM customers 
+      `SELECT reward_points
+                FROM customers
                 WHERE cid = '${cid}';
                 `
     )
@@ -599,7 +599,7 @@ app.get("/payment/:cid", (req, res) => {
   client
     .query(
       `SELECT credit_card
-                FROM customers 
+                FROM customers
                 WHERE cid = '${cid}';
                 `
     )
@@ -622,14 +622,14 @@ app.post("/promo", (req, res) => {
       `SELECT promo_detail
                 FROM promotions P
                 WHERE promo_code in (
-                  SELECT fds_promo from 
+                  SELECT fds_promo from
                   FDS_promotion F join Promotions P2
                   on P2.promo_code = F.fds_promo
                   where F.fds_promo = '${code}'
                   and P2.promo_start_date < CURRENT_DATE
                   and P2.promo_end_date > CURRENT_DATE
                   union
-                  SELECT restaurant_promo from 
+                  SELECT restaurant_promo from
                   Restaurant_promotion R join Promotions P3
                   on P3.promo_code = R.restaurant_promo
                   where restaurant_promo = '${code}'
@@ -672,7 +672,7 @@ app.post("/lastfive", (req, res) => {
 });
 
 /**
- * What: creates an order, dispatches a driver, returns the order id to   
+ * What: creates an order, dispatches a driver, returns the order id to
  * the front
  * Receives: {
  *  restaurant_name: String,
@@ -724,11 +724,11 @@ app.post("/order", (req, res) => {
 	  AND IS_FULL_TIMER_WORKING(did) = 1
 	  UNION
 	  SELECT did from Delivery_riders
-	  WHERE did in (select did from Part_time_rider P 
+	  WHERE did in (select did from Part_time_rider P
 				   where EXTRACT(WEEK from CURRENT_TIMESTAMP) = EXTRACT(WEEK FROM P.week_of_work))
 	  AND IS_PART_TIMER_WORKING(did) = 1
 ),
-	
+
 LastLocationOfRiders as (
 	select *
 	FROM AvailableRiders R left join Deliveries D
@@ -739,12 +739,12 @@ LastLocationOfRiders as (
 	and D.unit_num = A.unit_num
 	and D.postal_code = A.postal_code
 	and time_rider_delivers_order = (
-	SELECT MAX(time_rider_delivers_order) 
-	from Deliveries D2 
-	where D2.driver = D.driver) 
+	SELECT MAX(time_rider_delivers_order)
+	from Deliveries D2
+	where D2.driver = D.driver)
 )
 
-select did, lat, lon, 
+select did, lat, lon,
 3956 * 2 * ASIN(SQRT(  POWER(SIN((lat - ${lat}) * pi()/180 / 2), 2) +  COS(lat * pi()/180) *  COS(${lat} * pi()/180) *  POWER(SIN((lon -${lon}) * pi()/180 / 2), 2)  )) as d from LastLocationOfRiders
   order by d asc nulls first
   limit 1;
@@ -789,7 +789,7 @@ select did, lat, lon,
         subtotal + delivery_fee
       });
         ${str}
-        
+
       `;
 
       return client.query(query);
@@ -800,7 +800,7 @@ select did, lat, lon,
         WHERE A.street_name = '${street_name}'
         AND A.building = '${building}'
         AND A.unit_num = '${unit_num}'
-        AND A.postal_code = '${postal_code}'        
+        AND A.postal_code = '${postal_code}'
       `)
     }).catch (err=> console.log(err)).then(
       result => {

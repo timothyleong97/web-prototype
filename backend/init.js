@@ -1149,6 +1149,52 @@ query(`
   EXECUTE FUNCTION calculateTotalWorkingHours();
 `);
 
+query(`DROP FUNCTION IF EXISTS checkCredit CASCADE;`);
+query(`CREATE OR REPLACE FUNCTION checkCredit()
+RETURNS TRIGGER AS $$
+  DECLARE
+    my_sum BIGINT := 0;
+    digit text;
+    shouldDouble BOOLEAN := false;
+    tmpnum BIGINT;
+  BEGIN
+    -- if no credit card, nothing to do
+    IF NEW.credit_card = NULL THEN
+      RETURN NEW;
+    END IF;
+    -- remove the hyphens
+    NEW.credit_card = REPLACE(NEW.credit_card, '-', '');
+    RAISE NOTICE '%', NEW.credit_card;
+    FOR i in REVERSE LENGTH(NEW.credit_card)  .. 1 LOOP
+      digit := SUBSTRING(NEW.credit_card, i);
+      tmpnum := CAST(NEW.credit_card AS BIGINT);
+
+      IF shouldDouble = TRUE THEN
+        tmpnum := tmpnum * 2;
+        IF tmpnum >= 10 THEN
+          my_sum = my_sum + (MOD(tmpnum,10) + 1);
+        ELSE
+          my_sum = my_sum + tmpnum;
+        END IF;
+      ELSE
+        my_sum = my_sum + tmpnum;
+      END IF;
+      shouldDouble = NOT shouldDouble;
+    END LOOP;
+
+    IF MOD(my_sum, 10) = 0 THEN
+      return NEW;
+    ELSE
+      RAISE EXCEPTION 'Invalid credit card number';
+    END IF;
+  END;
+$$ LANGUAGE plpgsql;`);
+
+query(`DROP TRIGGER IF EXISTS credit_card_trigger ON Customers CASCADE;`);
+query(`CREATE TRIGGER credit_card_trigger
+  BEFORE UPDATE OR INSERT ON Customers
+  FOR EACH ROW
+  EXECUTE FUNCTION checkCredit();`);
 
 query(`DROP FUNCTION IF EXISTS getrestaurantrating;`);
 
